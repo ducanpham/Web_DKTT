@@ -60,7 +60,7 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
             <Image src="/logo.png" alt="Khoa Cơ Điện Tử" width={80} height={80} className="w-full h-full object-cover" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-1 tracking-tight">KHOA CƠ ĐIỆN Tử</h1>
-          <p className="text-blue-300 text-base font-semibold tracking-wide">ĐĂNG KÝ THỰC TẬP & HƯỠNG NGHIỆP</p>
+          <p className="text-blue-300 text-base font-semibold tracking-wide">ĐĂNG KÝ THỰC TẬP & HƯỚNG NGHIỆP</p>
           <p className="text-slate-400 text-sm mt-1">Đại học Bách Khoa Hà Nội</p>
           <div className="mt-3 inline-flex items-center gap-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full px-3 py-1">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
