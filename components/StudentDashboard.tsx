@@ -1,14 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import {
-  GraduationCap,
-  Search,
-  LogOut,
-  X,
-  ExternalLink,
-  Bell,
-} from 'lucide-react';
+import { GraduationCap, Search, LogOut, X, ExternalLink, Bell } from 'lucide-react';
 import { Company, Registration, Role } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
@@ -24,11 +17,7 @@ interface StudentDashboardProps {
 }
 
 export default function StudentDashboard({
-  companies,
-  registrations,
-  onRegister,
-  onDeclareExternal,
-  onLogout,
+  companies, registrations, onRegister, onDeclareExternal, onLogout,
 }: StudentDashboardProps) {
   const [search, setSearch] = useState('');
   const [statFilter, setStatFilter] = useState<string | null>(null);
@@ -39,10 +28,7 @@ export default function StudentDashboard({
   const activeFilterCount = [statFilter, fieldFilter, skillFilter].filter(Boolean).length;
 
   const clearAllFilters = () => {
-    setStatFilter(null);
-    setFieldFilter(null);
-    setSkillFilter(null);
-    setSearch('');
+    setStatFilter(null); setFieldFilter(null); setSkillFilter(null); setSearch('');
   };
 
   const filteredCompanies = useMemo(() => {
@@ -56,13 +42,10 @@ export default function StudentDashboard({
     });
   }, [companies, search, statFilter, fieldFilter, skillFilter]);
 
-  const handleExternalSubmit = useCallback(
-    (sid: string, sn: string, cn: string) => {
-      onDeclareExternal(sid, sn, cn);
-      setShowExternalModal(false);
-    },
-    [onDeclareExternal]
-  );
+  const handleExternalSubmit = useCallback((sid: string, sn: string, cn: string) => {
+    onDeclareExternal(sid, sn, cn);
+    setShowExternalModal(false);
+  }, [onDeclareExternal]);
 
   const role: Role = 'student';
 
@@ -71,27 +54,21 @@ export default function StudentDashboard({
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          {/* Logo */}
           <div className="flex items-center gap-3 flex-shrink-0">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
               <GraduationCap className="w-4 h-4 text-white" />
             </div>
             <div className="hidden sm:block">
               <p className="text-sm font-bold text-slate-800 leading-tight">UniIntern Hub</p>
-              <p className="text-xs text-slate-400 leading-tight">Student Portal</p>
+              <p className="text-xs text-slate-400 leading-tight">Cổng Sinh Viên</p>
             </div>
           </div>
 
-          {/* Search */}
           <div className="flex-1 max-w-xl relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search companies…"
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm"
-            />
+            <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
+              placeholder="Tìm kiếm doanh nghiệp…"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-sm" />
             {search && (
               <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
                 <X className="w-3.5 h-3.5" />
@@ -99,15 +76,12 @@ export default function StudentDashboard({
             )}
           </div>
 
-          {/* Right actions */}
           <div className="flex items-center gap-3">
-            {/* Role badge */}
             <div className="hidden sm:flex items-center gap-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full">
               <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
-              <span className="text-xs font-semibold text-blue-600">Student</span>
+              <span className="text-xs font-semibold text-blue-600">Sinh Viên</span>
             </div>
 
-            {/* Notification: registration count */}
             {registrations.length > 0 && (
               <div className="relative">
                 <div className="p-2 rounded-lg bg-slate-100 text-slate-500">
@@ -119,111 +93,79 @@ export default function StudentDashboard({
               </div>
             )}
 
-            <button
-              onClick={onLogout}
-              className="flex items-center gap-1.5 text-slate-500 hover:text-red-600 text-sm font-medium transition-colors p-2 rounded-lg hover:bg-red-50"
-            >
+            <button onClick={onLogout}
+              className="flex items-center gap-1.5 text-slate-500 hover:text-red-600 text-sm font-medium transition-colors p-2 rounded-lg hover:bg-red-50">
               <LogOut className="w-4 h-4" />
-              <span className="hidden sm:inline">Logout</span>
+              <span className="hidden sm:inline">Đăng xuất</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-7 space-y-6">
-        {/* Page Header */}
+        {/* Tiêu đề trang */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Internship Opportunities</h1>
+            <h1 className="text-2xl font-bold text-slate-800">Cơ Hội Thực Tập</h1>
             <p className="text-slate-500 text-sm mt-1">
-              Browse {companies.length} partner companies and register for your internship
+              Khám phá {companies.length} doanh nghiệp đối tác và đăng ký thực tập
             </p>
           </div>
-          {/* External company banner */}
-          <button
-            onClick={() => setShowExternalModal(true)}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm"
-          >
+          <button onClick={() => setShowExternalModal(true)}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
             <ExternalLink className="w-4 h-4" />
-            Declare External Company
+            Khai Báo Công Ty Ngoài
           </button>
         </div>
 
-        {/* Active filters bar */}
+        {/* Thanh bộ lọc */}
         {activeFilterCount > 0 && (
           <div className="flex items-center gap-3 p-3.5 bg-blue-50 border border-blue-200 rounded-xl animate-fade-in">
-            <span className="text-xs font-semibold text-blue-700">
-              {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} active
-            </span>
+            <span className="text-xs font-semibold text-blue-700">{activeFilterCount} bộ lọc đang áp dụng</span>
             <div className="flex flex-wrap gap-2">
               {statFilter && (
                 <span className="badge bg-blue-100 text-blue-700">
-                  {statFilter === 'gala' ? '⭐ Gala Sponsors' : '📶 Online Recruitment'}
+                  {statFilter === 'gala' ? '⭐ Nhà Tài Trợ Gala' : '📶 Tuyển Dụng Online'}
                   <button onClick={() => setStatFilter(null)} className="ml-1 hover:text-blue-900"><X className="w-2.5 h-2.5" /></button>
                 </span>
               )}
               {fieldFilter && (
                 <span className="badge bg-blue-100 text-blue-700">
-                  Field: {fieldFilter}
+                  Lĩnh vực: {fieldFilter}
                   <button onClick={() => setFieldFilter(null)} className="ml-1 hover:text-blue-900"><X className="w-2.5 h-2.5" /></button>
                 </span>
               )}
               {skillFilter && (
                 <span className="badge bg-blue-100 text-blue-700">
-                  Skill: {skillFilter}
+                  Kỹ năng: {skillFilter}
                   <button onClick={() => setSkillFilter(null)} className="ml-1 hover:text-blue-900"><X className="w-2.5 h-2.5" /></button>
                 </span>
               )}
             </div>
-            <button onClick={clearAllFilters} className="ml-auto text-xs text-blue-600 hover:text-blue-800 font-medium">
-              Clear all
-            </button>
+            <button onClick={clearAllFilters} className="ml-auto text-xs text-blue-600 hover:text-blue-800 font-medium">Bỏ tất cả</button>
           </div>
         )}
 
-        {/* Stat Cards */}
-        <StatCards
-          companies={companies}
-          activeFilter={statFilter}
-          onFilterChange={setStatFilter}
-        />
+        <StatCards companies={companies} activeFilter={statFilter} onFilterChange={setStatFilter} />
 
-        {/* Charts */}
-        <ChartCards
-          companies={companies}
-          activeFieldFilter={fieldFilter}
-          activeSkillFilter={skillFilter}
-          onFieldFilter={setFieldFilter}
-          onSkillFilter={setSkillFilter}
-        />
+        <ChartCards companies={companies} activeFieldFilter={fieldFilter} activeSkillFilter={skillFilter}
+          onFieldFilter={setFieldFilter} onSkillFilter={setSkillFilter} />
 
-        {/* Table */}
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-slate-800">
-              Companies{' '}
+              Danh Sách Doanh Nghiệp{' '}
               {filteredCompanies.length < companies.length && (
-                <span className="text-base font-normal text-slate-400">
-                  ({filteredCompanies.length} of {companies.length})
-                </span>
+                <span className="text-base font-normal text-slate-400">({filteredCompanies.length} / {companies.length})</span>
               )}
             </h2>
           </div>
-          <CompanyTable
-            companies={filteredCompanies}
-            role={role}
-            onRegister={onRegister}
-          />
+          <CompanyTable companies={filteredCompanies} role={role} onRegister={onRegister} />
         </div>
       </main>
 
-      {/* External Company Modal */}
       {showExternalModal && (
-        <ExternalCompanyModal
-          onClose={() => setShowExternalModal(false)}
-          onSubmit={handleExternalSubmit}
-        />
+        <ExternalCompanyModal onClose={() => setShowExternalModal(false)} onSubmit={handleExternalSubmit} />
       )}
     </div>
   );

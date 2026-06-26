@@ -32,19 +32,17 @@ export default function Home() {
   const [registrations, setRegistrations] = useState<Registration[]>(INITIAL_REGISTRATIONS);
   const [hydrated, setHydrated] = useState(false);
 
-  // Hydrate from localStorage on mount
+  // Khôi phục từ localStorage khi tải trang
   useEffect(() => {
     const savedRole = loadFromStorage<Role | null>(STORAGE_KEY_ROLE, null);
     const savedCompanies = loadFromStorage<Company[]>(STORAGE_KEY_COMPANIES, INITIAL_COMPANIES);
     const savedRegistrations = loadFromStorage<Registration[]>(STORAGE_KEY_REGISTRATIONS, INITIAL_REGISTRATIONS);
-
     setRole(savedRole);
     setCompanies(savedCompanies);
     setRegistrations(savedRegistrations);
     setHydrated(true);
   }, []);
 
-  // Persist companies and registrations on changes
   useEffect(() => {
     if (!hydrated) return;
     saveToStorage(STORAGE_KEY_COMPANIES, companies);
@@ -65,11 +63,10 @@ export default function Home() {
     saveToStorage(STORAGE_KEY_ROLE, null);
   }, []);
 
-  /* ──── Student Actions ──── */
+  /* ──── Hành động của Sinh viên ──── */
 
   const handleRegister = useCallback(
     (companyId: string, studentId: string, studentName: string) => {
-      // Deduct 1 slot
       setCompanies((prev) =>
         prev.map((c) =>
           c.id === companyId
@@ -77,14 +74,13 @@ export default function Home() {
             : c
         )
       );
-      // Add registration record
       const company = companies.find((c) => c.id === companyId);
       const newReg: Registration = {
         id: `r_${Date.now()}`,
         studentId,
         studentName,
         companyId,
-        companyName: company?.name ?? 'Unknown',
+        companyName: company?.name ?? 'Không xác định',
         registeredAt: new Date().toISOString(),
         isExternal: false,
       };
@@ -100,7 +96,7 @@ export default function Home() {
         studentId,
         studentName,
         companyId: 'EXT',
-        companyName: `${companyName} (External)`,
+        companyName: `${companyName} (Ngoài)`,
         registeredAt: new Date().toISOString(),
         isExternal: true,
       };
@@ -109,31 +105,33 @@ export default function Home() {
     []
   );
 
-  /* ──── Admin Actions ──── */
+  /* ──── Hành động của Admin ──── */
 
   const handleDeleteRegistration = useCallback(
     (regId: string) => {
       const reg = registrations.find((r) => r.id === regId);
       if (!reg) return;
-
-      // Restore slot if internal registration
       if (!reg.isExternal && reg.companyId !== 'EXT') {
         setCompanies((prev) =>
-          prev.map((c) => {
-            if (c.id !== reg.companyId) return c;
-            return { ...c, availableSlots: Math.min(c.totalSlots, c.availableSlots + 1) };
-          })
+          prev.map((c) =>
+            c.id !== reg.companyId ? c : { ...c, availableSlots: Math.min(c.totalSlots, c.availableSlots + 1) }
+          )
         );
       }
-
       setRegistrations((prev) => prev.filter((r) => r.id !== regId));
     },
     [registrations]
   );
 
+  const handleImportCompanies = useCallback(
+    (newCompanies: Company[], replace: boolean) => {
+      setCompanies((prev) => (replace ? newCompanies : [...prev, ...newCompanies]));
+    },
+    []
+  );
+
   /* ──── Render ──── */
 
-  // Prevent flash during hydration
   if (!hydrated) {
     return (
       <div className="min-h-screen bg-slate-900 flex items-center justify-center">
@@ -142,15 +140,13 @@ export default function Home() {
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
-          <p className="text-slate-400 text-sm">Loading UniIntern Hub…</p>
+          <p className="text-slate-400 text-sm">Đang tải UniIntern Hub…</p>
         </div>
       </div>
     );
   }
 
-  if (!role) {
-    return <LoginScreen onLogin={handleLogin} />;
-  }
+  if (!role) return <LoginScreen onLogin={handleLogin} />;
 
   if (role === 'student') {
     return (
@@ -169,6 +165,7 @@ export default function Home() {
       companies={companies}
       registrations={registrations}
       onDeleteRegistration={handleDeleteRegistration}
+      onImportCompanies={handleImportCompanies}
       onLogout={handleLogout}
     />
   );

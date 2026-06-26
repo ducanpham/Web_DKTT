@@ -5,13 +5,13 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'UniIntern Hub — University Recruitment & Internship Dashboard',
+  title: 'UniIntern Hub — Hệ thống Quản lý Thực tập Sinh viên',
   description:
-    'Comprehensive role-based recruitment and internship management platform for university students and administrators.',
-  keywords: 'university, internship, recruitment, dashboard, student, admin',
+    'Nền tảng quản lý tuyển dụng và thực tập phân quyền theo vai trò dành cho sinh viên và quản trị viên trường đại học.',
+  keywords: 'đại học, thực tập, tuyển dụng, dashboard, sinh viên, quản trị viên',
   openGraph: {
     title: 'UniIntern Hub',
-    description: 'University Recruitment & Internship Management Dashboard',
+    description: 'Hệ thống Quản lý Tuyển dụng & Thực tập Đại học',
     type: 'website',
   },
 };
