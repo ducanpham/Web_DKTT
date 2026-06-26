@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useMemo, useCallback } from 'react';
-import { GraduationCap, Search, LogOut, X, ExternalLink, Bell } from 'lucide-react';
+import Image from 'next/image';
+import { Search, LogOut, X, ExternalLink, Bell } from 'lucide-react';
 import { Company, Registration, Role } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
@@ -55,12 +56,12 @@ export default function StudentDashboard({
       <header className="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-              <GraduationCap className="w-4 h-4 text-white" />
+            <div className="w-8 h-8 rounded-lg overflow-hidden shadow-sm">
+              <Image src="/logo.png" alt="Khoa Cơ Điện Tử" width={32} height={32} className="w-full h-full object-cover" />
             </div>
             <div className="hidden sm:block">
-              <p className="text-sm font-bold text-slate-800 leading-tight">UniIntern Hub</p>
-              <p className="text-xs text-slate-400 leading-tight">Cổng Sinh Viên</p>
+              <p className="text-sm font-bold text-slate-800 leading-tight">KHOA CƠ ĐIỆN Tử</p>
+              <p className="text-xs text-slate-400 leading-tight">Cổng Đăng Ký Thực Tập</p>
             </div>
           </div>
 
@@ -78,7 +79,7 @@ export default function StudentDashboard({
 
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full">
-              <GraduationCap className="w-3.5 h-3.5 text-blue-600" />
+              <span className="text-sm">🤖</span>
               <span className="text-xs font-semibold text-blue-600">Sinh Viên</span>
             </div>
 

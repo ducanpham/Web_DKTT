@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { GraduationCap, Shield, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
+import Image from 'next/image';
+import { Shield, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
 
 interface LoginScreenProps {
   onLogin: (role: 'student' | 'admin') => void;
@@ -55,11 +56,12 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
       <div className="relative w-full max-w-lg animate-slide-up">
         {/* Logo & Tiêu đề */}
         <div className="text-center mb-10">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-2xl shadow-blue-500/40 mb-5">
-            <GraduationCap className="w-10 h-10 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl shadow-2xl shadow-blue-500/40 mb-5 overflow-hidden">
+            <Image src="/logo.png" alt="Khoa Cơ Điện Tử" width={80} height={80} className="w-full h-full object-cover" />
           </div>
-          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">UniIntern Hub</h1>
-          <p className="text-slate-400 text-base">Hệ thống Quản lý Tuyển dụng &amp; Thực tập Sinh viên</p>
+          <h1 className="text-3xl font-bold text-white mb-1 tracking-tight">KHOA CƠ ĐIỆN Tử</h1>
+          <p className="text-blue-300 text-base font-semibold tracking-wide">ĐĂNG KÝ THỰC TẬP & HƯỠNG NGHIỆP</p>
+          <p className="text-slate-400 text-sm mt-1">Đại học Bách Khoa Hà Nội</p>
           <div className="mt-3 inline-flex items-center gap-1.5 bg-blue-500/10 border border-blue-500/20 rounded-full px-3 py-1">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span className="text-emerald-400 text-xs font-medium">Hệ thống hoạt động — Năm học 2025–2026</span>
@@ -82,10 +84,10 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
                   : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
               }`}
             >
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                selectedRole === 'student' ? 'bg-blue-500 shadow-lg shadow-blue-500/40' : 'bg-white/10 group-hover:bg-white/15'
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center overflow-hidden transition-all duration-300 ${
+                selectedRole === 'student' ? 'shadow-lg shadow-blue-500/40' : 'bg-white/10 group-hover:bg-white/15'
               }`}>
-                <GraduationCap className="w-7 h-7 text-white" />
+                <Image src="/logo.png" alt="Sinh viên" width={56} height={56} className="w-full h-full object-cover" />
               </div>
               <div className="text-center">
                 <p className="text-white font-semibold text-sm">Sinh Viên</p>

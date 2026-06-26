@@ -5,13 +5,13 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'UniIntern Hub — Hệ thống Quản lý Thực tập Sinh viên',
+  title: 'Khoa Cơ Điện Tử — Đăng Ký Thực Tập & Hướng Nghiệp | ĐHBK Hà Nội',
   description:
-    'Nền tảng quản lý tuyển dụng và thực tập phân quyền theo vai trò dành cho sinh viên và quản trị viên trường đại học.',
-  keywords: 'đại học, thực tập, tuyển dụng, dashboard, sinh viên, quản trị viên',
+    'Hệ thống đăng ký thực tập và hướng nghiệp dành cho sinh viên Khoa Cơ Điện Tử, Đại học Bách Khoa Hà Nội.',
+  keywords: 'cơ điện tử, thực tập, hướng nghiệp, ĐHBK, Bách Khoa, sinh viên, đăng ký',
   openGraph: {
-    title: 'UniIntern Hub',
-    description: 'Hệ thống Quản lý Tuyển dụng & Thực tập Đại học',
+    title: 'Khoa Cơ Điện Tử — Đăng Ký Thực Tập & Hướng Nghiệp',
+    description: 'Hệ thống đăng ký thực tập và hướng nghiệp Khoa Cơ Điện Tử ĐHBK Hà Nội',
     type: 'website',
   },
 };
