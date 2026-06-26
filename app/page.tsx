@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Company, Registration, Role, INITIAL_COMPANIES, INITIAL_REGISTRATIONS } from '@/lib/data';
+import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, INITIAL_COMPANIES, INITIAL_REGISTRATIONS } from '@/lib/data';
 import LoginScreen from '@/components/LoginScreen';
 import StudentDashboard from '@/components/StudentDashboard';
 import AdminDashboard from '@/components/AdminDashboard';
@@ -9,6 +9,7 @@ import AdminDashboard from '@/components/AdminDashboard';
 const STORAGE_KEY_ROLE = 'unintern_role';
 const STORAGE_KEY_COMPANIES = 'unintern_companies';
 const STORAGE_KEY_REGISTRATIONS = 'unintern_registrations';
+const STORAGE_KEY_GUIDE = 'unintern_guide';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback;
@@ -30,6 +31,7 @@ export default function Home() {
   const [role, setRole] = useState<Role | null>(null);
   const [companies, setCompanies] = useState<Company[]>(INITIAL_COMPANIES);
   const [registrations, setRegistrations] = useState<Registration[]>(INITIAL_REGISTRATIONS);
+  const [guide, setGuide] = useState<InternshipGuide>(DEFAULT_GUIDE);
   const [hydrated, setHydrated] = useState(false);
 
   // Khôi phục từ localStorage khi tải trang
@@ -37,21 +39,17 @@ export default function Home() {
     const savedRole = loadFromStorage<Role | null>(STORAGE_KEY_ROLE, null);
     const savedCompanies = loadFromStorage<Company[]>(STORAGE_KEY_COMPANIES, INITIAL_COMPANIES);
     const savedRegistrations = loadFromStorage<Registration[]>(STORAGE_KEY_REGISTRATIONS, INITIAL_REGISTRATIONS);
+    const savedGuide = loadFromStorage<InternshipGuide>(STORAGE_KEY_GUIDE, DEFAULT_GUIDE);
     setRole(savedRole);
     setCompanies(savedCompanies);
     setRegistrations(savedRegistrations);
+    setGuide(savedGuide);
     setHydrated(true);
   }, []);
 
-  useEffect(() => {
-    if (!hydrated) return;
-    saveToStorage(STORAGE_KEY_COMPANIES, companies);
-  }, [companies, hydrated]);
-
-  useEffect(() => {
-    if (!hydrated) return;
-    saveToStorage(STORAGE_KEY_REGISTRATIONS, registrations);
-  }, [registrations, hydrated]);
+  useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_COMPANIES, companies); }, [companies, hydrated]);
+  useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_REGISTRATIONS, registrations); }, [registrations, hydrated]);
+  useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_GUIDE, guide); }, [guide, hydrated]);
 
   const handleLogin = useCallback((selectedRole: Role) => {
     setRole(selectedRole);
@@ -66,7 +64,7 @@ export default function Home() {
   /* ──── Hành động của Sinh viên ──── */
 
   const handleRegister = useCallback(
-    (companyId: string, studentId: string, studentName: string) => {
+    (companyId: string, studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string) => {
       setCompanies((prev) =>
         prev.map((c) =>
           c.id === companyId
@@ -79,6 +77,9 @@ export default function Home() {
         id: `r_${Date.now()}`,
         studentId,
         studentName,
+        studentPhone,
+        studentEmail,
+        internClass,
         companyId,
         companyName: company?.name ?? 'Không xác định',
         registeredAt: new Date().toISOString(),
@@ -90,11 +91,14 @@ export default function Home() {
   );
 
   const handleDeclareExternal = useCallback(
-    (studentId: string, studentName: string, companyName: string) => {
+    (studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, companyName: string) => {
       const newReg: Registration = {
         id: `r_ext_${Date.now()}`,
         studentId,
         studentName,
+        studentPhone,
+        studentEmail,
+        internClass,
         companyId: 'EXT',
         companyName: `${companyName} (Ngoài)`,
         registeredAt: new Date().toISOString(),
@@ -130,6 +134,10 @@ export default function Home() {
     []
   );
 
+  const handleUpdateGuide = useCallback((newGuide: InternshipGuide) => {
+    setGuide(newGuide);
+  }, []);
+
   /* ──── Render ──── */
 
   if (!hydrated) {
@@ -153,6 +161,7 @@ export default function Home() {
       <StudentDashboard
         companies={companies}
         registrations={registrations}
+        guide={guide}
         onRegister={handleRegister}
         onDeclareExternal={handleDeclareExternal}
         onLogout={handleLogout}
@@ -164,8 +173,10 @@ export default function Home() {
     <AdminDashboard
       companies={companies}
       registrations={registrations}
+      guide={guide}
       onDeleteRegistration={handleDeleteRegistration}
       onImportCompanies={handleImportCompanies}
+      onUpdateGuide={handleUpdateGuide}
       onLogout={handleLogout}
     />
   );

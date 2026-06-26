@@ -1,28 +1,36 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, UserCheck, Hash, User, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { X, UserCheck, Hash, User, AlertCircle, CheckCircle2, Phone, Mail, BookOpen } from 'lucide-react';
 
 interface RegisterModalProps {
   companyId: string;
   companyName: string;
   availableSlots: number;
   onClose: () => void;
-  onSubmit: (studentId: string, studentName: string) => void;
+  onSubmit: (studentId: string, studentName: string, phone: string, email: string, internClass: string) => void;
 }
 
 export function RegisterModal({ companyId: _companyId, companyName, availableSlots, onClose, onSubmit }: RegisterModalProps) {
   const [studentId, setStudentId] = useState('');
   const [studentName, setStudentName] = useState('');
-  const [errors, setErrors] = useState<{ id?: string; name?: string }>({});
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [internClass, setInternClass] = useState('');
+  const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string }>({});
   const [success, setSuccess] = useState(false);
 
   const validate = () => {
-    const errs: { id?: string; name?: string } = {};
+    const errs: typeof errors = {};
     if (!studentId.trim()) errs.id = 'Mã sinh viên không được để trống';
-    else if (!/^[A-Za-z0-9]{4,12}$/.test(studentId.trim())) errs.id = 'Mã SV phải có 4–12 ký tự chữ và số';
+    else if (!/^[A-Za-z0-9]{4,12}$/.test(studentId.trim())) errs.id = 'MSSV phải có 4–12 ký tự chữ và số';
     if (!studentName.trim()) errs.name = 'Họ và tên không được để trống';
     else if (studentName.trim().length < 3) errs.name = 'Họ tên phải có ít nhất 3 ký tự';
+    if (!phone.trim()) errs.phone = 'Số điện thoại không được để trống';
+    else if (!/^(0|\+84)[0-9]{8,10}$/.test(phone.trim())) errs.phone = 'Số điện thoại không hợp lệ';
+    if (!email.trim()) errs.email = 'Email không được để trống';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = 'Email không đúng định dạng';
+    if (!internClass.trim()) errs.cls = 'Lớp thực tập không được để trống';
     return errs;
   };
 
@@ -31,8 +39,28 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setSuccess(true);
-    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim()); }, 1200);
+    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim()); }, 1200);
   };
+
+  const Field = ({ label, icon: Icon, value, onChange, placeholder, type = 'text', error, errorKey }: {
+    label: string; icon: React.ElementType; value: string;
+    onChange: (v: string) => void; placeholder: string;
+    type?: string; error?: string; errorKey: string;
+  }) => (
+    <div>
+      <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+        {label} <span className="text-red-500">*</span>
+      </label>
+      <div className="relative">
+        <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+        <input type={type} value={value}
+          onChange={(e) => { onChange(e.target.value); setErrors((p) => ({ ...p, [errorKey]: undefined })); }}
+          placeholder={placeholder}
+          className={`input-field pl-10 ${error ? 'border-red-400 focus:ring-red-400' : ''}`} />
+      </div>
+      {error && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {error}</p>}
+    </div>
+  );
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -77,33 +105,20 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                  Mã Sinh Viên <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <Hash className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="text" value={studentId}
-                    onChange={(e) => { setStudentId(e.target.value); setErrors((p) => ({ ...p, id: undefined })); }}
-                    placeholder="VD: SV202501"
-                    className={`input-field pl-10 ${errors.id ? 'border-red-400 focus:ring-red-400' : ''}`} />
-                </div>
-                {errors.id && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.id}</p>}
-              </div>
+              <Field label="MSSV" icon={Hash} value={studentId}
+                onChange={setStudentId} placeholder="VD: 20225678" error={errors.id} errorKey="id" />
 
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-                  Họ và Tên <span className="text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="text" value={studentName}
-                    onChange={(e) => { setStudentName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-                    placeholder="Nhập họ và tên đầy đủ"
-                    className={`input-field pl-10 ${errors.name ? 'border-red-400 focus:ring-red-400' : ''}`} />
-                </div>
-                {errors.name && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.name}</p>}
-              </div>
+              <Field label="Họ và Tên" icon={User} value={studentName}
+                onChange={setStudentName} placeholder="Nhập họ và tên đầy đủ" error={errors.name} errorKey="name" />
+
+              <Field label="Số Điện Thoại" icon={Phone} value={phone}
+                onChange={setPhone} placeholder="VD: 0912345678" type="tel" error={errors.phone} errorKey="phone" />
+
+              <Field label="Email" icon={Mail} value={email}
+                onChange={setEmail} placeholder="VD: sv@hust.edu.vn" type="email" error={errors.email} errorKey="email" />
+
+              <Field label="Lớp Thực Tập" icon={BookOpen} value={internClass}
+                onChange={setInternClass} placeholder="VD: KSCD-01, Kỹ thuật-K65..." error={errors.cls} errorKey="cls" />
 
               <div className="pt-2 flex gap-3">
                 <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">Hủy</button>
@@ -123,20 +138,26 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
 
 interface ExternalModalProps {
   onClose: () => void;
-  onSubmit: (studentId: string, studentName: string, companyName: string) => void;
+  onSubmit: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string) => void;
 }
 
 export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) {
   const [studentId, setStudentId] = useState('');
   const [studentName, setStudentName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [internClass, setInternClass] = useState('');
   const [companyName, setCompanyName] = useState('');
-  const [errors, setErrors] = useState<{ id?: string; name?: string; company?: string }>({});
+  const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string; company?: string }>({});
   const [success, setSuccess] = useState(false);
 
   const validate = () => {
-    const errs: { id?: string; name?: string; company?: string } = {};
+    const errs: typeof errors = {};
     if (!studentId.trim()) errs.id = 'Mã sinh viên không được để trống';
     if (!studentName.trim()) errs.name = 'Họ và tên không được để trống';
+    if (!phone.trim()) errs.phone = 'Số điện thoại không được để trống';
+    if (!email.trim()) errs.email = 'Email không được để trống';
+    if (!internClass.trim()) errs.cls = 'Lớp thực tập không được để trống';
     if (!companyName.trim()) errs.company = 'Tên công ty không được để trống';
     return errs;
   };
@@ -146,8 +167,10 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setSuccess(true);
-    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), companyName.trim()); }, 1200);
+    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim(), companyName.trim()); }, 1200);
   };
+
+  const cls = (err?: string) => `input-field ${err ? 'border-red-400' : ''}`;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -180,15 +203,27 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
             </div>
 
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1.5">Mã Sinh Viên <span className="text-red-500">*</span></label>
-                <div className="relative">
-                  <Hash className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input type="text" value={studentId}
-                    onChange={(e) => { setStudentId(e.target.value); setErrors((p) => ({ ...p, id: undefined })); }}
-                    placeholder="VD: SV202501" className={`input-field pl-10 ${errors.id ? 'border-red-400' : ''}`} />
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">MSSV <span className="text-red-500">*</span></label>
+                  <div className="relative">
+                    <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input type="text" value={studentId}
+                      onChange={(e) => { setStudentId(e.target.value); setErrors((p) => ({ ...p, id: undefined })); }}
+                      placeholder="20225678" className={`${cls(errors.id)} pl-9`} />
+                  </div>
+                  {errors.id && <p className="mt-1 text-xs text-red-500">{errors.id}</p>}
                 </div>
-                {errors.id && <p className="mt-1 text-xs text-red-500">{errors.id}</p>}
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Lớp Thực Tập <span className="text-red-500">*</span></label>
+                  <div className="relative">
+                    <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input type="text" value={internClass}
+                      onChange={(e) => { setInternClass(e.target.value); setErrors((p) => ({ ...p, cls: undefined })); }}
+                      placeholder="KSCD-01" className={`${cls(errors.cls)} pl-9`} />
+                  </div>
+                  {errors.cls && <p className="mt-1 text-xs text-red-500">{errors.cls}</p>}
+                </div>
               </div>
 
               <div>
@@ -197,16 +232,39 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input type="text" value={studentName}
                     onChange={(e) => { setStudentName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-                    placeholder="Họ và tên đầy đủ" className={`input-field pl-10 ${errors.name ? 'border-red-400' : ''}`} />
+                    placeholder="Họ và tên đầy đủ" className={`${cls(errors.name)} pl-10`} />
                 </div>
                 {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Số Điện Thoại <span className="text-red-500">*</span></label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input type="tel" value={phone}
+                      onChange={(e) => { setPhone(e.target.value); setErrors((p) => ({ ...p, phone: undefined })); }}
+                      placeholder="0912345678" className={`${cls(errors.phone)} pl-9`} />
+                  </div>
+                  {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-slate-700 mb-1.5">Email <span className="text-red-500">*</span></label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input type="email" value={email}
+                      onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
+                      placeholder="sv@hust.edu.vn" className={`${cls(errors.email)} pl-9`} />
+                  </div>
+                  {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+                </div>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-1.5">Tên Công Ty <span className="text-red-500">*</span></label>
                 <input type="text" value={companyName}
                   onChange={(e) => { setCompanyName(e.target.value); setErrors((p) => ({ ...p, company: undefined })); }}
-                  placeholder="Tên công ty tự tìm được" className={`input-field ${errors.company ? 'border-red-400' : ''}`} />
+                  placeholder="Tên công ty tự tìm được" className={cls(errors.company)} />
                 {errors.company && <p className="mt-1 text-xs text-red-500">{errors.company}</p>}
               </div>
 

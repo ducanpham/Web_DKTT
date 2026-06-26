@@ -1,0 +1,194 @@
+[
+  {
+    "id": 1,
+    "name": "CÔNG TY CỔ PHẦN SẢN XUẤT VÀ DỊCH VỤ LEANMAC",
+    "rawSlots": "6",
+    "slots": 6
+  },
+  {
+    "id": 2,
+    "name": "CÔNG TY CỔ PHẦN THIẾT BỊ VÀ GIẢI PHÁP CƠ KHÍ AUTOMECH",
+    "rawSlots": "30",
+    "slots": 30
+  },
+  {
+    "id": 3,
+    "name": "Công ty Cổ phần Kim Khí Thăng Long",
+    "rawSlots": "50",
+    "slots": 50
+  },
+  {
+    "id": 4,
+    "name": "Công ty TNHH TM& DV Laser Việt Nhật",
+    "rawSlots": "15",
+    "slots": 15
+  },
+  {
+    "id": 5,
+    "name": "Công ty TNHH Phát Triển Thương Mại Minh Vũ",
+    "rawSlots": "10",
+    "slots": 10
+  },
+  {
+    "id": 6,
+    "name": "Unilever",
+    "rawSlots": "1",
+    "slots": 1
+  },
+  {
+    "id": 7,
+    "name": "Công ty TNHH Công nghệ máy văn phòng Kyocera Việt Nam",
+    "rawSlots": "Hiện tại Kyocera mong muốn tuyển dụng 3 thực tập sinh chuyên mảng Cơ khí (Có phỏng vấn)\r\nƯu tiên ứng viên có hộ khẩu tại Hải Phòng, hoặc các khu vực lân cận như Hải Dương, Quảng Ninh, Thái Bình, Nam Định",
+    "slots": 3
+  },
+  {
+    "id": 8,
+    "name": "Công ty cổ phần công nghiệp TCI",
+    "rawSlots": "2-8 sinh viên",
+    "slots": 8
+  },
+  {
+    "id": 9,
+    "name": "CÔNG TY TNHH INNOVATION PRECISION VIỆT NAM",
+    "rawSlots": "8 đến 10 người",
+    "slots": 10
+  },
+  {
+    "id": 10,
+    "name": "Công ty CP Thiết bị và Dịch vụ TCE",
+    "rawSlots": "05",
+    "slots": 5
+  },
+  {
+    "id": 11,
+    "name": "Công ty Cổ phần Công nghệ và đầu tư INTECH",
+    "rawSlots": "5 - 7 bạn ạ",
+    "slots": 7
+  },
+  {
+    "id": 12,
+    "name": "Công ty TNHH Daiwa Plastics Thăng Long",
+    "rawSlots": "5",
+    "slots": 5
+  },
+  {
+    "id": 13,
+    "name": "Công ty TNHH Điện tử Meiko Việt Nam",
+    "rawSlots": "10-20 sinh viên",
+    "slots": 20
+  },
+  {
+    "id": 14,
+    "name": "Công ty TNHH thiết bị HT Việt Nam",
+    "rawSlots": "3 người",
+    "slots": 3
+  },
+  {
+    "id": 15,
+    "name": "Công ty Cổ phần Santomas Việt Nam",
+    "rawSlots": "02 người thuộc kệ Kỹ sư và chuẩn bị thực tập tốt nghiệp",
+    "slots": 2
+  },
+  {
+    "id": 16,
+    "name": "Công ty TNHH Makino Việt Nam",
+    "rawSlots": "5-7 sinh viên",
+    "slots": 7
+  },
+  {
+    "id": 17,
+    "name": "Công ty Cổ phần Công nghiệp TCI",
+    "rawSlots": "20",
+    "slots": 20
+  },
+  {
+    "id": 18,
+    "name": "Công ty TNHH Canon Việt Nam",
+    "rawSlots": "50",
+    "slots": 50
+  },
+  {
+    "id": 19,
+    "name": "Công ty tnhh Neweb Việt Nam(WNC)",
+    "rawSlots": "70",
+    "slots": 70
+  },
+  {
+    "id": 20,
+    "name": "CÔNG TY TNHH PHẦN MỀM HICAS",
+    "rawSlots": "3-5",
+    "slots": 5
+  },
+  {
+    "id": 21,
+    "name": "Công ty cổ phần hệ thống AIoT",
+    "rawSlots": "4",
+    "slots": 4
+  },
+  {
+    "id": 22,
+    "name": "Công Ty Cổ Phần Croptex",
+    "rawSlots": "3-5",
+    "slots": 5
+  },
+  {
+    "id": 23,
+    "name": "Công ty TNHH Thuận Thành Nam Việt",
+    "rawSlots": "3 sinh viên",
+    "slots": 3
+  },
+  {
+    "id": 24,
+    "name": "Tổng Công ty Sản xuất thiết bị Viettel",
+    "rawSlots": "30",
+    "slots": 30
+  },
+  {
+    "id": 25,
+    "name": "Công ty Cổ phần Kim khí Thăng Long",
+    "rawSlots": "50 người",
+    "slots": 50
+  },
+  {
+    "id": 26,
+    "name": "Công ty TNHH Thương mại quốc tế 3S Việt Nam",
+    "rawSlots": "3",
+    "slots": 3
+  },
+  {
+    "id": 27,
+    "name": "Công ty Cổ phần IL-SUNG TECH",
+    "rawSlots": "50",
+    "slots": 50
+  },
+  {
+    "id": 28,
+    "name": "Công ty TNHH MTV Thép VAS Nghi Sơn",
+    "rawSlots": "20",
+    "slots": 20
+  },
+  {
+    "id": 29,
+    "name": "Công ty TNHH Laird Việt Nam (Công ty con tại Việt Nam của công ty Qnity Electronics)",
+    "rawSlots": "10-20",
+    "slots": 20
+  },
+  {
+    "id": 30,
+    "name": "Công ty TNHH Nestlé Việt nam",
+    "rawSlots": "6",
+    "slots": 6
+  },
+  {
+    "id": 31,
+    "name": "STEAM for Vietnam Foundation",
+    "rawSlots": "4",
+    "slots": 4
+  },
+  {
+    "id": 32,
+    "name": "Công ty TNHH Sản xuất đồ gia dụng Sunhouse",
+    "rawSlots": "7",
+    "slots": 7
+  }
+]

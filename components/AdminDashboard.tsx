@@ -2,8 +2,8 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, PlusCircle, Pencil, Trash2, BarChart2, ChevronDown, ChevronUp, FileSpreadsheet, Download } from 'lucide-react';
-import { Company, Registration, Role } from '@/lib/data';
+import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, BookOpen, Wrench, Link, Save } from 'lucide-react';
+import { Company, Registration, Role, InternshipGuide } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
@@ -13,16 +13,20 @@ import UploadExcelModal from './UploadExcelModal';
 interface AdminDashboardProps {
   companies: Company[];
   registrations: Registration[];
+  guide: InternshipGuide;
   onDeleteRegistration: (id: string) => void;
   onImportCompanies: (newCompanies: Company[], replace: boolean) => void;
+  onUpdateGuide: (guide: InternshipGuide) => void;
   onLogout: () => void;
 }
 
 export default function AdminDashboard({
   companies,
   registrations,
+  guide,
   onDeleteRegistration,
   onImportCompanies,
+  onUpdateGuide,
   onLogout,
 }: AdminDashboardProps) {
   const [search, setSearch] = useState('');
@@ -31,7 +35,10 @@ export default function AdminDashboard({
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
   const [showRegModal, setShowRegModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showGuidePanel, setShowGuidePanel] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
+  const [guideDraft, setGuideDraft] = useState<InternshipGuide>(guide);
+  const [guideSaved, setGuideSaved] = useState(false);
 
   const activeFilterCount = [statFilter, fieldFilter, skillFilter].filter(Boolean).length;
 
@@ -68,6 +75,13 @@ export default function AdminDashboard({
     },
     [onImportCompanies]
   );
+
+  const handleSaveGuide = useCallback(() => {
+    onUpdateGuide(guideDraft);
+    setGuideSaved(true);
+    setTimeout(() => setGuideSaved(false), 2000);
+    setShowGuidePanel(false);
+  }, [guideDraft, onUpdateGuide]);
 
   const noop = useCallback(() => {}, []);
   const role: Role = 'admin';
@@ -128,6 +142,13 @@ export default function AdminDashboard({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* Quản lý Hướng dẫn Thực tập */}
+            <button onClick={() => setShowGuidePanel(!showGuidePanel)}
+              className={`btn-secondary ${showGuidePanel ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : ''}`}>
+              <BookOpen className="w-4 h-4" />
+              Hướng Dẫn TT
+            </button>
+
             {/* Nhập Excel */}
             <button onClick={() => setShowUploadModal(true)} className="btn-secondary">
               <Upload className="w-4 h-4" />

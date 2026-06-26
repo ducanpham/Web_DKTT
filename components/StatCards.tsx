@@ -32,7 +32,7 @@ export default function StatCards({ companies, activeFilter, onFilterChange }: S
       },
       {
         key: 'gala',
-        label: 'Nhà Tài Trợ Gala',
+        label: 'Đối Tác Thân Thiết',
         value: galaSponsors,
         icon: Star,
         bg: 'from-amber-500 to-orange-500',
@@ -40,7 +40,7 @@ export default function StatCards({ companies, activeFilter, onFilterChange }: S
         textColor: 'text-amber-600',
         borderColor: 'border-amber-200',
         ringColor: 'ring-amber-400',
-        description: 'Đối tác cao cấp',
+        description: 'Đối tác cao cấp của Khoa',
       },
       {
         key: 'online',

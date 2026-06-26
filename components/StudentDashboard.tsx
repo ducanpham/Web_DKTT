@@ -2,8 +2,8 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import { Search, LogOut, X, ExternalLink, Bell } from 'lucide-react';
-import { Company, Registration, Role } from '@/lib/data';
+import { Search, LogOut, X, ExternalLink, Bell, BookOpen, Wrench, ChevronRight } from 'lucide-react';
+import { Company, Registration, Role, InternshipGuide } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
@@ -12,13 +12,14 @@ import { ExternalCompanyModal } from './RegistrationModals';
 interface StudentDashboardProps {
   companies: Company[];
   registrations: Registration[];
-  onRegister: (companyId: string, studentId: string, studentName: string) => void;
-  onDeclareExternal: (studentId: string, studentName: string, companyName: string) => void;
+  guide: InternshipGuide;
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void;
+  onDeclareExternal: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string) => void;
   onLogout: () => void;
 }
 
 export default function StudentDashboard({
-  companies, registrations, onRegister, onDeclareExternal, onLogout,
+  companies, registrations, guide, onRegister, onDeclareExternal, onLogout,
 }: StudentDashboardProps) {
   const [search, setSearch] = useState('');
   const [statFilter, setStatFilter] = useState<string | null>(null);
@@ -43,12 +44,14 @@ export default function StudentDashboard({
     });
   }, [companies, search, statFilter, fieldFilter, skillFilter]);
 
-  const handleExternalSubmit = useCallback((sid: string, sn: string, cn: string) => {
-    onDeclareExternal(sid, sn, cn);
+  const handleExternalSubmit = useCallback((sid: string, sn: string, phone: string, email: string, cls: string, cn: string) => {
+    onDeclareExternal(sid, sn, phone, email, cls, cn);
     setShowExternalModal(false);
   }, [onDeclareExternal]);
 
   const role: Role = 'student';
+
+  const hasGuide = guide.technicalLink || guide.engineerLink;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -60,7 +63,7 @@ export default function StudentDashboard({
               <Image src="/logo.png" alt="Khoa Cơ Điện Tử" width={32} height={32} className="w-full h-full object-cover" />
             </div>
             <div className="hidden sm:block">
-              <p className="text-sm font-bold text-slate-800 leading-tight">KHOA CƠ ĐIỆN Tử</p>
+              <p className="text-sm font-bold text-slate-800 leading-tight">KHOA CƠ ĐIỆN TỬ</p>
               <p className="text-xs text-slate-400 leading-tight">Cổng Đăng Ký Thực Tập</p>
             </div>
           </div>
@@ -104,6 +107,48 @@ export default function StudentDashboard({
       </header>
 
       <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-7 space-y-6">
+        {/* Banner Hướng dẫn Thực tập — chỉ hiện khi admin đã cung cấp link */}
+        {hasGuide && (
+          <div className="rounded-2xl bg-gradient-to-br from-indigo-600 via-blue-600 to-cyan-500 p-5 shadow-lg shadow-blue-500/20 text-white animate-fade-in">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen className="w-5 h-5 text-white/80" />
+              <h2 className="text-base font-bold tracking-wide">TÀI LIỆU HƯỚNG DẪN THỰC TẬP</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {guide.technicalLink && (
+                <a href={guide.technicalLink} target="_blank" rel="noopener noreferrer"
+                  className="group flex items-center justify-between bg-white/15 hover:bg-white/25 backdrop-blur-sm rounded-xl px-4 py-3.5 transition-all border border-white/20 hover:border-white/40">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                      <Wrench className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold text-sm">{guide.technicalLabel || 'Hướng dẫn Thực tập Kỹ thuật'}</p>
+                      <p className="text-white/60 text-xs mt-0.5">Mở tài liệu Google Drive</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-white/60 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                </a>
+              )}
+              {guide.engineerLink && (
+                <a href={guide.engineerLink} target="_blank" rel="noopener noreferrer"
+                  className="group flex items-center justify-between bg-white/15 hover:bg-white/25 backdrop-blur-sm rounded-xl px-4 py-3.5 transition-all border border-white/20 hover:border-white/40">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-lg bg-white/20 flex items-center justify-center flex-shrink-0">
+                      <BookOpen className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold text-sm">{guide.engineerLabel || 'Thực tập Kỹ sư Chuyên sâu'}</p>
+                      <p className="text-white/60 text-xs mt-0.5">Mở tài liệu Google Drive</p>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-white/60 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                </a>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Tiêu đề trang */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
@@ -126,7 +171,7 @@ export default function StudentDashboard({
             <div className="flex flex-wrap gap-2">
               {statFilter && (
                 <span className="badge bg-blue-100 text-blue-700">
-                  {statFilter === 'gala' ? '⭐ Nhà Tài Trợ Gala' : '📶 Tuyển Dụng Online'}
+                  {statFilter === 'gala' ? '⭐ Đối Tác Thân Thiết' : '📶 Tuyển Dụng Online'}
                   <button onClick={() => setStatFilter(null)} className="ml-1 hover:text-blue-900"><X className="w-2.5 h-2.5" /></button>
                 </span>
               )}

@@ -28,11 +28,29 @@ export interface Registration {
   id: string;
   studentId: string;
   studentName: string;
+  studentPhone: string;
+  studentEmail: string;
+  internClass: string;
   companyId: string;
   companyName: string;
   registeredAt: string;
   isExternal: boolean;
 }
+
+export interface InternshipGuide {
+  technicalLink: string;    // Link hướng dẫn thực tập kỹ thuật
+  engineerLink: string;     // Link thực tập kỹ sư chuyên sâu
+  technicalLabel: string;
+  engineerLabel: string;
+}
+
+export const DEFAULT_GUIDE: InternshipGuide = {
+  technicalLink: '',
+  engineerLink: '',
+  technicalLabel: 'Hướng dẫn Thực tập Kỹ thuật',
+  engineerLabel: 'Thực tập Kỹ sư Chuyên sâu',
+};
+
 
 export const INITIAL_COMPANIES: Company[] = [
   {
@@ -174,8 +192,8 @@ export const INITIAL_COMPANIES: Company[] = [
       meals: "Có hỗ trợ bữa ăn",
       housing: "Có bố trí ký túc xá",
     },
-    totalSlots: 0,
-    availableSlots: 0,
+    totalSlots: 3,
+    availableSlots: 3,
     contactName: "Đặng Anh Thơ",
     contactPhone: "0359494575",
     contactEmail: "tho.da@dtvn.kyocera.com",
