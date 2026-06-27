@@ -3,10 +3,19 @@
 import React, { useState } from 'react';
 import {
   Star, Wifi, ChevronDown, ChevronUp, Globe, Phone, Mail, User,
-  Layers, Utensils, Home, Banknote, Lock,
+  Layers, Utensils, Home, Banknote, Lock, GraduationCap, Briefcase, Presentation, BookOpen, Clock
 } from 'lucide-react';
 import { Company, Role, StudentViewConfig } from '@/lib/data';
 import { RegisterModal } from './RegistrationModals';
+
+function getQOptionBadge(option: string) {
+  const text = option.toLowerCase();
+  if (text.includes('lễ tốt nghiệp')) return { icon: <GraduationCap className="w-3.5 h-3.5" />, text: 'Lễ tốt nghiệp (19/7)', color: 'bg-amber-50 text-amber-700 border border-amber-200' };
+  if (text.includes('đồ án tốt nghiệp')) return { icon: <BookOpen className="w-3.5 h-3.5" />, text: 'Hướng dẫn ĐATN', color: 'bg-blue-50 text-blue-700 border border-blue-200' };
+  if (text.includes('job fair')) return { icon: <Briefcase className="w-3.5 h-3.5" />, text: 'Job Fair / Tuyển dụng', color: 'bg-emerald-50 text-emerald-700 border border-emerald-200' };
+  if (text.includes('hội thảo chuyên đề')) return { icon: <Presentation className="w-3.5 h-3.5" />, text: 'Hội thảo / Định hướng', color: 'bg-violet-50 text-violet-700 border border-violet-200' };
+  return { icon: <Clock className="w-3.5 h-3.5" />, text: 'Chưa sắp xếp', color: 'bg-slate-50 text-slate-600 border border-slate-200' };
+}
 
 interface CompanyTableProps {
   companies: Company[];
@@ -295,6 +304,24 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
                   </div>
                 )}
               </div>
+
+              {/* Các sự kiện tham gia (chỉ Admin) */}
+              {role === 'admin' && company.qOptions && company.qOptions.length > 0 && (
+                <div className="bg-white rounded-xl p-4 border border-slate-100 sm:col-span-2 lg:col-span-1">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Sự Kiện Tham Gia (Cột Q)</p>
+                  <div className="flex flex-col gap-2">
+                    {company.qOptions.map((opt, i) => {
+                      const badge = getQOptionBadge(opt);
+                      return (
+                        <div key={i} className={`flex items-start gap-2 px-3 py-2 rounded-lg text-xs font-medium border shadow-sm ${badge.color}`}>
+                          <div className="mt-0.5 flex-shrink-0">{badge.icon}</div>
+                          <span className="leading-relaxed">{badge.text}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </td>
         </tr>
