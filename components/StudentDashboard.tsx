@@ -14,7 +14,7 @@ interface StudentDashboardProps {
   registrations: Registration[];
   guide: InternshipGuide;
   viewConfig: StudentViewConfig;
-  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void;
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => void;
   onDeclareExternal: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string) => void;
   onLogout: () => void;
 }
@@ -158,11 +158,13 @@ export default function StudentDashboard({
               Khám phá {companies.length} doanh nghiệp đối tác và đăng ký thực tập
             </p>
           </div>
-          <button onClick={() => setShowExternalModal(true)}
-            className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
-            <ExternalLink className="w-4 h-4" />
-            Khai Báo Công Ty Ngoài
-          </button>
+          {viewConfig?.allowExternalDeclaration && (
+            <button onClick={() => setShowExternalModal(true)}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
+              <ExternalLink className="w-4 h-4" />
+              Đề xuất/Khai Báo Công Ty Ngoài
+            </button>
+          )}
         </div>
 
         {/* Thanh bộ lọc */}
@@ -172,7 +174,7 @@ export default function StudentDashboard({
             <div className="flex flex-wrap gap-2">
               {statFilter && (
                 <span className="badge bg-blue-100 text-blue-700">
-                  {statFilter === 'gala' ? '⭐ Đối Tác Thân Thiết' : statFilter === 'online' ? '📶 Tuyển Dụng Online' : '⭐ T.Dụng Online & Đối tác'}
+                  {statFilter === 'gala' ? '⭐ Tham dự Ngày hội TN' : statFilter === 'online' ? '📶 Tuyển Dụng Online' : '⭐ T.Dụng Online & Ngày hội TN'}
                   <button onClick={() => setStatFilter(null)} className="ml-1 hover:text-blue-900"><X className="w-2.5 h-2.5" /></button>
                 </span>
               )}

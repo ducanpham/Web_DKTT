@@ -38,6 +38,7 @@ export default function ManageRegistrationsModal({ registrations, onClose, onDel
       'Email': r.studentEmail,
       'Lớp thực tập': r.internClass || '',
       'Công ty Đăng ký': r.companyName,
+      'Kỳ vọng kỹ năng': r.expectedSkills || '',
       'Khai báo ngoài': r.isExternal ? 'Có' : 'Không',
       'Thời gian đăng ký': formatDate(r.registeredAt)
     }));
@@ -104,8 +105,11 @@ export default function ManageRegistrationsModal({ registrations, onClose, onDel
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-slate-800 truncate">{reg.studentName}</p>
                         <p className="text-xs text-slate-500">
-                          {reg.studentId} &bull; <span className="font-medium text-slate-600">{reg.companyName}</span>
+                          {reg.studentId} &bull; <span className="font-medium text-indigo-600">{reg.companyName}</span>
                         </p>
+                        {reg.expectedSkills && (
+                          <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 italic text-ellipsis">Kỳ vọng: {reg.expectedSkills}</p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0 ml-3">
@@ -142,6 +146,9 @@ export default function ManageRegistrationsModal({ registrations, onClose, onDel
                         <p className="text-xs text-slate-500">
                           {reg.studentId} &bull; <span className="font-medium text-violet-600">{reg.companyName}</span>
                         </p>
+                        {reg.expectedSkills && (
+                          <p className="text-xs text-slate-400 mt-0.5 line-clamp-1 italic text-ellipsis">Kỳ vọng: {reg.expectedSkills}</p>
+                        )}
                       </div>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0 ml-3">

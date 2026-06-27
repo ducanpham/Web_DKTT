@@ -216,6 +216,7 @@ export default function UploadExcelModal({ onClose, onImport }: UploadExcelModal
       contactPhone: m.contactPhone || 'Chưa cập nhật',
       contactEmail: m.contactEmail || 'Chưa cập nhật',
       website: m.website || '#',
+      address: 'Chưa cập nhật', // Address is not currently parsed from the form mapping
       industry: m.industry || 'Chưa xác định',
     }));
     onImport(companies, replaceMode);

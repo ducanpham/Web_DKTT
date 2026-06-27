@@ -12,7 +12,7 @@ interface CompanyTableProps {
   companies: Company[];
   role: Role;
   viewConfig?: StudentViewConfig;
-  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void;
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => void;
 }
 
 
@@ -39,14 +39,14 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
   company: Company;
   role: Role;
   viewConfig?: StudentViewConfig;
-  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => void
 }) {
   const [expanded, setExpanded] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
   const hasSlots = company.availableSlots > 0;
 
-  const handleRegSubmit = (studentId: string, studentName: string, phone: string, email: string, internClass: string) => {
-    onRegister(company.id, studentId, studentName, phone, email, internClass);
+  const handleRegSubmit = (studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills: string) => {
+    onRegister(company.id, studentId, studentName, phone, email, internClass, expectedSkills);
     setRegisterModal(false);
   };
 
@@ -243,28 +243,40 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
 
               {/* Liên hệ hoặc thông báo ẩn */}
               <div className="bg-white rounded-xl p-4 border border-slate-100">
-                {role === 'admin' ? (
+                {role === 'admin' || viewConfig?.showCompanyAddress || viewConfig?.showContactPerson ? (
                   <>
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Thông Tin Liên Hệ</p>
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2 text-sm">
-                        <User className="w-4 h-4 text-slate-400" />
-                        <span className="text-slate-700">{company.contactName}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Phone className="w-4 h-4 text-slate-400" />
-                        <span className="text-slate-700">{company.contactPhone}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Mail className="w-4 h-4 text-slate-400" />
-                        <a href={`mailto:${company.contactEmail}`} className="text-blue-600 hover:underline">{company.contactEmail}</a>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm">
-                        <Globe className="w-4 h-4 text-slate-400" />
-                        <a href={company.website} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline truncate">
-                          {company.website.replace('https://', '')}
-                        </a>
-                      </div>
+                      {(role === 'admin' || viewConfig?.showContactPerson) && (
+                        <>
+                          <div className="flex items-center gap-2 text-sm">
+                            <User className="w-4 h-4 text-slate-400" />
+                            <span className="text-slate-700">{company.contactName}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <Phone className="w-4 h-4 text-slate-400" />
+                            <span className="text-slate-700">{company.contactPhone}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <Mail className="w-4 h-4 text-slate-400" />
+                            <a href={`mailto:${company.contactEmail}`} className="text-blue-600 hover:underline">{company.contactEmail}</a>
+                          </div>
+                        </>
+                      )}
+                      {(role === 'admin' || viewConfig?.showCompanyAddress) && (
+                        <>
+                          <div className="flex items-start gap-2 text-sm">
+                            <Globe className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                            <a href={company.website} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                              {company.website.replace('https://', '')}
+                            </a>
+                          </div>
+                          <div className="flex items-start gap-2 text-sm">
+                            <Home className="w-4 h-4 text-slate-400 mt-0.5 shrink-0" />
+                            <span className="text-slate-700">{company.address}</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </>
                 ) : (

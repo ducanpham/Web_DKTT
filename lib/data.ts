@@ -21,6 +21,7 @@ export interface Company {
   contactPhone: string;
   contactEmail: string;
   website: string;
+  address: string;
   industry: string;
 }
 
@@ -35,6 +36,7 @@ export interface Registration {
   companyName: string;
   registeredAt: string;
   isExternal: boolean;
+  expectedSkills?: string;
 }
 
 export interface InternshipGuide {
@@ -59,6 +61,9 @@ export interface StudentViewConfig {
   showStatCards: boolean;
   enableFallback: boolean;
   fallbackFormUrl: string;
+  showCompanyAddress: boolean;
+  showContactPerson: boolean;
+  allowExternalDeclaration: boolean;
 }
 
 export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
@@ -69,6 +74,9 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
   showStatCards: true,
   enableFallback: false,
   fallbackFormUrl: '',
+  showCompanyAddress: true,
+  showContactPerson: true,
+  allowExternalDeclaration: false,
 };
 
 export const INITIAL_COMPANIES: Company[] = [
@@ -91,6 +99,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0393176268",
     contactEmail: "Chưa cập nhật",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -112,6 +121,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0989888160",
     contactEmail: "thanhtt@automech.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -133,6 +143,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0983006998",
     contactEmail: "hoanghuychung@gmail.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -154,6 +165,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0982.763.666",
     contactEmail: "Anhkieu@laservietnhat.com.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -175,6 +187,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0968292834",
     contactEmail: "sale1.minhvu@gmail.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -196,6 +209,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0916261170",
     contactEmail: "nguyen-minh.hang@unilever.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -217,6 +231,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0359494575",
     contactEmail: "tho.da@dtvn.kyocera.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -238,6 +253,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0975795299",
     contactEmail: "dongdv@tci.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -259,6 +275,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0347846161",
     contactEmail: "Trang.dt@sdcxjt.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -280,6 +297,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0969560686",
     contactEmail: "tuyendung@tce.net.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -301,6 +319,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0982561613",
     contactEmail: "tuyendung.ho2@intechgroup.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -322,6 +341,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0912097676",
     contactEmail: "khoi-td@daiwa-tl.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -343,6 +363,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0936293433 hoặc 0944806116",
     contactEmail: "duy.nguyendang@meiko-elec.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -364,6 +385,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "+84 91 6511138",
     contactEmail: "Hcnsht@thietbiht.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -385,6 +407,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0982537406",
     contactEmail: "thu.ht@santomas.com.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -406,6 +429,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0983435455",
     contactEmail: "Ducminh.tran@makino.com.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -427,6 +451,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0978733663",
     contactEmail: "hattt@tci.vn/ phuongntm@tci.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -448,6 +473,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0365309625",
     contactEmail: "thu.nguyen539@mail.canon",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -469,6 +495,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0985971246",
     contactEmail: "Ruby.pei@wnc.com.tw",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -490,6 +517,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0983683620",
     contactEmail: "minh@hicas.co",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -511,6 +539,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0839799889",
     contactEmail: "Hoanle@aiots.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -532,6 +561,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0327340913",
     contactEmail: "buithutrang@croptex.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -553,6 +583,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0969577103",
     contactEmail: "thuy031997@gmail.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -574,6 +605,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "Hồ Thanh Nga - Chuyên viên nhân sự - SĐT: 0333.560.270Lê Thị Minh Nguyệt - Chuyên viên nhân sự - SĐT: 0968.669.966",
     contactEmail: "vmctuyendung@gmail.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -595,6 +627,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0983006998",
     contactEmail: "hoanghuychung@gmail.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -616,6 +649,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0986638545",
     contactEmail: "3svietnam@posi3s.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -637,6 +671,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0869143888",
     contactEmail: "thanh.nt@il-sungtech.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -658,6 +693,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0987803585",
     contactEmail: "hongtt@vassteel.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -679,6 +715,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0944681886",
     contactEmail: "Brian.tran@qnityelectronics.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -700,6 +737,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0968855517",
     contactEmail: "truongthiphuong.thao@vn.nestle.com",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -721,6 +759,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0349363293",
     contactEmail: "joy@steamforvietnam.org",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
   {
@@ -742,6 +781,7 @@ export const INITIAL_COMPANIES: Company[] = [
     contactPhone: "0373539379",
     contactEmail: "maittn@sunhouse.com.vn",
     website: '#',
+    address: "Chưa cập nhật",
     industry: 'Cơ Điện Tử & Tự Động Hóa',
   },
 ];

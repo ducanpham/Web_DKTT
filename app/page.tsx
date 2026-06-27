@@ -69,7 +69,7 @@ export default function Home() {
   /* ──── Hành động của Sinh viên ──── */
 
   const handleRegister = useCallback(
-    (companyId: string, studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string) => {
+    (companyId: string, studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, expectedSkills?: string) => {
       setCompanies((prev) =>
         prev.map((c) =>
           c.id === companyId
@@ -89,6 +89,7 @@ export default function Home() {
         companyName: company?.name ?? 'Không xác định',
         registeredAt: new Date().toISOString(),
         isExternal: false,
+        expectedSkills,
       };
       setRegistrations((prev) => [...prev, newReg]);
     },
@@ -96,7 +97,7 @@ export default function Home() {
   );
 
   const handleDeclareExternal = useCallback(
-    (studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, companyName: string) => {
+    (studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, companyName: string, expectedSkills?: string) => {
       const newReg: Registration = {
         id: `r_ext_${Date.now()}`,
         studentId,
@@ -108,6 +109,7 @@ export default function Home() {
         companyName: `${companyName} (Ngoài)`,
         registeredAt: new Date().toISOString(),
         isExternal: true,
+        expectedSkills,
       };
       setRegistrations((prev) => [...prev, newReg]);
     },

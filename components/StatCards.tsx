@@ -33,7 +33,7 @@ export default function StatCards({ companies, activeFilter, onFilterChange }: S
       },
       {
         key: 'gala',
-        label: 'Đối Tác Thân Thiết',
+        label: 'Tham dự Ngày hội TN',
         value: galaSponsors,
         icon: Star,
         bg: 'from-amber-500 to-orange-500',
@@ -41,7 +41,7 @@ export default function StatCards({ companies, activeFilter, onFilterChange }: S
         textColor: 'text-amber-600',
         borderColor: 'border-amber-200',
         ringColor: 'ring-amber-400',
-        description: 'Đối tác cao cấp của Khoa',
+        description: 'Tham dự ngày hội tốt nghiệp',
       },
       {
         key: 'online',

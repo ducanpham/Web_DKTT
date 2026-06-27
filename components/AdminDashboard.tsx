@@ -319,6 +319,24 @@ export default function AdminDashboard({
                   className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
                 <span className="text-sm font-medium text-slate-700">Thẻ Thống kê (5 thẻ màu)</span>
               </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={viewConfigDraft.showCompanyAddress}
+                  onChange={(e) => setViewConfigDraft((p) => ({ ...p, showCompanyAddress: e.target.checked }))}
+                  className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <span className="text-sm font-medium text-slate-700">Địa chỉ Công ty</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={viewConfigDraft.showContactPerson}
+                  onChange={(e) => setViewConfigDraft((p) => ({ ...p, showContactPerson: e.target.checked }))}
+                  className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <span className="text-sm font-medium text-slate-700">Người liên hệ & Điện thoại/Email</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={viewConfigDraft.allowExternalDeclaration}
+                  onChange={(e) => setViewConfigDraft((p) => ({ ...p, allowExternalDeclaration: e.target.checked }))}
+                  className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <span className="text-sm font-medium text-slate-700">Cho phép SV Đề xuất/Khai báo công ty ngoài</span>
+              </label>
               
               <div className="border-t border-slate-200 pt-3 mt-1">
                 <label className="flex items-center gap-2 cursor-pointer mb-3">
@@ -356,7 +374,7 @@ export default function AdminDashboard({
             <div className="flex flex-wrap gap-2">
               {statFilter && (
                 <span className="badge bg-indigo-100 text-indigo-700">
-                  {statFilter === 'gala' ? '⭐ Đối Tác Thân Thiết' : statFilter === 'online' ? '📶 Tuyển Dụng Online' : '⭐ T.Dụng Online & Đối tác'}
+                  {statFilter === 'gala' ? '⭐ Tham dự Ngày hội TN' : statFilter === 'online' ? '📶 Tuyển Dụng Online' : '⭐ T.Dụng Online & Ngày hội TN'}
                   <button onClick={() => setStatFilter(null)} className="ml-1"><X className="w-2.5 h-2.5" /></button>
                 </span>
               )}

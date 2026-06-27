@@ -9,7 +9,7 @@ interface RegisterModalProps {
   companyName: string;
   availableSlots: number;
   onClose: () => void;
-  onSubmit: (studentId: string, studentName: string, phone: string, email: string, internClass: string) => void;
+  onSubmit: (studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills: string) => void;
 }
 
 export function RegisterModal({ companyId: _companyId, companyName, availableSlots, onClose, onSubmit }: RegisterModalProps) {
@@ -18,7 +18,8 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [internClass, setInternClass] = useState('');
-  const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string }>({});
+  const [expectedSkills, setExpectedSkills] = useState('');
+  const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string; exp?: string }>({});
   const [success, setSuccess] = useState(false);
   const [timeLeft, setTimeLeft] = useState(90);
   const [timeoutExpired, setTimeoutExpired] = useState(false);
@@ -49,6 +50,7 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
     if (!email.trim()) errs.email = 'Email không được để trống';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) errs.email = 'Email không đúng định dạng';
     if (!internClass.trim()) errs.cls = 'Lớp thực tập không được để trống';
+    if (!expectedSkills.trim()) errs.exp = 'Vui lòng điền kỳ vọng kỹ năng';
     return errs;
   };
 
@@ -72,7 +74,7 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
     }
 
     setSuccess(true);
-    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim()); }, 1200);
+    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim(), expectedSkills.trim()); }, 1200);
   };
 
   const Field = ({ label, icon: Icon, value, onChange, placeholder, type = 'text', error, errorKey }: {
@@ -162,6 +164,19 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
               <Field label="Lớp Thực Tập" icon={BookOpen} value={internClass}
                 onChange={setInternClass} placeholder="VD: KSCD-01, Kỹ thuật-K65..." error={errors.cls} errorKey="cls" />
 
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  Kỳ vọng kỹ năng/kiến thức <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={expectedSkills}
+                  onChange={(e) => { setExpectedSkills(e.target.value); setErrors(p => ({ ...p, exp: undefined })); }}
+                  placeholder="Bạn mong muốn học hỏi được điều gì..."
+                  className={`input-field !pl-4 min-h-[80px] resize-none ${errors.exp ? 'border-red-400 focus:ring-red-400' : ''}`}
+                />
+                {errors.exp && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.exp}</p>}
+              </div>
+
               <div className="pt-2 flex gap-3">
                 <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">Hủy</button>
                 <button type="submit" className="btn-primary flex-1 justify-center">
@@ -180,7 +195,7 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
 
 interface ExternalModalProps {
   onClose: () => void;
-  onSubmit: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string) => void;
+  onSubmit: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string, expectedSkills: string) => void;
 }
 
 export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) {
@@ -190,7 +205,8 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
   const [email, setEmail] = useState('');
   const [internClass, setInternClass] = useState('');
   const [companyName, setCompanyName] = useState('');
-  const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string; company?: string }>({});
+  const [expectedSkills, setExpectedSkills] = useState('');
+  const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string; company?: string; exp?: string }>({});
   const [success, setSuccess] = useState(false);
 
   const validate = () => {
@@ -201,6 +217,7 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
     if (!email.trim()) errs.email = 'Email không được để trống';
     if (!internClass.trim()) errs.cls = 'Lớp thực tập không được để trống';
     if (!companyName.trim()) errs.company = 'Tên công ty không được để trống';
+    if (!expectedSkills.trim()) errs.exp = 'Vui lòng điền kỳ vọng kỹ năng';
     return errs;
   };
 
@@ -209,7 +226,7 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
     setSuccess(true);
-    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim(), companyName.trim()); }, 1200);
+    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim(), companyName.trim(), expectedSkills.trim()); }, 1200);
   };
 
   const cls = (err?: string) => `input-field ${err ? 'border-red-400' : ''}`;
@@ -308,6 +325,19 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
                   onChange={(e) => { setCompanyName(e.target.value); setErrors((p) => ({ ...p, company: undefined })); }}
                   placeholder="Tên công ty tự tìm được" className={cls(errors.company)} />
                 {errors.company && <p className="mt-1 text-xs text-red-500">{errors.company}</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  Kỳ vọng kỹ năng/kiến thức <span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  value={expectedSkills}
+                  onChange={(e) => { setExpectedSkills(e.target.value); setErrors(p => ({ ...p, exp: undefined })); }}
+                  placeholder="Bạn mong muốn học hỏi được điều gì..."
+                  className={`input-field !pl-4 min-h-[80px] resize-none ${errors.exp ? 'border-red-400 focus:ring-red-400' : ''}`}
+                />
+                {errors.exp && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.exp}</p>}
               </div>
 
               <div className="pt-2 flex gap-3">
