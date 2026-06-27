@@ -139,6 +139,33 @@ export default function Home() {
     []
   );
 
+  const handleImportRegistrations = useCallback(
+    (newRegs: Registration[]) => {
+      setRegistrations((prev) => {
+        const currentIds = new Set(prev.map(r => r.studentId.toUpperCase()));
+        const uniqueNewRegs = newRegs.filter(r => !currentIds.has(r.studentId.toUpperCase()));
+        return [...prev, ...uniqueNewRegs];
+      });
+
+      // Update availableSlots by counting newRegs per company
+      setCompanies((prev) => {
+        const counts: Record<string, number> = {};
+        newRegs.forEach(r => {
+          if (!r.isExternal && r.companyId !== 'EXT') {
+            counts[r.companyId] = (counts[r.companyId] || 0) + 1;
+          }
+        });
+        return prev.map(c => {
+          if (counts[c.id]) {
+            return { ...c, availableSlots: Math.max(0, c.availableSlots - counts[c.id]) };
+          }
+          return c;
+        });
+      });
+    },
+    []
+  );
+
   const handleUpdateGuide = useCallback((newGuide: InternshipGuide) => {
     setGuide(newGuide);
   }, []);
@@ -183,8 +210,9 @@ export default function Home() {
       viewConfig={studentViewConfig}
       onDeleteRegistration={handleDeleteRegistration}
       onImportCompanies={handleImportCompanies}
+      onImportRegistrations={handleImportRegistrations}
       onUpdateGuide={handleUpdateGuide}
-      onUpdateViewConfig={setStudentViewConfig}
+      onUpdateViewConfig={handleUpdateViewConfig}
       onLogout={handleLogout}
     />
   );

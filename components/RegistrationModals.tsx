@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
-import { X, UserCheck, Hash, User, AlertCircle, CheckCircle2, Phone, Mail, BookOpen } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, UserCheck, Hash, User, AlertCircle, CheckCircle2, Phone, Mail, BookOpen, Clock } from 'lucide-react';
+import { Registration } from '@/lib/data';
 
 interface RegisterModalProps {
   companyId: string;
@@ -19,6 +20,23 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
   const [internClass, setInternClass] = useState('');
   const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string }>({});
   const [success, setSuccess] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(90);
+  const [timeoutExpired, setTimeoutExpired] = useState(false);
+
+  useEffect(() => {
+    if (success || timeoutExpired) return;
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setTimeoutExpired(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [success, timeoutExpired]);
 
   const validate = () => {
     const errs: typeof errors = {};
@@ -36,8 +54,23 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (timeoutExpired) return;
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
+
+    try {
+      const rawRegs = localStorage.getItem('unintern_registrations');
+      if (rawRegs) {
+        const allRegs: Registration[] = JSON.parse(rawRegs);
+        if (allRegs.some(r => r.studentId.trim().toUpperCase() === studentId.trim().toUpperCase())) {
+          setErrors({ id: 'MSSV này đã đăng ký thực tập tại một công ty khác!' });
+          return;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
     setSuccess(true);
     setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim()); }, 1200);
   };
@@ -75,31 +108,40 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
               Bạn đã đăng ký thực tập tại <span className="font-semibold text-slate-700">{companyName}</span>. Chúc may mắn!
             </p>
           </div>
+        ) : timeoutExpired ? (
+          <div className="p-10 text-center animate-scale-in">
+            <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+              <Clock className="w-10 h-10 text-red-500" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800 mb-2">Hết thời gian giữ chỗ!</h3>
+            <p className="text-slate-500 text-sm mb-6">
+              Bạn đã quá 90 giây để hoàn thành Form. Vui lòng đóng cửa sổ và thử lại.
+            </p>
+            <button onClick={onClose} className="btn-primary w-full justify-center">Đóng</button>
+          </div>
         ) : (
           <>
-            <div className="flex items-center justify-between p-6 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-sm">
-                  <UserCheck className="w-5 h-5 text-white" />
-                </div>
+            <div className="p-5 sm:p-6 border-b border-slate-100">
+              <div className="flex items-start justify-between mb-5">
                 <div>
-                  <h2 className="text-base font-bold text-slate-800">Đăng Ký Thực Tập</h2>
-                  <p className="text-xs text-slate-400">{companyName}</p>
+                  <h3 className="text-xl font-bold text-slate-800 tracking-tight">Đăng ký Thực tập</h3>
+                  <p className="text-slate-500 text-sm mt-1">
+                    Công ty <span className="font-semibold text-slate-700">{companyName}</span>
+                  </p>
                 </div>
+                <button onClick={onClose} className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-all">
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button onClick={onClose} className="p-2 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
 
-            <div className="px-6 pt-5">
-              <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
-                  <span className="text-blue-600 font-bold text-sm">{availableSlots}</span>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Layers className="w-4 h-4 text-amber-600" />
+                  <span className="text-sm text-amber-800 font-medium">Còn {availableSlots} chỉ tiêu</span>
                 </div>
-                <div>
-                  <p className="text-blue-800 text-xs font-semibold">Chỉ tiêu còn lại</p>
-                  <p className="text-blue-600 text-xs">Đăng ký sẽ trừ đi 1 chỉ tiêu</p>
+                <div className="flex items-center gap-1.5 text-red-600 bg-red-50 px-2 py-1 rounded border border-red-100">
+                  <Clock className="w-4 h-4 animate-pulse" />
+                  <span className="text-sm font-bold">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
                 </div>
               </div>
             </div>

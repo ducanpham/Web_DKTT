@@ -137,7 +137,13 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
                   <Layers className="w-3 h-3" />
                   {hasSlots ? `${company.availableSlots} chỉ tiêu` : 'Hết chỗ'}
                 </span>
-                <button onClick={() => setRegisterModal(true)} disabled={!hasSlots}
+                <button onClick={() => {
+                  if (viewConfig?.enableFallback && viewConfig?.fallbackFormUrl) {
+                    window.open(viewConfig.fallbackFormUrl, '_blank');
+                  } else {
+                    setRegisterModal(true);
+                  }
+                }} disabled={!hasSlots}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
                     hasSlots ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-400 cursor-not-allowed'
                   }`}>
@@ -154,7 +160,13 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
         )}
         {role === 'student' && !viewConfig?.showSlots && (
           <td className="px-5 py-4">
-            <button onClick={() => setRegisterModal(true)} disabled={!hasSlots}
+            <button onClick={() => {
+              if (viewConfig?.enableFallback && viewConfig?.fallbackFormUrl) {
+                window.open(viewConfig.fallbackFormUrl, '_blank');
+              } else {
+                setRegisterModal(true);
+              }
+            }} disabled={!hasSlots}
               className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
                 hasSlots ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-400 cursor-not-allowed'
               }`}>

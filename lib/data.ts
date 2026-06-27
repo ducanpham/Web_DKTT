@@ -57,6 +57,8 @@ export interface StudentViewConfig {
   showBenefits: boolean;
   showSlots: boolean;
   showStatCards: boolean;
+  enableFallback: boolean;
+  fallbackFormUrl: string;
 }
 
 export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
@@ -65,6 +67,8 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
   showBenefits: true,
   showSlots: true,
   showStatCards: true,
+  enableFallback: false,
+  fallbackFormUrl: '',
 };
 
 export const INITIAL_COMPANIES: Company[] = [

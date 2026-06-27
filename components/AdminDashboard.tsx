@@ -2,13 +2,14 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, BookOpen, Wrench, Link, Save, Settings } from 'lucide-react';
+import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, BookOpen, Wrench, Link, Save, Settings, RefreshCcw } from 'lucide-react';
 import { Company, Registration, Role, InternshipGuide, StudentViewConfig } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
 import ManageRegistrationsModal from './ManageRegistrationsModal';
 import UploadExcelModal from './UploadExcelModal';
+import SyncGoogleFormModal from './SyncGoogleFormModal';
 
 interface AdminDashboardProps {
   companies: Company[];
@@ -17,6 +18,7 @@ interface AdminDashboardProps {
   viewConfig: StudentViewConfig;
   onDeleteRegistration: (id: string) => void;
   onImportCompanies: (newCompanies: Company[], replace: boolean) => void;
+  onImportRegistrations: (newRegs: Registration[]) => void;
   onUpdateGuide: (guide: InternshipGuide) => void;
   onUpdateViewConfig: (config: StudentViewConfig) => void;
   onLogout: () => void;
@@ -29,6 +31,7 @@ export default function AdminDashboard({
   viewConfig,
   onDeleteRegistration,
   onImportCompanies,
+  onImportRegistrations,
   onUpdateGuide,
   onUpdateViewConfig,
   onLogout,
@@ -39,6 +42,7 @@ export default function AdminDashboard({
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
   const [showRegModal, setShowRegModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [showSyncModal, setShowSyncModal] = useState(false);
   const [showGuidePanel, setShowGuidePanel] = useState(false);
   const [showViewPanel, setShowViewPanel] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
@@ -177,6 +181,12 @@ export default function AdminDashboard({
               Nhập Excel
             </button>
 
+            {/* Đồng bộ Google Form */}
+            <button onClick={() => setShowSyncModal(true)} className="btn-secondary text-orange-600 hover:bg-orange-50 hover:border-orange-200">
+              <RefreshCcw className="w-4 h-4" />
+              Đồng bộ Form
+            </button>
+
             {/* Sao chép Email */}
             <button
               onClick={handleCopyEmails}
@@ -309,6 +319,24 @@ export default function AdminDashboard({
                   className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
                 <span className="text-sm font-medium text-slate-700">Thẻ Thống kê (5 thẻ màu)</span>
               </label>
+              
+              <div className="border-t border-slate-200 pt-3 mt-1">
+                <label className="flex items-center gap-2 cursor-pointer mb-3">
+                  <input type="checkbox" checked={viewConfigDraft.enableFallback}
+                    onChange={(e) => setViewConfigDraft((p) => ({ ...p, enableFallback: e.target.checked }))}
+                    className="w-4 h-4 text-orange-600 rounded border-slate-300 focus:ring-orange-500" />
+                  <span className="text-sm font-semibold text-slate-800">Bật Chế độ quá tải (Chuyển hướng Đăng ký sang Google Form)</span>
+                </label>
+                {viewConfigDraft.enableFallback && (
+                  <input
+                    type="url"
+                    value={viewConfigDraft.fallbackFormUrl}
+                    onChange={(e) => setViewConfigDraft(p => ({ ...p, fallbackFormUrl: e.target.value }))}
+                    placeholder="Nhập link Google Form..."
+                    className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all"
+                  />
+                )}
+              </div>
             </div>
             <div className="flex gap-3">
               <button onClick={() => setShowViewPanel(false)} className="btn-secondary">Hủy</button>
@@ -413,6 +441,15 @@ export default function AdminDashboard({
         <UploadExcelModal
           onClose={() => setShowUploadModal(false)}
           onImport={(companies, replace) => handleImport(companies, replace)}
+        />
+      )}
+
+      {/* Modal Đồng bộ Google Form */}
+      {showSyncModal && (
+        <SyncGoogleFormModal 
+          companies={companies} 
+          onClose={() => setShowSyncModal(false)} 
+          onImportRegistrations={onImportRegistrations} 
         />
       )}
     </div>
