@@ -27,6 +27,7 @@ interface MappedCompany {
   housing: string;
   isGalaSponsor: boolean;
   isOnlineRecruitment: boolean;
+  address: string;
 }
 
 interface UploadExcelModalProps {
@@ -59,6 +60,9 @@ const COLUMN_MAP: Record<string, keyof MappedCompany> = {
   'sdt': 'contactPhone',
   'email': 'contactEmail',
   'website': 'website',
+  'địa chỉ': 'address',
+  'dia chi': 'address',
+  'address': 'address',
   'chỉ tiêu': 'totalSlots',
   'chi tieu': 'totalSlots',
   'slots': 'totalSlots',
@@ -76,9 +80,12 @@ const COLUMN_MAP: Record<string, keyof MappedCompany> = {
   'nhà tài trợ gala': 'isGalaSponsor',
   'nha tai tro gala': 'isGalaSponsor',
   'gala sponsor': 'isGalaSponsor',
+  'tham gia ngay hoi sinh vien co dien tu': 'isGalaSponsor',
+  'tham gia ngay hoi tn': 'isGalaSponsor',
   'online': 'isOnlineRecruitment',
   'tuyển dụng online': 'isOnlineRecruitment',
   'online recruitment': 'isOnlineRecruitment',
+  'tai tro': 'isOnlineRecruitment',
 };
 
 const EMOJI_LIST = ['🔷','📡','🎮','💳','🛒','⚙️','🚗','📊','📦','🏥','🌐','💼','🏗️','🔬','✈️'];
@@ -152,6 +159,7 @@ export default function UploadExcelModal({ onClose, onImport }: UploadExcelModal
             housing: 'Không cung cấp',
             isGalaSponsor: false,
             isOnlineRecruitment: false,
+            address: '',
           };
 
           rawHeaders.forEach((h) => {
@@ -216,7 +224,7 @@ export default function UploadExcelModal({ onClose, onImport }: UploadExcelModal
       contactPhone: m.contactPhone || 'Chưa cập nhật',
       contactEmail: m.contactEmail || 'Chưa cập nhật',
       website: m.website || '#',
-      address: 'Chưa cập nhật', // Address is not currently parsed from the form mapping
+      address: m.address || 'Chưa cập nhật',
       industry: m.industry || 'Chưa xác định',
     }));
     onImport(companies, replaceMode);
