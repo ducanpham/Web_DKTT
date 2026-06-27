@@ -16,7 +16,7 @@ export default function StatCards({ companies, activeFilter, onFilterChange }: S
     const galaSponsors = companies.filter((c) => c.isGalaSponsor).length;
     const online = companies.filter((c) => c.isOnlineRecruitment).length;
     const onlineAndGala = companies.filter((c) => c.isOnlineRecruitment && c.isGalaSponsor).length;
-    const totalSlots = companies.reduce((sum, c) => sum + c.totalSlots, 0);
+    const totalAvailableSlots = companies.reduce((sum, c) => sum + c.availableSlots, 0);
 
     return [
       {
@@ -69,8 +69,8 @@ export default function StatCards({ companies, activeFilter, onFilterChange }: S
       },
       {
         key: 'slots',
-        label: 'Tổng Chỉ Tiêu',
-        value: totalSlots,
+        label: 'Chỉ Tiêu Còn Lại',
+        value: totalAvailableSlots,
         icon: Layers,
         bg: 'from-violet-500 to-purple-600',
         lightBg: 'bg-violet-50',

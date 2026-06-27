@@ -172,7 +172,7 @@ export default function StudentDashboard({
             <div className="flex flex-wrap gap-2">
               {statFilter && (
                 <span className="badge bg-blue-100 text-blue-700">
-                  {statFilter === 'gala' ? '⭐ Đối Tác Thân Thiết' : '📶 Tuyển Dụng Online'}
+                  {statFilter === 'gala' ? '⭐ Đối Tác Thân Thiết' : statFilter === 'online' ? '📶 Tuyển Dụng Online' : '⭐ T.Dụng Online & Đối tác'}
                   <button onClick={() => setStatFilter(null)} className="ml-1 hover:text-blue-900"><X className="w-2.5 h-2.5" /></button>
                 </span>
               )}
@@ -193,7 +193,9 @@ export default function StudentDashboard({
           </div>
         )}
 
-        <StatCards companies={companies} activeFilter={statFilter} onFilterChange={setStatFilter} />
+        {viewConfig?.showStatCards !== false && (
+          <StatCards companies={companies} activeFilter={statFilter} onFilterChange={setStatFilter} />
+        )}
 
         <ChartCards companies={companies} activeFieldFilter={fieldFilter} activeSkillFilter={skillFilter}
           onFieldFilter={setFieldFilter} onSkillFilter={setSkillFilter} />

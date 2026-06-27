@@ -303,6 +303,12 @@ export default function AdminDashboard({
                   className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
                 <span className="text-sm font-medium text-slate-700">Chỉ tiêu / Số lượng</span>
               </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={viewConfigDraft.showStatCards}
+                  onChange={(e) => setViewConfigDraft((p) => ({ ...p, showStatCards: e.target.checked }))}
+                  className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <span className="text-sm font-medium text-slate-700">Thẻ Thống kê (5 thẻ màu)</span>
+              </label>
             </div>
             <div className="flex gap-3">
               <button onClick={() => setShowViewPanel(false)} className="btn-secondary">Hủy</button>

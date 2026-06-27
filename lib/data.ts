@@ -56,6 +56,7 @@ export interface StudentViewConfig {
   showSkills: boolean;
   showBenefits: boolean;
   showSlots: boolean;
+  showStatCards: boolean;
 }
 
 export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
@@ -63,6 +64,7 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
   showSkills: true,
   showBenefits: true,
   showSlots: true,
+  showStatCards: true,
 };
 
 export const INITIAL_COMPANIES: Company[] = [
