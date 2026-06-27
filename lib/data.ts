@@ -51,6 +51,19 @@ export const DEFAULT_GUIDE: InternshipGuide = {
   engineerLabel: 'Thực tập Kỹ sư Chuyên sâu',
 };
 
+export interface StudentViewConfig {
+  showFields: boolean;
+  showSkills: boolean;
+  showBenefits: boolean;
+  showSlots: boolean;
+}
+
+export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
+  showFields: true,
+  showSkills: true,
+  showBenefits: true,
+  showSlots: true,
+};
 
 export const INITIAL_COMPANIES: Company[] = [
   {

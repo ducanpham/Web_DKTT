@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, INITIAL_COMPANIES, INITIAL_REGISTRATIONS } from '@/lib/data';
+import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, StudentViewConfig, DEFAULT_STUDENT_VIEW_CONFIG, INITIAL_COMPANIES, INITIAL_REGISTRATIONS } from '@/lib/data';
 import LoginScreen from '@/components/LoginScreen';
 import StudentDashboard from '@/components/StudentDashboard';
 import AdminDashboard from '@/components/AdminDashboard';
@@ -10,6 +10,7 @@ const STORAGE_KEY_ROLE = 'unintern_role';
 const STORAGE_KEY_COMPANIES = 'unintern_companies_v2';
 const STORAGE_KEY_REGISTRATIONS = 'unintern_registrations';
 const STORAGE_KEY_GUIDE = 'unintern_guide';
+const STORAGE_KEY_STUDENT_VIEW = 'unintern_student_view';
 
 function loadFromStorage<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback;
@@ -32,6 +33,7 @@ export default function Home() {
   const [companies, setCompanies] = useState<Company[]>(INITIAL_COMPANIES);
   const [registrations, setRegistrations] = useState<Registration[]>(INITIAL_REGISTRATIONS);
   const [guide, setGuide] = useState<InternshipGuide>(DEFAULT_GUIDE);
+  const [studentViewConfig, setStudentViewConfig] = useState<StudentViewConfig>(DEFAULT_STUDENT_VIEW_CONFIG);
   const [hydrated, setHydrated] = useState(false);
 
   // Khôi phục từ localStorage khi tải trang
@@ -40,16 +42,19 @@ export default function Home() {
     const savedCompanies = loadFromStorage<Company[]>(STORAGE_KEY_COMPANIES, INITIAL_COMPANIES);
     const savedRegistrations = loadFromStorage<Registration[]>(STORAGE_KEY_REGISTRATIONS, INITIAL_REGISTRATIONS);
     const savedGuide = loadFromStorage<InternshipGuide>(STORAGE_KEY_GUIDE, DEFAULT_GUIDE);
+    const savedStudentView = loadFromStorage<StudentViewConfig>(STORAGE_KEY_STUDENT_VIEW, DEFAULT_STUDENT_VIEW_CONFIG);
     setRole(savedRole);
     setCompanies(savedCompanies);
     setRegistrations(savedRegistrations);
     setGuide(savedGuide);
+    setStudentViewConfig(savedStudentView);
     setHydrated(true);
   }, []);
 
   useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_COMPANIES, companies); }, [companies, hydrated]);
   useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_REGISTRATIONS, registrations); }, [registrations, hydrated]);
   useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_GUIDE, guide); }, [guide, hydrated]);
+  useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_STUDENT_VIEW, studentViewConfig); }, [studentViewConfig, hydrated]);
 
   const handleLogin = useCallback((selectedRole: Role) => {
     setRole(selectedRole);
@@ -162,6 +167,7 @@ export default function Home() {
         companies={companies}
         registrations={registrations}
         guide={guide}
+        viewConfig={studentViewConfig}
         onRegister={handleRegister}
         onDeclareExternal={handleDeclareExternal}
         onLogout={handleLogout}
@@ -174,9 +180,11 @@ export default function Home() {
       companies={companies}
       registrations={registrations}
       guide={guide}
+      viewConfig={studentViewConfig}
       onDeleteRegistration={handleDeleteRegistration}
       onImportCompanies={handleImportCompanies}
       onUpdateGuide={handleUpdateGuide}
+      onUpdateViewConfig={setStudentViewConfig}
       onLogout={handleLogout}
     />
   );

@@ -56,7 +56,7 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
         <input type={type} value={value}
           onChange={(e) => { onChange(e.target.value); setErrors((p) => ({ ...p, [errorKey]: undefined })); }}
           placeholder={placeholder}
-          className={`input-field pl-10 ${error ? 'border-red-400 focus:ring-red-400' : ''}`} />
+          className={`input-field !pl-10 ${error ? 'border-red-400 focus:ring-red-400' : ''}`} />
       </div>
       {error && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {error}</p>}
     </div>
@@ -210,7 +210,7 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
                     <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input type="text" value={studentId}
                       onChange={(e) => { setStudentId(e.target.value); setErrors((p) => ({ ...p, id: undefined })); }}
-                      placeholder="20225678" className={`${cls(errors.id)} pl-9`} />
+                      placeholder="20225678" className={`${cls(errors.id)} !pl-9`} />
                   </div>
                   {errors.id && <p className="mt-1 text-xs text-red-500">{errors.id}</p>}
                 </div>
@@ -220,7 +220,7 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
                     <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input type="text" value={internClass}
                       onChange={(e) => { setInternClass(e.target.value); setErrors((p) => ({ ...p, cls: undefined })); }}
-                      placeholder="KSCD-01" className={`${cls(errors.cls)} pl-9`} />
+                      placeholder="KSCD-01" className={`${cls(errors.cls)} !pl-9`} />
                   </div>
                   {errors.cls && <p className="mt-1 text-xs text-red-500">{errors.cls}</p>}
                 </div>
@@ -232,7 +232,7 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
                   <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input type="text" value={studentName}
                     onChange={(e) => { setStudentName(e.target.value); setErrors((p) => ({ ...p, name: undefined })); }}
-                    placeholder="Họ và tên đầy đủ" className={`${cls(errors.name)} pl-10`} />
+                    placeholder="Họ và tên đầy đủ" className={`${cls(errors.name)} !pl-10`} />
                 </div>
                 {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
               </div>
@@ -244,7 +244,7 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input type="tel" value={phone}
                       onChange={(e) => { setPhone(e.target.value); setErrors((p) => ({ ...p, phone: undefined })); }}
-                      placeholder="0912345678" className={`${cls(errors.phone)} pl-9`} />
+                      placeholder="0912345678" className={`${cls(errors.phone)} !pl-9`} />
                   </div>
                   {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
                 </div>
@@ -254,7 +254,7 @@ export function ExternalCompanyModal({ onClose, onSubmit }: ExternalModalProps) 
                     <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input type="email" value={email}
                       onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
-                      placeholder="sv@hust.edu.vn" className={`${cls(errors.email)} pl-9`} />
+                      placeholder="sv@hust.edu.vn" className={`${cls(errors.email)} !pl-9`} />
                   </div>
                   {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
                 </div>

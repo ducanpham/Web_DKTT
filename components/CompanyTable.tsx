@@ -5,12 +5,13 @@ import {
   Star, Wifi, ChevronDown, ChevronUp, Globe, Phone, Mail, User,
   Layers, Utensils, Home, Banknote, Lock,
 } from 'lucide-react';
-import { Company, Role } from '@/lib/data';
+import { Company, Role, StudentViewConfig } from '@/lib/data';
 import { RegisterModal } from './RegistrationModals';
 
 interface CompanyTableProps {
   companies: Company[];
   role: Role;
+  viewConfig?: StudentViewConfig;
   onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void;
 }
 
@@ -34,9 +35,10 @@ function SlotProgress({ available, total }: { available: number; total: number }
   );
 }
 
-function CompanyRow({ company, role, onRegister }: {
+function CompanyRow({ company, role, viewConfig, onRegister }: {
   company: Company;
   role: Role;
+  viewConfig?: StudentViewConfig;
   onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -73,24 +75,28 @@ function CompanyRow({ company, role, onRegister }: {
         </td>
 
         {/* Lĩnh vực */}
-        <td className="px-5 py-4 hidden md:table-cell">
-          <div className="flex flex-wrap gap-1.5">
-            {company.fields.slice(0, 2).map((f) => (
-              <span key={f} className="badge bg-blue-50 text-blue-700 font-medium">{f}</span>
-            ))}
-            {company.fields.length > 2 && <span className="badge bg-slate-100 text-slate-500">+{company.fields.length - 2}</span>}
-          </div>
-        </td>
+        {(role === 'admin' || viewConfig?.showFields) && (
+          <td className="px-5 py-4 hidden md:table-cell">
+            <div className="flex flex-wrap gap-1.5">
+              {company.fields.slice(0, 2).map((f) => (
+                <span key={f} className="badge bg-blue-50 text-blue-700 font-medium">{f}</span>
+              ))}
+              {company.fields.length > 2 && <span className="badge bg-slate-100 text-slate-500">+{company.fields.length - 2}</span>}
+            </div>
+          </td>
+        )}
 
         {/* Kỹ năng */}
-        <td className="px-5 py-4 hidden lg:table-cell">
-          <div className="flex flex-wrap gap-1.5">
-            {company.skills.slice(0, 3).map((s) => (
-              <span key={s} className="badge bg-violet-50 text-violet-700 font-mono text-xs">{s}</span>
-            ))}
-            {company.skills.length > 3 && <span className="badge bg-slate-100 text-slate-500">+{company.skills.length - 3}</span>}
-          </div>
-        </td>
+        {(role === 'admin' || viewConfig?.showSkills) && (
+          <td className="px-5 py-4 hidden lg:table-cell">
+            <div className="flex flex-wrap gap-1.5">
+              {company.skills.slice(0, 3).map((s) => (
+                <span key={s} className="badge bg-violet-50 text-violet-700 font-mono text-xs">{s}</span>
+              ))}
+              {company.skills.length > 3 && <span className="badge bg-slate-100 text-slate-500">+{company.skills.length - 3}</span>}
+            </div>
+          </td>
+        )}
 
         {/* Admin: Liên hệ */}
         {role === 'admin' && (
@@ -123,27 +129,39 @@ function CompanyRow({ company, role, onRegister }: {
         )}
 
         {/* Chỉ tiêu / Hành động */}
-        <td className="px-5 py-4">
-          {role === 'student' ? (
-            <div className="flex flex-col items-start gap-2">
-              <span className={`badge font-semibold ${hasSlots ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600'}`}>
-                <Layers className="w-3 h-3" />
-                {hasSlots ? `${company.availableSlots} chỉ tiêu` : 'Hết chỗ'}
-              </span>
-              <button onClick={() => setRegisterModal(true)} disabled={!hasSlots}
-                className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
-                  hasSlots ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                }`}>
-                {hasSlots ? 'Đăng ký' : 'Hết chỗ'}
-              </button>
-            </div>
-          ) : (
-            <div className="min-w-[130px]">
-              <SlotProgress available={company.availableSlots} total={company.totalSlots} />
-              <p className="text-xs text-slate-500 mt-1.5">Còn {company.availableSlots} chỉ tiêu</p>
-            </div>
-          )}
-        </td>
+        {(role === 'admin' || viewConfig?.showSlots) && (
+          <td className="px-5 py-4">
+            {role === 'student' ? (
+              <div className="flex flex-col items-start gap-2">
+                <span className={`badge font-semibold ${hasSlots ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600'}`}>
+                  <Layers className="w-3 h-3" />
+                  {hasSlots ? `${company.availableSlots} chỉ tiêu` : 'Hết chỗ'}
+                </span>
+                <button onClick={() => setRegisterModal(true)} disabled={!hasSlots}
+                  className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+                    hasSlots ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                  }`}>
+                  {hasSlots ? 'Đăng ký' : 'Hết chỗ'}
+                </button>
+              </div>
+            ) : (
+              <div className="min-w-[130px]">
+                <SlotProgress available={company.availableSlots} total={company.totalSlots} />
+                <p className="text-xs text-slate-500 mt-1.5">Còn {company.availableSlots} chỉ tiêu</p>
+              </div>
+            )}
+          </td>
+        )}
+        {role === 'student' && !viewConfig?.showSlots && (
+          <td className="px-5 py-4">
+            <button onClick={() => setRegisterModal(true)} disabled={!hasSlots}
+              className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+                hasSlots ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-400 cursor-not-allowed'
+              }`}>
+              {hasSlots ? 'Đăng ký' : 'Hết chỗ'}
+            </button>
+          </td>
+        )}
 
         {/* Mở rộng */}
         <td className="px-3 py-4">
@@ -160,44 +178,56 @@ function CompanyRow({ company, role, onRegister }: {
           <td colSpan={6} className="px-5 pb-5 pt-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in">
               {/* Phúc lợi */}
-              <div className="bg-white rounded-xl p-4 border border-slate-100">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Phúc Lợi</p>
-                <div className="space-y-2.5">
-                  <div className="flex items-start gap-2.5">
-                    <Banknote className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-xs font-semibold text-slate-600">Phụ cấp</p>
-                      <p className="text-xs text-slate-500">{company.benefits.allowance}</p>
+              {(role === 'admin' || viewConfig?.showBenefits) && (
+                <div className="bg-white rounded-xl p-4 border border-slate-100">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Phúc Lợi</p>
+                  <div className="space-y-2.5">
+                    <div className="flex items-start gap-2.5">
+                      <Banknote className="w-4 h-4 text-emerald-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs font-semibold text-slate-600">Phụ cấp</p>
+                        <p className="text-xs text-slate-500">{company.benefits.allowance}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Utensils className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-xs font-semibold text-slate-600">Bữa ăn</p>
-                      <p className="text-xs text-slate-500">{company.benefits.meals}</p>
+                    <div className="flex items-start gap-2.5">
+                      <Utensils className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs font-semibold text-slate-600">Bữa ăn</p>
+                        <p className="text-xs text-slate-500">{company.benefits.meals}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-start gap-2.5">
-                    <Home className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                    <div>
-                      <p className="text-xs font-semibold text-slate-600">Chỗ ở</p>
-                      <p className="text-xs text-slate-500">{company.benefits.housing}</p>
+                    <div className="flex items-start gap-2.5">
+                      <Home className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs font-semibold text-slate-600">Chỗ ở</p>
+                        <p className="text-xs text-slate-500">{company.benefits.housing}</p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               {/* Tất cả lĩnh vực & kỹ năng */}
-              <div className="bg-white rounded-xl p-4 border border-slate-100">
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Lĩnh Vực</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {company.fields.map((f) => <span key={f} className="badge bg-blue-50 text-blue-700">{f}</span>)}
+              {(role === 'admin' || viewConfig?.showFields || viewConfig?.showSkills) && (
+                <div className="bg-white rounded-xl p-4 border border-slate-100">
+                  {(role === 'admin' || viewConfig?.showFields) && (
+                    <>
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Lĩnh Vực</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {company.fields.map((f) => <span key={f} className="badge bg-blue-50 text-blue-700">{f}</span>)}
+                      </div>
+                    </>
+                  )}
+                  {(role === 'admin' || viewConfig?.showSkills) && (
+                    <>
+                      <p className={`text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 ${(role === 'admin' || viewConfig?.showFields) ? 'mt-3' : ''}`}>Kỹ Năng</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {company.skills.map((s) => <span key={s} className="badge bg-violet-50 text-violet-700 font-mono text-xs">{s}</span>)}
+                      </div>
+                    </>
+                  )}
                 </div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3 mb-2">Kỹ Năng</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {company.skills.map((s) => <span key={s} className="badge bg-violet-50 text-violet-700 font-mono text-xs">{s}</span>)}
-                </div>
-              </div>
+              )}
 
               {/* Liên hệ hoặc thông báo ẩn */}
               <div className="bg-white rounded-xl p-4 border border-slate-100">
@@ -248,7 +278,7 @@ function CompanyRow({ company, role, onRegister }: {
   );
 }
 
-export default function CompanyTable({ companies, role, onRegister }: CompanyTableProps) {
+export default function CompanyTable({ companies, role, viewConfig, onRegister }: CompanyTableProps) {
   if (companies.length === 0) {
     return (
       <div className="card p-16 text-center">
@@ -268,20 +298,29 @@ export default function CompanyTable({ companies, role, onRegister }: CompanyTab
           <thead>
             <tr className="border-b border-slate-100 bg-slate-50/70">
               <th className="table-header px-5 py-3.5 text-left">Doanh Nghiệp</th>
-              <th className="table-header px-5 py-3.5 text-left hidden md:table-cell">Lĩnh Vực</th>
-              <th className="table-header px-5 py-3.5 text-left hidden lg:table-cell">Kỹ Năng</th>
+              {(role === 'admin' || viewConfig?.showFields) && (
+                <th className="table-header px-5 py-3.5 text-left hidden md:table-cell">Lĩnh Vực</th>
+              )}
+              {(role === 'admin' || viewConfig?.showSkills) && (
+                <th className="table-header px-5 py-3.5 text-left hidden lg:table-cell">Kỹ Năng</th>
+              )}
               <th className="table-header px-5 py-3.5 text-left hidden xl:table-cell">
                 {role === 'admin' ? 'Liên Hệ' : 'Bảo Mật'}
               </th>
-              <th className="table-header px-5 py-3.5 text-left">
-                {role === 'student' ? 'Chỉ Tiêu / Đăng Ký' : 'Tiến Độ Chỉ Tiêu'}
-              </th>
+              {(role === 'admin' || viewConfig?.showSlots) && (
+                <th className="table-header px-5 py-3.5 text-left">
+                  {role === 'student' ? 'Chỉ Tiêu' : 'Tiến Độ Chỉ Tiêu'}
+                </th>
+              )}
+              {role === 'student' && !viewConfig?.showSlots && (
+                <th className="table-header px-5 py-3.5 text-left">Đăng Ký</th>
+              )}
               <th className="px-3 py-3.5"></th>
             </tr>
           </thead>
           <tbody>
             {companies.map((company) => (
-              <CompanyRow key={company.id} company={company} role={role} onRegister={onRegister} />
+              <CompanyRow key={company.id} company={company} role={role} viewConfig={viewConfig} onRegister={onRegister} />
             ))}
           </tbody>
         </table>

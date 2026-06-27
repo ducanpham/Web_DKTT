@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { Search, LogOut, X, ExternalLink, Bell, BookOpen, Wrench, ChevronRight } from 'lucide-react';
-import { Company, Registration, Role, InternshipGuide } from '@/lib/data';
+import { Company, Registration, Role, InternshipGuide, StudentViewConfig } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
@@ -13,13 +13,14 @@ interface StudentDashboardProps {
   companies: Company[];
   registrations: Registration[];
   guide: InternshipGuide;
+  viewConfig: StudentViewConfig;
   onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void;
   onDeclareExternal: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string) => void;
   onLogout: () => void;
 }
 
 export default function StudentDashboard({
-  companies, registrations, guide, onRegister, onDeclareExternal, onLogout,
+  companies, registrations, guide, viewConfig, onRegister, onDeclareExternal, onLogout,
 }: StudentDashboardProps) {
   const [search, setSearch] = useState('');
   const [statFilter, setStatFilter] = useState<string | null>(null);
@@ -206,7 +207,7 @@ export default function StudentDashboard({
               )}
             </h2>
           </div>
-          <CompanyTable companies={filteredCompanies} role={role} onRegister={onRegister} />
+          <CompanyTable companies={filteredCompanies} role={role} viewConfig={viewConfig} onRegister={onRegister} />
         </div>
       </main>
 

@@ -2,8 +2,8 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, BookOpen, Wrench, Link, Save } from 'lucide-react';
-import { Company, Registration, Role, InternshipGuide } from '@/lib/data';
+import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, BookOpen, Wrench, Link, Save, Settings } from 'lucide-react';
+import { Company, Registration, Role, InternshipGuide, StudentViewConfig } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
@@ -14,9 +14,11 @@ interface AdminDashboardProps {
   companies: Company[];
   registrations: Registration[];
   guide: InternshipGuide;
+  viewConfig: StudentViewConfig;
   onDeleteRegistration: (id: string) => void;
   onImportCompanies: (newCompanies: Company[], replace: boolean) => void;
   onUpdateGuide: (guide: InternshipGuide) => void;
+  onUpdateViewConfig: (config: StudentViewConfig) => void;
   onLogout: () => void;
 }
 
@@ -24,9 +26,11 @@ export default function AdminDashboard({
   companies,
   registrations,
   guide,
+  viewConfig,
   onDeleteRegistration,
   onImportCompanies,
   onUpdateGuide,
+  onUpdateViewConfig,
   onLogout,
 }: AdminDashboardProps) {
   const [search, setSearch] = useState('');
@@ -36,9 +40,12 @@ export default function AdminDashboard({
   const [showRegModal, setShowRegModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showGuidePanel, setShowGuidePanel] = useState(false);
+  const [showViewPanel, setShowViewPanel] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
   const [guideDraft, setGuideDraft] = useState<InternshipGuide>(guide);
+  const [viewConfigDraft, setViewConfigDraft] = useState<StudentViewConfig>(viewConfig);
   const [guideSaved, setGuideSaved] = useState(false);
+  const [viewSaved, setViewSaved] = useState(false);
 
   const activeFilterCount = [statFilter, fieldFilter, skillFilter].filter(Boolean).length;
 
@@ -54,6 +61,7 @@ export default function AdminDashboard({
       if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
       if (statFilter === 'gala' && !c.isGalaSponsor) return false;
       if (statFilter === 'online' && !c.isOnlineRecruitment) return false;
+      if (statFilter === 'online-gala' && !(c.isOnlineRecruitment && c.isGalaSponsor)) return false;
       if (fieldFilter && !c.fields.some((f) => f === fieldFilter)) return false;
       if (skillFilter && !c.skills.some((s) => s === skillFilter)) return false;
       return true;
@@ -82,6 +90,13 @@ export default function AdminDashboard({
     setTimeout(() => setGuideSaved(false), 2000);
     setShowGuidePanel(false);
   }, [guideDraft, onUpdateGuide]);
+
+  const handleSaveViewConfig = useCallback(() => {
+    onUpdateViewConfig(viewConfigDraft);
+    setViewSaved(true);
+    setTimeout(() => setViewSaved(false), 2000);
+    setShowViewPanel(false);
+  }, [viewConfigDraft, onUpdateViewConfig]);
 
   const noop = useCallback(() => {}, []);
   const role: Role = 'admin';
@@ -142,6 +157,13 @@ export default function AdminDashboard({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* Cấu hình View Sinh Viên */}
+            <button onClick={() => setShowViewPanel(!showViewPanel)}
+              className={`btn-secondary ${showViewPanel ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : ''}`}>
+              <Settings className="w-4 h-4" />
+              Giao Diện Sinh Viên
+            </button>
+
             {/* Quản lý Hướng dẫn Thực tập */}
             <button onClick={() => setShowGuidePanel(!showGuidePanel)}
               className={`btn-secondary ${showGuidePanel ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : ''}`}>
@@ -190,7 +212,7 @@ export default function AdminDashboard({
 
         {/* Panel Hướng Dẫn Thực Tập */}
         {showGuidePanel && (
-          <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-5 animate-fade-in">
+          <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-5 animate-fade-in mb-4">
             <div className="flex items-center gap-2 mb-4">
               <BookOpen className="w-5 h-5 text-indigo-600" />
               <h3 className="font-bold text-slate-800">Cấu Hình Hướng Dẫn Thực Tập</h3>
@@ -248,6 +270,50 @@ export default function AdminDashboard({
           </div>
         )}
 
+        {/* Panel Cấu Hình Giao Diện Sinh Viên */}
+        {showViewPanel && (
+          <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-5 animate-fade-in mb-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Settings className="w-5 h-5 text-indigo-600" />
+              <h3 className="font-bold text-slate-800">Cấu Hình Giao Diện Sinh Viên</h3>
+              <span className="text-xs text-slate-400 ml-1">(Bật/tắt các cột hiển thị trong bảng)</span>
+            </div>
+            <div className="flex flex-wrap gap-6 mb-4">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={viewConfigDraft.showFields}
+                  onChange={(e) => setViewConfigDraft((p) => ({ ...p, showFields: e.target.checked }))}
+                  className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <span className="text-sm font-medium text-slate-700">Lĩnh vực</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={viewConfigDraft.showSkills}
+                  onChange={(e) => setViewConfigDraft((p) => ({ ...p, showSkills: e.target.checked }))}
+                  className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <span className="text-sm font-medium text-slate-700">Kỹ năng</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={viewConfigDraft.showBenefits}
+                  onChange={(e) => setViewConfigDraft((p) => ({ ...p, showBenefits: e.target.checked }))}
+                  className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <span className="text-sm font-medium text-slate-700">Quyền lợi & Hỗ trợ</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={viewConfigDraft.showSlots}
+                  onChange={(e) => setViewConfigDraft((p) => ({ ...p, showSlots: e.target.checked }))}
+                  className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
+                <span className="text-sm font-medium text-slate-700">Chỉ tiêu / Số lượng</span>
+              </label>
+            </div>
+            <div className="flex gap-3">
+              <button onClick={() => setShowViewPanel(false)} className="btn-secondary">Hủy</button>
+              <button onClick={handleSaveViewConfig}
+                className={`btn-primary ${viewSaved ? 'bg-emerald-500 border-emerald-500' : ''}`}>
+                {viewSaved ? <><Check className="w-4 h-4" /> Đã lưu!</> : <><Save className="w-4 h-4" /> Áp dụng ngay</>}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Thanh bộ lọc đang hoạt động */}
         {activeFilterCount > 0 && (
           <div className="flex items-center gap-3 p-3.5 bg-indigo-50 border border-indigo-200 rounded-xl animate-fade-in">
@@ -256,7 +322,7 @@ export default function AdminDashboard({
             <div className="flex flex-wrap gap-2">
               {statFilter && (
                 <span className="badge bg-indigo-100 text-indigo-700">
-                  {statFilter === 'gala' ? '⭐ Nhà Tài Trợ Gala' : '📶 Tuyển Dụng Online'}
+                  {statFilter === 'gala' ? '⭐ Đối Tác Thân Thiết' : statFilter === 'online' ? '📶 Tuyển Dụng Online' : '⭐ T.Dụng Online & Đối tác'}
                   <button onClick={() => setStatFilter(null)} className="ml-1"><X className="w-2.5 h-2.5" /></button>
                 </span>
               )}
