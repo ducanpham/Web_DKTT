@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, BookOpen, Wrench, Link, Save, Settings, RefreshCcw } from 'lucide-react';
+import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, BookOpen, Wrench, Link, Save, Settings, RefreshCcw, ClipboardList } from 'lucide-react';
 import { Company, Registration, Role, InternshipGuide, StudentViewConfig } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
@@ -10,6 +10,7 @@ import CompanyTable from './CompanyTable';
 import ManageRegistrationsModal from './ManageRegistrationsModal';
 import UploadExcelModal from './UploadExcelModal';
 import SyncGoogleFormModal from './SyncGoogleFormModal';
+import WeeklyReportModal from './WeeklyReportModal';
 
 interface AdminDashboardProps {
   companies: Company[];
@@ -43,6 +44,7 @@ export default function AdminDashboard({
   const [showRegModal, setShowRegModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showSyncModal, setShowSyncModal] = useState(false);
+  const [showWeeklyModal, setShowWeeklyModal] = useState(false);
   const [showGuidePanel, setShowGuidePanel] = useState(false);
   const [showViewPanel, setShowViewPanel] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
@@ -217,6 +219,13 @@ export default function AdminDashboard({
                 </span>
               )}
             </button>
+
+            {/* Báo cáo tiến độ */}
+            <button onClick={() => setShowWeeklyModal(true)}
+              className="btn-secondary text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200">
+              <ClipboardList className="w-4 h-4" />
+              Báo Cáo Tuần
+            </button>
           </div>
         </div>
 
@@ -355,6 +364,39 @@ export default function AdminDashboard({
                   />
                 )}
               </div>
+
+              {/* Báo cáo tiến độ hàng tuần */}
+              <div className="border-t border-slate-200 pt-3 mt-1 space-y-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox"
+                    checked={viewConfigDraft.weeklyReport?.enabled ?? false}
+                    onChange={(e) => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { googleFormUrl: '', sheetsCsvUrl: '' }), enabled: e.target.checked } }))}
+                    className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" />
+                  <span className="text-sm font-semibold text-slate-800">Bật Báo cáo tiến độ hàng tuần</span>
+                </label>
+                {viewConfigDraft.weeklyReport?.enabled && (
+                  <div className="space-y-2 pl-6">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Form (Sinh viên nộp báo cáo)</label>
+                      <input type="url"
+                        value={viewConfigDraft.weeklyReport?.googleFormUrl ?? ''}
+                        onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, sheetsCsvUrl: '' }), googleFormUrl: e.target.value } }))}
+                        placeholder="https://forms.gle/..."
+                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Sheets CSV (Admin theo dõi kết quả)</label>
+                      <input type="url"
+                        value={viewConfigDraft.weeklyReport?.sheetsCsvUrl ?? ''}
+                        onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, googleFormUrl: '' }), sheetsCsvUrl: e.target.value } }))}
+                        placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv"
+                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
             <div className="flex gap-3">
               <button onClick={() => setShowViewPanel(false)} className="btn-secondary">Hủy</button>
@@ -468,6 +510,15 @@ export default function AdminDashboard({
           companies={companies} 
           onClose={() => setShowSyncModal(false)} 
           onImportRegistrations={onImportRegistrations} 
+        />
+      )}
+
+      {/* Modal Báo cáo Tiến độ Hàng Tuần */}
+      {showWeeklyModal && (
+        <WeeklyReportModal
+          config={viewConfig.weeklyReport ?? { enabled: false, googleFormUrl: '', sheetsCsvUrl: '' }}
+          registrations={registrations}
+          onClose={() => setShowWeeklyModal(false)}
         />
       )}
     </div>

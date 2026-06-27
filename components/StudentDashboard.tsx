@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import { Search, LogOut, X, ExternalLink, Bell, BookOpen, Wrench, ChevronRight } from 'lucide-react';
+import { Search, LogOut, X, ExternalLink, Bell, BookOpen, Wrench, ChevronRight, ClipboardList } from 'lucide-react';
 import { Company, Registration, Role, InternshipGuide, StudentViewConfig } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
@@ -158,13 +158,26 @@ export default function StudentDashboard({
               Khám phá {companies.length} doanh nghiệp đối tác và đăng ký thực tập
             </p>
           </div>
-          {viewConfig?.allowExternalDeclaration && (
-            <button onClick={() => setShowExternalModal(true)}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
-              <ExternalLink className="w-4 h-4" />
-              Đề xuất/Khai Báo Công Ty Ngoài
-            </button>
-          )}
+          <div className="flex items-center gap-3 flex-wrap">
+            {viewConfig?.weeklyReport?.enabled && viewConfig.weeklyReport.googleFormUrl && (
+              <a
+                href={viewConfig.weeklyReport.googleFormUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm"
+              >
+                <ClipboardList className="w-4 h-4" />
+                Nộp Báo Cáo Tuần
+              </a>
+            )}
+            {viewConfig?.allowExternalDeclaration && (
+              <button onClick={() => setShowExternalModal(true)}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
+                <ExternalLink className="w-4 h-4" />
+                Đề xuất/Khai Báo Công Ty Ngoài
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Thanh bộ lọc */}

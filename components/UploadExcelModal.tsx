@@ -63,6 +63,16 @@ const COLUMN_MAP: Record<string, keyof MappedCompany> = {
   'địa chỉ': 'address',
   'dia chi': 'address',
   'address': 'address',
+  'địa chỉ công ty': 'address',
+  'dia chi cong ty': 'address',
+  'trụ sở': 'address',
+  'tru so': 'address',
+  'địa điểm': 'address',
+  'dia diem': 'address',
+  'địa điểm làm việc': 'address',
+  'dia diem lam viec': 'address',
+  'nơi làm việc': 'address',
+  'noi lam viec': 'address',
   'chỉ tiêu': 'totalSlots',
   'chi tieu': 'totalSlots',
   'slots': 'totalSlots',
@@ -100,7 +110,13 @@ function parseBool(val: string | number | boolean | null | undefined): boolean {
   if (typeof val === 'boolean') return val;
   if (typeof val === 'number') return val !== 0;
   const s = String(val ?? '').toLowerCase().trim();
-  return ['yes', 'có', 'co', 'true', '1', 'x', '✓'].includes(s);
+  const normalized = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  
+  if (normalized.includes('khong') || normalized.includes('no') || normalized.includes('false')) return false;
+  if (normalized.includes('co') || normalized.includes('tham gia') || normalized.includes('yes') || normalized === '1' || normalized === 'x' || normalized === '✓') {
+    return true;
+  }
+  return false;
 }
 
 function parseList(val: string | number | boolean | null | undefined): string[] {

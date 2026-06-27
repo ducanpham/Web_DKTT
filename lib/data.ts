@@ -39,6 +39,24 @@ export interface Registration {
   expectedSkills?: string;
 }
 
+export interface WeeklyReport {
+  id: string;           // MSSV + tuần
+  studentId: string;
+  studentName: string;
+  internClass: string;
+  companyName: string;
+  weekLabel: string;    // VD: "Tuần 1", "Tuần 2"...
+  content: string;      // Công việc đã làm
+  difficulties: string; // Khó khăn / Đề xuất
+  submittedAt: string;
+}
+
+export interface WeeklyReportConfig {
+  enabled: boolean;            // Admin bật/tắt chức năng
+  googleFormUrl: string;       // Link Google Form cho sinh viên nộp
+  sheetsCsvUrl: string;        // Link CSV Google Sheets để admin fetch
+}
+
 export interface InternshipGuide {
   technicalLink: string;    // Link hướng dẫn thực tập kỹ thuật
   engineerLink: string;     // Link thực tập kỹ sư chuyên sâu
@@ -64,6 +82,7 @@ export interface StudentViewConfig {
   showCompanyAddress: boolean;
   showContactPerson: boolean;
   allowExternalDeclaration: boolean;
+  weeklyReport: WeeklyReportConfig;
 }
 
 export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
@@ -77,6 +96,11 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
   showCompanyAddress: true,
   showContactPerson: true,
   allowExternalDeclaration: false,
+  weeklyReport: {
+    enabled: false,
+    googleFormUrl: '',
+    sheetsCsvUrl: '',
+  },
 };
 
 export const INITIAL_COMPANIES: Company[] = [

@@ -62,6 +62,12 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
             <div>
               <p className="font-semibold text-slate-800 text-sm leading-tight">{company.name}</p>
               {role === 'admin' && <p className="text-xs text-slate-400 mt-0.5">{company.industry}</p>}
+              {(role === 'admin' || viewConfig?.showCompanyAddress) && company.address && (
+                <div className="flex items-start gap-1 text-xs text-slate-500 mt-1">
+                  <Home className="w-3 h-3 mt-0.5 shrink-0" />
+                  <span className="line-clamp-1" title={company.address}>{company.address}</span>
+                </div>
+              )}
               <div className="flex items-center gap-1.5 mt-1">
                 {company.isGalaSponsor && (
                   <span className="badge bg-amber-100 text-amber-700 gap-1"><Star className="w-3 h-3" /> Gala</span>
