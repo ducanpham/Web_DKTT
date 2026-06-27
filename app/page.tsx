@@ -7,7 +7,7 @@ import StudentDashboard from '@/components/StudentDashboard';
 import AdminDashboard from '@/components/AdminDashboard';
 
 const STORAGE_KEY_ROLE = 'unintern_role';
-const STORAGE_KEY_COMPANIES = 'unintern_companies';
+const STORAGE_KEY_COMPANIES = 'unintern_companies_v2';
 const STORAGE_KEY_REGISTRATIONS = 'unintern_registrations';
 const STORAGE_KEY_GUIDE = 'unintern_guide';
 
