@@ -11,8 +11,9 @@ import { RegisterModal } from './RegistrationModals';
 interface CompanyTableProps {
   companies: Company[];
   role: Role;
-  onRegister: (companyId: string, studentId: string, studentName: string) => void;
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void;
 }
+
 
 function SlotProgress({ available, total }: { available: number; total: number }) {
   const filled = total - available;
@@ -33,13 +34,17 @@ function SlotProgress({ available, total }: { available: number; total: number }
   );
 }
 
-function CompanyRow({ company, role, onRegister }: { company: Company; role: Role; onRegister: (id: string, sid: string, sn: string) => void }) {
+function CompanyRow({ company, role, onRegister }: {
+  company: Company;
+  role: Role;
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string) => void
+}) {
   const [expanded, setExpanded] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
   const hasSlots = company.availableSlots > 0;
 
-  const handleRegSubmit = (studentId: string, studentName: string) => {
-    onRegister(company.id, studentId, studentName);
+  const handleRegSubmit = (studentId: string, studentName: string, phone: string, email: string, internClass: string) => {
+    onRegister(company.id, studentId, studentName, phone, email, internClass);
     setRegisterModal(false);
   };
 

@@ -22,8 +22,9 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
 
   const handleAdminLogin = () => {
     setError('');
-    if (password !== 'admin123') {
-      setError('Mật khẩu không đúng. Gợi ý: admin123');
+    if (password !== 'MEOHULA') {
+      setError('Mật khẩu không đúng.');
+      setIsLoading(false);
       return;
     }
     setIsLoading(true);

@@ -188,6 +188,66 @@ export default function AdminDashboard({
           </div>
         </div>
 
+        {/* Panel Hướng Dẫn Thực Tập */}
+        {showGuidePanel && (
+          <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-5 animate-fade-in">
+            <div className="flex items-center gap-2 mb-4">
+              <BookOpen className="w-5 h-5 text-indigo-600" />
+              <h3 className="font-bold text-slate-800">Cấu Hình Hướng Dẫn Thực Tập</h3>
+              <span className="text-xs text-slate-400 ml-1">(Link sẽ hiển thị cho sinh viên)</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  <Wrench className="w-4 h-4 inline mr-1 text-slate-500" />
+                  Nhãn — Thực tập Kỹ thuật
+                </label>
+                <input type="text" value={guideDraft.technicalLabel}
+                  onChange={(e) => setGuideDraft((p) => ({ ...p, technicalLabel: e.target.value }))}
+                  placeholder="Hướng dẫn Thực tập Kỹ thuật"
+                  className="input-field text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  <Link className="w-4 h-4 inline mr-1 text-slate-500" />
+                  Link Drive — Thực tập Kỹ thuật
+                </label>
+                <input type="url" value={guideDraft.technicalLink}
+                  onChange={(e) => setGuideDraft((p) => ({ ...p, technicalLink: e.target.value }))}
+                  placeholder="https://drive.google.com/..."
+                  className="input-field text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  <BookOpen className="w-4 h-4 inline mr-1 text-slate-500" />
+                  Nhãn — Thực tập Kỹ sư Chuyên sâu
+                </label>
+                <input type="text" value={guideDraft.engineerLabel}
+                  onChange={(e) => setGuideDraft((p) => ({ ...p, engineerLabel: e.target.value }))}
+                  placeholder="Thực tập Kỹ sư Chuyên sâu"
+                  className="input-field text-sm" />
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+                  <Link className="w-4 h-4 inline mr-1 text-slate-500" />
+                  Link Drive — Thực tập Kỹ sư Chuyên sâu
+                </label>
+                <input type="url" value={guideDraft.engineerLink}
+                  onChange={(e) => setGuideDraft((p) => ({ ...p, engineerLink: e.target.value }))}
+                  placeholder="https://drive.google.com/..."
+                  className="input-field text-sm" />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-4">
+              <button onClick={() => setShowGuidePanel(false)} className="btn-secondary">Hủy</button>
+              <button onClick={handleSaveGuide}
+                className={`btn-primary ${guideSaved ? 'bg-emerald-500 border-emerald-500' : ''}`}>
+                {guideSaved ? <><Check className="w-4 h-4" /> Đã lưu!</> : <><Save className="w-4 h-4" /> Lưu & Công bố</>}
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Thanh bộ lọc đang hoạt động */}
         {activeFilterCount > 0 && (
           <div className="flex items-center gap-3 p-3.5 bg-indigo-50 border border-indigo-200 rounded-xl animate-fade-in">
