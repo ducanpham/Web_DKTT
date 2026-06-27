@@ -73,7 +73,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "CÔNG TY CỔ PHẦN SẢN XUẤT VÀ DỊCH VỤ LEANMAC",
     logo: "🏭",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","Thiết Kế Cơ Khí & CAD/CAM","AI & Machine Learning","Robot Công Nghiệp"],
     skills: ["PLC/SCADA","CAD/SolidWorks","Tiếng Anh"],
     benefits: {
@@ -157,7 +157,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công ty TNHH Phát Triển Thương Mại Minh Vũ",
     logo: "💡",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Robot Công Nghiệp","Tự Động Hóa & PLC","Thiết Kế Cơ Khí & CAD/CAM"],
     skills: ["PLC/SCADA","C/C++","CAD/SolidWorks","Kỹ năng thiết kế mạch điện t","Tiếng Anh"],
     benefits: {
@@ -178,7 +178,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Unilever",
     logo: "🛠️",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","IoT & Nhúng","Robot Công Nghiệp"],
     skills: ["PLC/SCADA","C/C++","Tiếng Anh","Có kỹ năng tiếng anh giao ti"],
     benefits: {
@@ -198,7 +198,7 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_7",
     name: "Công ty TNHH Công nghệ máy văn phòng Kyocera Việt Nam",
     logo: "🔬",
-    isGalaSponsor: true,
+    isGalaSponsor: false,
     isOnlineRecruitment: false,
     fields: ["Robot Công Nghiệp","Thiết Kế Cơ Khí & CAD/CAM","Điều khiển truyền động (Motion Cont","Công nghệ in 3D & Sản xuất đắp dần"],
     skills: ["CAD/SolidWorks","C/C++","Kỹ năng thiết kế mạch điện t","Tiếng Anh","Có kỹ năng tiếng anh giao ti"],
@@ -220,7 +220,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công ty cổ phần công nghiệp TCI",
     logo: "📡",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","Robot Công Nghiệp","Thiết Kế Cơ Khí & CAD/CAM","Điều khiển truyền động (Motion Cont"],
     skills: ["PLC/SCADA","CAD/SolidWorks","Tiếng Anh","Ưu tiên sinh viên thành thảo"],
     benefits: {
@@ -241,7 +241,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "CÔNG TY TNHH INNOVATION PRECISION VIỆT NAM",
     logo: "🏗️",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","Thiết Kế Cơ Khí & CAD/CAM","Vận Hành Sản Xuất"],
     skills: ["PLC/SCADA","C/C++","CAD/SolidWorks","Tiếng Anh","Ưu tiên biết tiếng trung"],
     benefits: {
@@ -282,8 +282,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_11",
     name: "Công ty Cổ phần Công nghệ và đầu tư INTECH",
     logo: "🔩",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","IoT & Nhúng","Thiết Kế Cơ Khí & CAD/CAM","Vận Hành Sản Xuất"],
     skills: ["PLC/SCADA","C/C++","CAD/SolidWorks","Tiếng Anh"],
     benefits: {
@@ -303,8 +303,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_12",
     name: "Công ty TNHH Daiwa Plastics Thăng Long",
     logo: "💻",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","Robot Công Nghiệp","AI & Machine Learning"],
     skills: ["PLC/SCADA","C/C++","CAD/SolidWorks","Kỹ năng thiết kế mạch điện t","Tiếng Anh"],
     benefits: {
@@ -324,8 +324,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_13",
     name: "Công ty TNHH Điện tử Meiko Việt Nam",
     logo: "🌐",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","IoT & Nhúng","Thiết Kế Cơ Khí & CAD/CAM","Robot Công Nghiệp"],
     skills: ["PLC/SCADA","C/C++","CAD/SolidWorks","Kỹ năng thiết kế mạch điện t","Có kỹ năng tiếng anh giao ti","Tiếng Anh"],
     benefits: {
@@ -346,7 +346,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công ty TNHH thiết bị HT Việt Nam",
     logo: "⚡",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Thiết Kế Cơ Khí & CAD/CAM","Tự Động Hóa & PLC","Vận Hành Sản Xuất","AI & Machine Learning"],
     skills: ["CAD/SolidWorks"],
     benefits: {
@@ -367,7 +367,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công ty Cổ phần Santomas Việt Nam",
     logo: "🎯",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","AI & Machine Learning","Robot Công Nghiệp","Thiết Kế Cơ Khí & CAD/CAM"],
     skills: ["PLC/SCADA","Kỹ năng thiết kế mạch điện t","Có kỹ năng tiếng anh giao ti"],
     benefits: {
@@ -387,8 +387,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_16",
     name: "Công ty TNHH Makino Việt Nam",
     logo: "🔭",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["Robot Công Nghiệp","Tự Động Hóa & PLC","Thiết Kế Cơ Khí & CAD/CAM","Điều khiển truyền động (Motion Cont"],
     skills: ["PLC/SCADA","Tiếng Anh","CAD/SolidWorks"],
     benefits: {
@@ -430,7 +430,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công ty TNHH Canon Việt Nam",
     logo: "🏢",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","Robot Công Nghiệp","Thiết Kế Cơ Khí & CAD/CAM","Điều khiển truyền động (Motion Cont"],
     skills: ["PLC/SCADA","C/C++","CAD/SolidWorks","Kỹ năng thiết kế mạch điện t"],
     benefits: {
@@ -471,8 +471,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_20",
     name: "CÔNG TY TNHH PHẦN MỀM HICAS",
     logo: "🛒",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["Thiết Kế Cơ Khí & CAD/CAM","AI & Machine Learning","Robot Công Nghiệp"],
     skills: ["C/C++","CAD/SolidWorks","Tiếng Anh","Có kỹ năng tiếng anh giao ti"],
     benefits: {
@@ -493,7 +493,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công ty cổ phần hệ thống AIoT",
     logo: "🧪",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["IoT & Nhúng","Điều khiển truyền động (Motion Cont","Robot Công Nghiệp","AI & Machine Learning"],
     skills: ["C/C++","Kỹ năng thiết kế mạch điện t"],
     benefits: {
@@ -514,7 +514,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công Ty Cổ Phần Croptex",
     logo: "🏆",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Robot Công Nghiệp","IoT & Nhúng","Thiết Kế Cơ Khí & CAD/CAM","Điều khiển truyền động (Motion Cont"],
     skills: ["CAD/SolidWorks","Kỹ năng thiết kế mạch điện t","PLC/SCADA","C/C++"],
     benefits: {
@@ -556,7 +556,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Tổng Công ty Sản xuất thiết bị Viettel",
     logo: "💼",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Thiết Kế Cơ Khí & CAD/CAM","Vận Hành Sản Xuất","Lập Trình Phần Mềm"],
     skills: ["CAD/SolidWorks","Kỹ năng thiết kế mạch điện t","Tiếng Anh","C/C++"],
     benefits: {
@@ -598,7 +598,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công ty TNHH Thương mại quốc tế 3S Việt Nam",
     logo: "🔷",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","Thiết Kế Cơ Khí & CAD/CAM","Điều khiển truyền động (Motion Cont","Vận Hành Sản Xuất"],
     skills: ["CAD/SolidWorks","Tiếng Anh","Có kỹ năng tiếng anh giao ti","C/C++","PLC/SCADA"],
     benefits: {
@@ -618,8 +618,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_27",
     name: "Công ty Cổ phần IL-SUNG TECH",
     logo: "🚀",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["Vận Hành Sản Xuất","Robot Công Nghiệp","Tự Động Hóa & PLC"],
     skills: ["Không yêu cầu thêm chuyên mô"],
     benefits: {
@@ -639,8 +639,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_28",
     name: "Công ty TNHH MTV Thép VAS Nghi Sơn",
     logo: "🌿",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","Thiết Kế Cơ Khí & CAD/CAM","Vận Hành Sản Xuất","AI & Machine Learning"],
     skills: ["PLC/SCADA","CAD/SolidWorks","Kỹ năng thiết kế mạch điện t","Tiếng Anh"],
     benefits: {
@@ -681,8 +681,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_30",
     name: "Công ty TNHH Nestlé Việt nam",
     logo: "🏥",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["AI & Machine Learning","Tự Động Hóa & PLC","Vận Hành Sản Xuất"],
     skills: ["Có kỹ năng tiếng anh giao ti","CAD/SolidWorks","PLC/SCADA","Tiếng Anh"],
     benefits: {
@@ -702,8 +702,8 @@ export const INITIAL_COMPANIES: Company[] = [
     id: "real_31",
     name: "STEAM for Vietnam Foundation",
     logo: "📐",
-    isGalaSponsor: true,
-    isOnlineRecruitment: true,
+    isGalaSponsor: false,
+    isOnlineRecruitment: false,
     fields: ["Thiết Kế Cơ Khí & CAD/CAM","Điều khiển truyền động (Motion Cont","Công nghệ in 3D & Sản xuất đắp dần","IoT & Nhúng"],
     skills: ["C/C++","CAD/SolidWorks","Kỹ năng thiết kế mạch điện t","Tiếng Anh"],
     benefits: {
@@ -724,7 +724,7 @@ export const INITIAL_COMPANIES: Company[] = [
     name: "Công ty TNHH Sản xuất đồ gia dụng Sunhouse",
     logo: "🎛️",
     isGalaSponsor: false,
-    isOnlineRecruitment: true,
+    isOnlineRecruitment: false,
     fields: ["Tự Động Hóa & PLC","IoT & Nhúng","Thiết Kế Cơ Khí & CAD/CAM","Điều khiển truyền động (Motion Cont"],
     skills: ["CAD/SolidWorks","Kỹ năng thiết kế mạch điện t","Tiếng Anh"],
     benefits: {
