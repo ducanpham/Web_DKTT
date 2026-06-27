@@ -212,7 +212,7 @@ export default function Home() {
       onImportCompanies={handleImportCompanies}
       onImportRegistrations={handleImportRegistrations}
       onUpdateGuide={handleUpdateGuide}
-      onUpdateViewConfig={handleUpdateViewConfig}
+      onUpdateViewConfig={setStudentViewConfig}
       onLogout={handleLogout}
     />
   );

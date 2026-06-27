@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, UserCheck, Hash, User, AlertCircle, CheckCircle2, Phone, Mail, BookOpen, Clock } from 'lucide-react';
+import { X, UserCheck, Hash, User, AlertCircle, CheckCircle2, Phone, Mail, BookOpen, Clock, Layers } from 'lucide-react';
 import { Registration } from '@/lib/data';
 
 interface RegisterModalProps {
