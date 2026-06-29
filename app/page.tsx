@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, StudentViewConfig, DEFAULT_STUDENT_VIEW_CONFIG, INITIAL_COMPANIES, INITIAL_REGISTRATIONS, fetchConfigFromAPI } from '@/lib/data';
+import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, StudentViewConfig, DEFAULT_STUDENT_VIEW_CONFIG, INITIAL_COMPANIES, INITIAL_REGISTRATIONS, fetchConfigFromAPI, saveConfigToAPI } from '@/lib/data';
 import LoginScreen from '@/components/LoginScreen';
 import StudentDashboard from '@/components/StudentDashboard';
 import AdminDashboard from '@/components/AdminDashboard';
@@ -75,6 +75,9 @@ export default function Home() {
         }
         if (configData.guide) {
           setGuide(configData.guide);
+        }
+        if (configData.customCompanies && Array.isArray(configData.customCompanies)) {
+          setCompanies(configData.customCompanies);
         }
       }
     };
@@ -214,19 +217,29 @@ export default function Home() {
       const reg = registrations.find((r) => r.id === regId);
       if (!reg) return;
 
-      if (studentViewConfig.appsScriptUrl) {
+      if (studentViewConfig.appsScriptUrl && reg.rowIndex) {
         try {
-          await fetch(studentViewConfig.appsScriptUrl, {
+          const res = await fetch(studentViewConfig.appsScriptUrl, {
             method: 'POST',
-            body: JSON.stringify({ action: 'delete', studentId: reg.studentId }),
+            body: JSON.stringify({ action: 'deleteRegistration', rowIndex: reg.rowIndex }),
             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
           });
+          const result = await res.json();
+          if (result.status === 'success') {
+            alert('Đã xóa thành công trên Google Sheets!');
+          } else {
+            alert('Lỗi từ Google Sheets: ' + result.message);
+          }
         } catch (e) {
           console.error('Lỗi khi xóa trên Sheets API', e);
-          alert('Lỗi kết nối khi xóa trên Google Sheets. Bạn có thể cần đồng bộ lại sau.');
+          alert('Lỗi kết nối khi xóa trên Google Sheets.');
         }
+      } else if (studentViewConfig.appsScriptUrl && !reg.rowIndex) {
+        alert('Bản ghi này chưa được đồng bộ từ Google Sheets (thiếu rowIndex). Vui lòng Đồng bộ Form trước khi xóa.');
+        return;
       }
 
+      // Vẫn cập nhật giao diện (Optimistic update)
       if (!reg.isExternal && reg.companyId !== 'EXT') {
         setCompanies((prev) =>
           prev.map((c) =>
@@ -240,57 +253,59 @@ export default function Home() {
   );
 
   const handleImportCompanies = useCallback(
-    (newCompanies: Company[], replace: boolean) => {
-      setCompanies((prev) => (replace ? newCompanies : [...prev, ...newCompanies]));
+    async (newCompanies: Company[], replace: boolean) => {
+      setCompanies((prev) => {
+        const updated = replace ? newCompanies : [...prev, ...newCompanies];
+        if (studentViewConfig.appsScriptUrl) {
+          saveConfigToAPI(studentViewConfig.appsScriptUrl, 'saveCompanies', updated)
+            .then(success => {
+              if (success) alert('Đã lưu danh sách doanh nghiệp lên Google Sheets!');
+              else alert('Lỗi khi lưu doanh nghiệp lên Google Sheets.');
+            });
+        }
+        return updated;
+      });
     },
-    []
+    [studentViewConfig.appsScriptUrl]
   );
 
   const handleSyncGoogleSheets = useCallback(async () => {
     if (!studentViewConfig.appsScriptUrl) return;
     try {
-      const res = await fetch(studentViewConfig.appsScriptUrl);
+      const res = await fetch(studentViewConfig.appsScriptUrl, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'getRegistrations' }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+      });
       const result = await res.json();
-      if (result.status === 'success' && result.data) {
-        const fetchedRegs = result.data.map((row: any, i: number) => {
+      if (result.status === 'success' && Array.isArray(result.data)) {
+        const fetchedRegs = result.data.map((row: any) => {
           const matchedCompany = companies.find(c => c.name === row.companyName);
           return {
-            id: `r_api_${i}_${Date.now()}`,
+            id: row.id || `r_api_${Date.now()}`,
+            rowIndex: row.rowIndex,
             studentId: row.studentId,
             studentName: row.studentName,
-            studentPhone: String(row.phone || ''),
-            studentEmail: row.email,
+            studentPhone: String(row.studentPhone || ''),
+            studentEmail: row.studentEmail,
             internClass: row.internClass,
-            expectedSkills: row.expectedSkills,
+            expectedSkills: row.expectedSkills || '',
             companyName: row.companyName,
             companyId: matchedCompany ? matchedCompany.id : 'UNKNOWN',
-            registeredAt: row.timestamp || new Date().toISOString(),
+            registeredAt: row.registeredAt || new Date().toISOString(),
             isExternal: false
           };
         });
 
         // Thay thế toàn bộ registrations bằng dữ liệu từ sheet
         setRegistrations(fetchedRegs);
-
-        // Tính lại slot cho company
-        setCompanies(prev => {
-          const counts: Record<string, number> = {};
-          fetchedRegs.forEach((r: Registration) => {
-            if (r.companyId && r.companyId !== 'UNKNOWN') {
-              counts[r.companyId] = (counts[r.companyId] || 0) + 1;
-            }
-          });
-          return prev.map(c => ({
-            ...c,
-            availableSlots: Math.max(0, c.totalSlots - (counts[c.id] || 0))
-          }));
-        });
+        alert('Đã đồng bộ danh sách đăng ký từ Google Sheets!');
       } else {
-        throw new Error(result.message || 'Lỗi dữ liệu trả về');
+        alert('Có lỗi khi đồng bộ hoặc dữ liệu trống.');
       }
-    } catch (error) {
-      console.error(error);
-      throw error;
+    } catch (err) {
+      console.error("Sync API error:", err);
+      alert('Lỗi mạng khi kết nối tới Google Sheets.');
     }
   }, [studentViewConfig.appsScriptUrl, companies]);
 

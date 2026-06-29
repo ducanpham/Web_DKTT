@@ -9,7 +9,6 @@ import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
 import ManageRegistrationsModal from './ManageRegistrationsModal';
 import UploadExcelModal from './UploadExcelModal';
-import SyncGoogleFormModal from './SyncGoogleFormModal';
 import WeeklyReportModal from './WeeklyReportModal';
 
 interface AdminDashboardProps {
@@ -46,7 +45,6 @@ export default function AdminDashboard({
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
   const [showRegModal, setShowRegModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [showSyncModal, setShowSyncModal] = useState(false);
   const [showWeeklyModal, setShowWeeklyModal] = useState(false);
   const [showGuidePanel, setShowGuidePanel] = useState(false);
   const [showViewPanel, setShowViewPanel] = useState(false);
@@ -207,9 +205,19 @@ export default function AdminDashboard({
             </button>
 
             {/* Đồng bộ Google Form */}
-            <button onClick={() => setShowSyncModal(true)} className="btn-secondary text-orange-600 hover:bg-orange-50 hover:border-orange-200">
-              <RefreshCcw className="w-4 h-4" />
-              Đồng bộ Form
+            <button 
+              onClick={async () => {
+                if (onSyncGoogleSheets) {
+                  setIsSyncingAPI(true);
+                  await onSyncGoogleSheets();
+                  setIsSyncingAPI(false);
+                }
+              }} 
+              disabled={isSyncingAPI}
+              className="btn-secondary text-orange-600 hover:bg-orange-50 hover:border-orange-200 disabled:opacity-50"
+            >
+              <RefreshCcw className={`w-4 h-4 ${isSyncingAPI ? 'animate-spin' : ''}`} />
+              {isSyncingAPI ? 'Đang đồng bộ...' : 'Đồng bộ Form'}
             </button>
 
             {/* Sao chép Email */}
@@ -556,15 +564,6 @@ export default function AdminDashboard({
         <UploadExcelModal
           onClose={() => setShowUploadModal(false)}
           onImport={(companies, replace) => handleImport(companies, replace)}
-        />
-      )}
-
-      {/* Modal Đồng bộ Google Form */}
-      {showSyncModal && (
-        <SyncGoogleFormModal 
-          companies={companies} 
-          onClose={() => setShowSyncModal(false)} 
-          onImportRegistrations={onImportRegistrations} 
         />
       )}
 

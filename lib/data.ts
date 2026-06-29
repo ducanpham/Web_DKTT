@@ -28,6 +28,7 @@ export interface Company {
 
 export interface Registration {
   id: string;
+  rowIndex?: number; // Added to map to Google Sheets row index
   studentId: string;
   studentName: string;
   studentPhone: string;
@@ -834,7 +835,7 @@ export const INITIAL_REGISTRATIONS: Registration[] = [];
 
 // --- API Helpers for Configuration DB ---
 
-export async function fetchConfigFromAPI(apiUrl: string): Promise<{ studentViewConfig?: StudentViewConfig, guide?: InternshipGuide } | null> {
+export async function fetchConfigFromAPI(apiUrl: string): Promise<{ studentViewConfig?: StudentViewConfig, guide?: InternshipGuide, customCompanies?: Company[] } | null> {
   if (!apiUrl) return null;
   try {
     const urlWithCacheBuster = apiUrl + (apiUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
@@ -851,7 +852,7 @@ export async function fetchConfigFromAPI(apiUrl: string): Promise<{ studentViewC
   }
 }
 
-export async function saveConfigToAPI(apiUrl: string, action: 'saveViewConfig' | 'saveGuide', data: any): Promise<boolean> {
+export async function saveConfigToAPI(apiUrl: string, action: 'saveViewConfig' | 'saveGuide' | 'saveCompanies', data: any): Promise<boolean> {
   if (!apiUrl) return false;
   try {
     const response = await fetch(apiUrl, {
