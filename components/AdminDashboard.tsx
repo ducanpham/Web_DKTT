@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
 import { Shield, Search, LogOut, Upload, Copy, Users, Check, X, Filter, BookOpen, Wrench, Link, Save, Settings, RefreshCcw, ClipboardList } from 'lucide-react';
-import { Company, Registration, Role, InternshipGuide, StudentViewConfig } from '@/lib/data';
+import { Company, Registration, Role, InternshipGuide, StudentViewConfig, saveConfigToAPI } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
@@ -93,15 +93,21 @@ export default function AdminDashboard({
     [onImportCompanies]
   );
 
-  const handleSaveGuide = useCallback(() => {
+  const handleSaveGuide = useCallback(async () => {
     onUpdateGuide(guideDraft);
+    if (viewConfig.appsScriptUrl) {
+      await saveConfigToAPI(viewConfig.appsScriptUrl, 'saveGuide', guideDraft);
+    }
     setGuideSaved(true);
     setTimeout(() => setGuideSaved(false), 2000);
     setShowGuidePanel(false);
-  }, [guideDraft, onUpdateGuide]);
+  }, [guideDraft, onUpdateGuide, viewConfig.appsScriptUrl]);
 
-  const handleSaveViewConfig = useCallback(() => {
+  const handleSaveViewConfig = useCallback(async () => {
     onUpdateViewConfig(viewConfigDraft);
+    if (viewConfigDraft.appsScriptUrl) {
+      await saveConfigToAPI(viewConfigDraft.appsScriptUrl, 'saveViewConfig', viewConfigDraft);
+    }
     setViewSaved(true);
     setTimeout(() => setViewSaved(false), 2000);
     setShowViewPanel(false);

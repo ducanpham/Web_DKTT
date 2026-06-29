@@ -171,11 +171,11 @@ export default function StudentDashboard({
               </a>
             )}
             {viewConfig?.allowExternalDeclaration && (
-              <button onClick={() => setShowExternalModal(true)}
+              <a href="https://forms.office.com/r/RqvQC2hkM2" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
                 <ExternalLink className="w-4 h-4" />
                 Đề xuất/Khai Báo Công Ty Ngoài
-              </button>
+              </a>
             )}
           </div>
         </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, StudentViewConfig, DEFAULT_STUDENT_VIEW_CONFIG, INITIAL_COMPANIES, INITIAL_REGISTRATIONS } from '@/lib/data';
+import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, StudentViewConfig, DEFAULT_STUDENT_VIEW_CONFIG, INITIAL_COMPANIES, INITIAL_REGISTRATIONS, fetchConfigFromAPI } from '@/lib/data';
 import LoginScreen from '@/components/LoginScreen';
 import StudentDashboard from '@/components/StudentDashboard';
 import AdminDashboard from '@/components/AdminDashboard';
@@ -55,6 +55,31 @@ export default function Home() {
   useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_REGISTRATIONS, registrations); }, [registrations, hydrated]);
   useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_GUIDE, guide); }, [guide, hydrated]);
   useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_STUDENT_VIEW, studentViewConfig); }, [studentViewConfig, hydrated]);
+
+  // Khôi phục cấu hình chung từ Database (Google Sheets API) nếu có
+  useEffect(() => {
+    if (!hydrated) return;
+    const fetchGlobalConfig = async () => {
+      // Use the URL from local config or default
+      const apiUrl = studentViewConfig.appsScriptUrl || DEFAULT_STUDENT_VIEW_CONFIG.appsScriptUrl;
+      if (!apiUrl) return;
+      
+      const configData = await fetchConfigFromAPI(apiUrl);
+      if (configData) {
+        if (configData.studentViewConfig) {
+          // Merge with local config to preserve the appsScriptUrl if it was set locally
+          setStudentViewConfig(prev => ({
+            ...configData.studentViewConfig!,
+            appsScriptUrl: prev.appsScriptUrl || configData.studentViewConfig!.appsScriptUrl
+          }));
+        }
+        if (configData.guide) {
+          setGuide(configData.guide);
+        }
+      }
+    };
+    fetchGlobalConfig();
+  }, [hydrated]); // Run once after hydration
 
   // Auto-sync Google Form CSV to reduce slots on load
   useEffect(() => {

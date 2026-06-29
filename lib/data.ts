@@ -97,8 +97,8 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
   fallbackFormUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSeZX-vE38wQlbxnO1naG_XInjO53qQJMBBQ_lmbpVxWVy_tDw/viewform?usp=header',
   showCompanyAddress: true,
   showContactPerson: true,
-  allowExternalDeclaration: false,
-  appsScriptUrl: '',
+  allowExternalDeclaration: true,
+  appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwtmAJcBdPENz0sZpHS2w5skziD-jt7UALY72iXRkohp6FzEE67BR3XIQY2H1O_LFaw/exec',
   weeklyReport: {
     enabled: false,
     googleFormUrl: '',
@@ -823,3 +823,40 @@ export const INITIAL_COMPANIES: Company[] = [
 ];
 
 export const INITIAL_REGISTRATIONS: Registration[] = [];
+
+// --- API Helpers for Configuration DB ---
+
+export async function fetchConfigFromAPI(apiUrl: string): Promise<{ studentViewConfig?: StudentViewConfig, guide?: InternshipGuide } | null> {
+  if (!apiUrl) return null;
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) return null;
+    const json = await response.json();
+    if (json.status === 'success' && json.data) {
+      return json.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching config from API:", error);
+    return null;
+  }
+}
+
+export async function saveConfigToAPI(apiUrl: string, action: 'saveViewConfig' | 'saveGuide', data: any): Promise<boolean> {
+  if (!apiUrl) return false;
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      body: JSON.stringify({ action, data }),
+      headers: {
+        'Content-Type': 'text/plain;charset=utf-8',
+      }
+    });
+    if (!response.ok) return false;
+    const json = await response.json();
+    return json.status === 'success';
+  } catch (error) {
+    console.error("Error saving config to API:", error);
+    return false;
+  }
+}
