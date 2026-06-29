@@ -562,8 +562,9 @@ export default function AdminDashboard({
       {/* Modal Nhập Excel */}
       {showUploadModal && (
         <UploadExcelModal
+          currentCompanies={companies}
           onClose={() => setShowUploadModal(false)}
-          onImport={(companies, replace) => handleImport(companies, replace)}
+          onImport={(imported, replace) => handleImport(imported, replace)}
         />
       )}
 

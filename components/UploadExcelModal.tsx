@@ -31,6 +31,7 @@ interface MappedCompany {
 }
 
 interface UploadExcelModalProps {
+  currentCompanies: Company[];
   onClose: () => void;
   onImport: (companies: Company[], replace: boolean) => void;
 }
@@ -125,7 +126,7 @@ function parseList(val: string | number | boolean | null | undefined): string[] 
   return s.split(/[,;/|]/).map((x) => x.trim()).filter(Boolean);
 }
 
-export default function UploadExcelModal({ onClose, onImport }: UploadExcelModalProps) {
+export default function UploadExcelModal({ currentCompanies, onClose, onImport }: UploadExcelModalProps) {
   const [step, setStep] = useState<'upload' | 'preview' | 'success'>('upload');
   const [isDragging, setIsDragging] = useState(false);
   const [fileName, setFileName] = useState('');
@@ -221,6 +222,14 @@ export default function UploadExcelModal({ onClose, onImport }: UploadExcelModal
   };
 
   const handleConfirmImport = () => {
+    if (!replaceMode) {
+      const duplicates = mapped.filter(m => currentCompanies.some(c => c.name.toLowerCase().trim() === m.name.toLowerCase().trim()));
+      if (duplicates.length > 0) {
+        const confirmMsg = `Cảnh báo: Có ${duplicates.length} công ty trùng tên với danh sách hiện tại (VD: ${duplicates.slice(0, 3).map(d => d.name).join(', ')}). Bạn có chắc chắn muốn tiếp tục thêm?`;
+        if (!window.confirm(confirmMsg)) return;
+      }
+    }
+
     const companies: Company[] = mapped.map((m, i) => ({
       id: `imported_${Date.now()}_${i}`,
       name: m.name,
