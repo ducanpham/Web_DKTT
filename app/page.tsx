@@ -132,6 +132,46 @@ export default function Home() {
     return () => clearInterval(intervalId);
   }, [hydrated]);
 
+  // Tự động lấy danh sách đăng ký nếu là Admin
+  useEffect(() => {
+    if (!hydrated || role !== 'admin') return;
+    const autoFetchRegs = async () => {
+      const apiUrl = studentViewConfig.appsScriptUrl || DEFAULT_STUDENT_VIEW_CONFIG.appsScriptUrl;
+      if (!apiUrl) return;
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'getRegistrations' }),
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        });
+        const result = await res.json();
+        if (result.status === 'success' && Array.isArray(result.data)) {
+          const fetchedRegs = result.data.map((row: any) => {
+            const matchedCompany = companies.find(c => c.name === row.companyName);
+            return {
+              id: row.id || `r_api_${Date.now()}`,
+              rowIndex: row.rowIndex,
+              studentId: row.studentId,
+              studentName: row.studentName,
+              studentPhone: String(row.studentPhone || ''),
+              studentEmail: row.studentEmail,
+              internClass: row.internClass,
+              expectedSkills: row.expectedSkills || '',
+              companyName: row.companyName,
+              companyId: matchedCompany ? matchedCompany.id : 'UNKNOWN',
+              registeredAt: row.registeredAt || new Date().toISOString(),
+              isExternal: false
+            };
+          });
+          setRegistrations(fetchedRegs);
+        }
+      } catch (err) {
+        console.error("Auto fetch registrations error:", err);
+      }
+    };
+    autoFetchRegs();
+  }, [hydrated, role, studentViewConfig.appsScriptUrl]); // Intentionally not depending on companies to avoid loop
+
   const handleLogin = useCallback((selectedRole: Role) => {
     setRole(selectedRole);
     saveToStorage(STORAGE_KEY_ROLE, selectedRole);
