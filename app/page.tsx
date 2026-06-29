@@ -56,6 +56,53 @@ export default function Home() {
   useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_GUIDE, guide); }, [guide, hydrated]);
   useEffect(() => { if (hydrated) saveToStorage(STORAGE_KEY_STUDENT_VIEW, studentViewConfig); }, [studentViewConfig, hydrated]);
 
+  // Auto-sync Google Form CSV to reduce slots on load
+  useEffect(() => {
+    if (!hydrated) return;
+    const autoSyncCSV = async () => {
+      try {
+        const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/1KLgP6Ty01qP8hbPZfwQPKbpCiakbKzaHKPKpYBGdD2M/export?format=csv&gid=439149178";
+        const response = await fetch(sheetCsvUrl);
+        if (!response.ok) return; // Silent fail if private or error
+        const csvText = await response.text();
+        
+        const Papa = (await import('papaparse')).default;
+        Papa.parse(csvText, {
+          header: true,
+          skipEmptyLines: true,
+          complete: (results) => {
+            const data = results.data as any[];
+            setCompanies(prev => {
+              const counts: Record<string, number> = {};
+              data.forEach(row => {
+                // Check all column values for company names
+                const values = Object.values(row).map(v => String(v).trim().toUpperCase());
+                prev.forEach(c => {
+                  if (values.some(v => v.includes(c.name.trim().toUpperCase()))) {
+                     counts[c.id] = (counts[c.id] || 0) + 1;
+                  }
+                });
+              });
+              
+              return prev.map(c => {
+                const used = counts[c.id] || 0;
+                // Only update if slots actually changed to avoid unnecessary renders
+                const newAvailable = Math.max(0, c.totalSlots - used);
+                if (c.availableSlots !== newAvailable) {
+                  return { ...c, availableSlots: newAvailable };
+                }
+                return c;
+              });
+            });
+          }
+        });
+      } catch (err) {
+        console.error("Auto sync CSV error:", err);
+      }
+    };
+    autoSyncCSV();
+  }, [hydrated]);
+
   const handleLogin = useCallback((selectedRole: Role) => {
     setRole(selectedRole);
     saveToStorage(STORAGE_KEY_ROLE, selectedRole);
