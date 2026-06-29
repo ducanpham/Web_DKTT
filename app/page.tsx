@@ -85,45 +85,39 @@ export default function Home() {
   useEffect(() => {
     if (!hydrated) return;
     const autoSyncCSV = async () => {
+      // Use the Apps Script URL from the config
+      const apiUrl = studentViewConfig.appsScriptUrl || DEFAULT_STUDENT_VIEW_CONFIG.appsScriptUrl;
+      if (!apiUrl) return;
+
       try {
-        const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/1KLgP6Ty01qP8hbPZfwQPKbpCiakbKzaHKPKpYBGdD2M/export?format=csv&gid=439149178";
-        const urlWithCacheBuster = sheetCsvUrl + "&t=" + Date.now();
-        const response = await fetch(urlWithCacheBuster, { cache: 'no-store' });
-        if (!response.ok) return; // Silent fail if private or error
-        const csvText = await response.text();
-        
-        const Papa = (await import('papaparse')).default;
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const data = results.data as any[];
-            setCompanies(prev => {
-              const counts: Record<string, number> = {};
-              data.forEach(row => {
-                // Check all column values for company names
-                const values = Object.values(row).map(v => String(v).trim().toUpperCase());
-                prev.forEach(c => {
-                  if (values.some(v => v.includes(c.name.trim().toUpperCase()))) {
-                     counts[c.id] = (counts[c.id] || 0) + 1;
-                  }
-                });
-              });
-              
-              return prev.map(c => {
-                const used = counts[c.id] || 0;
-                // Only update if slots actually changed to avoid unnecessary renders
-                const newAvailable = Math.max(0, c.totalSlots - used);
-                if (c.availableSlots !== newAvailable) {
-                  return { ...c, availableSlots: newAvailable };
-                }
-                return c;
-              });
-            });
-          }
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          body: JSON.stringify({
+            action: 'getSlotCounts',
+            companyNames: companies.map(c => c.name)
+          }),
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
         });
+        
+        if (!response.ok) return;
+        const result = await response.json();
+        
+        if (result.status === 'success' && result.data && typeof result.data === 'object' && !result.data.error) {
+          const counts = result.data as Record<string, number>;
+          
+          setCompanies(prev => {
+            return prev.map(c => {
+              const used = counts[c.name] || 0;
+              const newAvailable = Math.max(0, c.totalSlots - used);
+              if (c.availableSlots !== newAvailable) {
+                return { ...c, availableSlots: newAvailable };
+              }
+              return c;
+            });
+          });
+        }
       } catch (err) {
-        console.error("Auto sync CSV error:", err);
+        console.error("Auto sync API error:", err);
       }
     };
     
