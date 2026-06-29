@@ -21,7 +21,7 @@ interface CompanyTableProps {
   companies: Company[];
   role: Role;
   viewConfig?: StudentViewConfig;
-  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => void;
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>;
 }
 
 
@@ -48,15 +48,14 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
   company: Company;
   role: Role;
   viewConfig?: StudentViewConfig;
-  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => void
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>
 }) {
   const [expanded, setExpanded] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
   const hasSlots = company.availableSlots > 0;
 
-  const handleRegSubmit = (studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills: string) => {
-    onRegister(company.id, studentId, studentName, phone, email, internClass, expectedSkills);
-    setRegisterModal(false);
+  const handleRegSubmit = async (studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills: string) => {
+    return await onRegister(company.id, studentId, studentName, phone, email, internClass, expectedSkills);
   };
 
   return (

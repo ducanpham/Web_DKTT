@@ -23,6 +23,7 @@ interface AdminDashboardProps {
   onUpdateGuide: (guide: InternshipGuide) => void;
   onUpdateViewConfig: (config: StudentViewConfig) => void;
   onLogout: () => void;
+  onSyncGoogleSheets?: () => Promise<void>;
 }
 
 export default function AdminDashboard({
@@ -36,8 +37,10 @@ export default function AdminDashboard({
   onUpdateGuide,
   onUpdateViewConfig,
   onLogout,
+  onSyncGoogleSheets
 }: AdminDashboardProps) {
   const [search, setSearch] = useState('');
+  const [isSyncingAPI, setIsSyncingAPI] = useState(false);
   const [statFilter, setStatFilter] = useState<string | null>(null);
   const [fieldFilter, setFieldFilter] = useState<string | null>(null);
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
@@ -104,7 +107,7 @@ export default function AdminDashboard({
     setShowViewPanel(false);
   }, [viewConfigDraft, onUpdateViewConfig]);
 
-  const noop = useCallback(() => {}, []);
+  const noop = useCallback(async () => Promise.resolve(null), []);
   const role: Role = 'admin';
 
   return (
@@ -176,6 +179,20 @@ export default function AdminDashboard({
               <BookOpen className="w-4 h-4" />
               Hướng Dẫn TT
             </button>
+
+            {/* Đồng bộ API Google Sheets */}
+            {viewConfig.appsScriptUrl && onSyncGoogleSheets && (
+              <button onClick={async () => {
+                setIsSyncingAPI(true);
+                try { await onSyncGoogleSheets(); }
+                catch(e) { alert('Đồng bộ thất bại. Vui lòng kiểm tra console.'); }
+                finally { setIsSyncingAPI(false); }
+              }} disabled={isSyncingAPI}
+                className="btn-secondary text-indigo-600 hover:bg-indigo-50 hover:border-indigo-200 disabled:opacity-50">
+                <RefreshCcw className={`w-4 h-4 ${isSyncingAPI ? 'animate-spin' : ''}`} />
+                {isSyncingAPI ? 'Đang đồng bộ...' : 'Đồng bộ từ Sheets API'}
+              </button>
+            )}
 
             {/* Nhập Excel */}
             <button onClick={() => setShowUploadModal(true)} className="btn-secondary">
@@ -360,9 +377,23 @@ export default function AdminDashboard({
                     value={viewConfigDraft.fallbackFormUrl}
                     onChange={(e) => setViewConfigDraft(p => ({ ...p, fallbackFormUrl: e.target.value }))}
                     placeholder="Nhập link Google Form..."
-                    className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all"
+                    className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all mb-3"
                   />
                 )}
+                
+                <label className="block text-sm font-semibold text-slate-800 mb-1">
+                  API Google Apps Script (Đồng bộ Google Sheets)
+                </label>
+                <p className="text-xs text-slate-500 mb-2">
+                  Dán link Web App URL của Google Apps Script vào đây để kết nối Web với Google Sheets.
+                </p>
+                <input
+                  type="url"
+                  value={viewConfigDraft.appsScriptUrl}
+                  onChange={(e) => setViewConfigDraft(p => ({ ...p, appsScriptUrl: e.target.value }))}
+                  placeholder="https://script.google.com/macros/s/.../exec"
+                  className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                />
               </div>
 
               {/* Báo cáo tiến độ hàng tuần */}

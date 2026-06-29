@@ -14,7 +14,7 @@ interface StudentDashboardProps {
   registrations: Registration[];
   guide: InternshipGuide;
   viewConfig: StudentViewConfig;
-  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => void;
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>;
   onDeclareExternal: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string) => void;
   onLogout: () => void;
 }

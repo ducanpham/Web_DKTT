@@ -69,31 +69,49 @@ export default function Home() {
   /* ──── Hành động của Sinh viên ──── */
 
   const handleRegister = useCallback(
-    (companyId: string, studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, expectedSkills?: string) => {
+    async (companyId: string, studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, expectedSkills?: string): Promise<string | null> => {
+      const company = companies.find((c) => c.id === companyId);
+      const companyName = company?.name ?? 'Không xác định';
+
+      if (studentViewConfig.appsScriptUrl) {
+        try {
+          const res = await fetch(studentViewConfig.appsScriptUrl, {
+            method: 'POST',
+            body: JSON.stringify({
+              action: 'register',
+              studentId, studentName, phone: studentPhone, email: studentEmail, internClass, expectedSkills: expectedSkills || '', companyName
+            }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+          });
+          const result = await res.json();
+          if (result.status === 'error') return result.message || 'Lỗi đăng ký qua API.';
+        } catch (error) {
+          return 'Lỗi mạng khi kết nối đến Google Sheets.';
+        }
+      } else {
+        if (registrations.some(r => r.studentId.trim().toUpperCase() === studentId.trim().toUpperCase())) {
+          return 'MSSV này đã đăng ký thực tập tại một công ty khác!';
+        }
+      }
+
       setCompanies((prev) =>
         prev.map((c) =>
-          c.id === companyId
-            ? { ...c, availableSlots: Math.max(0, c.availableSlots - 1) }
-            : c
+          c.id === companyId ? { ...c, availableSlots: Math.max(0, c.availableSlots - 1) } : c
         )
       );
-      const company = companies.find((c) => c.id === companyId);
+      
       const newReg: Registration = {
         id: `r_${Date.now()}`,
-        studentId,
-        studentName,
-        studentPhone,
-        studentEmail,
-        internClass,
-        companyId,
-        companyName: company?.name ?? 'Không xác định',
+        studentId, studentName, studentPhone, studentEmail, internClass,
+        companyId, companyName,
         registeredAt: new Date().toISOString(),
-        isExternal: false,
-        expectedSkills,
+        isExternal: false, expectedSkills,
       };
       setRegistrations((prev) => [...prev, newReg]);
+      
+      return null;
     },
-    [companies]
+    [companies, registrations, studentViewConfig.appsScriptUrl]
   );
 
   const handleDeclareExternal = useCallback(
@@ -119,9 +137,23 @@ export default function Home() {
   /* ──── Hành động của Admin ──── */
 
   const handleDeleteRegistration = useCallback(
-    (regId: string) => {
+    async (regId: string) => {
       const reg = registrations.find((r) => r.id === regId);
       if (!reg) return;
+
+      if (studentViewConfig.appsScriptUrl) {
+        try {
+          await fetch(studentViewConfig.appsScriptUrl, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'delete', studentId: reg.studentId }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+          });
+        } catch (e) {
+          console.error('Lỗi khi xóa trên Sheets API', e);
+          alert('Lỗi kết nối khi xóa trên Google Sheets. Bạn có thể cần đồng bộ lại sau.');
+        }
+      }
+
       if (!reg.isExternal && reg.companyId !== 'EXT') {
         setCompanies((prev) =>
           prev.map((c) =>
@@ -131,7 +163,7 @@ export default function Home() {
       }
       setRegistrations((prev) => prev.filter((r) => r.id !== regId));
     },
-    [registrations]
+    [registrations, studentViewConfig.appsScriptUrl]
   );
 
   const handleImportCompanies = useCallback(
@@ -140,6 +172,54 @@ export default function Home() {
     },
     []
   );
+
+  const handleSyncGoogleSheets = useCallback(async () => {
+    if (!studentViewConfig.appsScriptUrl) return;
+    try {
+      const res = await fetch(studentViewConfig.appsScriptUrl);
+      const result = await res.json();
+      if (result.status === 'success' && result.data) {
+        const fetchedRegs = result.data.map((row: any, i: number) => {
+          const matchedCompany = companies.find(c => c.name === row.companyName);
+          return {
+            id: `r_api_${i}_${Date.now()}`,
+            studentId: row.studentId,
+            studentName: row.studentName,
+            studentPhone: String(row.phone || ''),
+            studentEmail: row.email,
+            internClass: row.internClass,
+            expectedSkills: row.expectedSkills,
+            companyName: row.companyName,
+            companyId: matchedCompany ? matchedCompany.id : 'UNKNOWN',
+            registeredAt: row.timestamp || new Date().toISOString(),
+            isExternal: false
+          };
+        });
+
+        // Thay thế toàn bộ registrations bằng dữ liệu từ sheet
+        setRegistrations(fetchedRegs);
+
+        // Tính lại slot cho company
+        setCompanies(prev => {
+          const counts: Record<string, number> = {};
+          fetchedRegs.forEach((r: Registration) => {
+            if (r.companyId && r.companyId !== 'UNKNOWN') {
+              counts[r.companyId] = (counts[r.companyId] || 0) + 1;
+            }
+          });
+          return prev.map(c => ({
+            ...c,
+            availableSlots: Math.max(0, c.totalSlots - (counts[c.id] || 0))
+          }));
+        });
+      } else {
+        throw new Error(result.message || 'Lỗi dữ liệu trả về');
+      }
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }, [studentViewConfig.appsScriptUrl, companies]);
 
   const handleImportRegistrations = useCallback(
     (newRegs: Registration[]) => {
@@ -216,6 +296,7 @@ export default function Home() {
       onUpdateGuide={handleUpdateGuide}
       onUpdateViewConfig={setStudentViewConfig}
       onLogout={handleLogout}
+      onSyncGoogleSheets={handleSyncGoogleSheets}
     />
   );
 }

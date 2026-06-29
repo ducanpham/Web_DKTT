@@ -9,7 +9,7 @@ interface RegisterModalProps {
   companyName: string;
   availableSlots: number;
   onClose: () => void;
-  onSubmit: (studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills: string) => void;
+  onSubmit: (studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills: string) => Promise<string | null>;
 }
 
 export function RegisterModal({ companyId: _companyId, companyName, availableSlots, onClose, onSubmit }: RegisterModalProps) {
@@ -19,25 +19,9 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
   const [email, setEmail] = useState('');
   const [internClass, setInternClass] = useState('');
   const [expectedSkills, setExpectedSkills] = useState('');
-  const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string; exp?: string }>({});
+  const [errors, setErrors] = useState<{ id?: string; name?: string; phone?: string; email?: string; cls?: string; exp?: string; form?: string }>({});
   const [success, setSuccess] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(90);
-  const [timeoutExpired, setTimeoutExpired] = useState(false);
-
-  useEffect(() => {
-    if (success || timeoutExpired) return;
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setTimeoutExpired(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [success, timeoutExpired]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validate = () => {
     const errs: typeof errors = {};
@@ -54,27 +38,27 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
     return errs;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (timeoutExpired) return;
+    if (isLoading) return;
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
+    setIsLoading(true);
+    setErrors({});
     try {
-      const rawRegs = localStorage.getItem('unintern_registrations');
-      if (rawRegs) {
-        const allRegs: Registration[] = JSON.parse(rawRegs);
-        if (allRegs.some(r => r.studentId.trim().toUpperCase() === studentId.trim().toUpperCase())) {
-          setErrors({ id: 'MSSV này đã đăng ký thực tập tại một công ty khác!' });
-          return;
-        }
+      const errorMsg = await onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim(), expectedSkills.trim());
+      if (errorMsg) {
+        setErrors({ form: errorMsg });
+      } else {
+        setSuccess(true);
+        setTimeout(onClose, 1500);
       }
     } catch (e) {
-      console.error(e);
+      setErrors({ form: 'Có lỗi xảy ra khi kết nối. Vui lòng thử lại.' });
+    } finally {
+      setIsLoading(false);
     }
-
-    setSuccess(true);
-    setTimeout(() => { onSubmit(studentId.trim(), studentName.trim(), phone.trim(), email.trim(), internClass.trim(), expectedSkills.trim()); }, 1200);
   };
 
   const Field = ({ label, icon: Icon, value, onChange, placeholder, type = 'text', error, errorKey }: {
@@ -110,17 +94,6 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
               Bạn đã đăng ký thực tập tại <span className="font-semibold text-slate-700">{companyName}</span>. Chúc may mắn!
             </p>
           </div>
-        ) : timeoutExpired ? (
-          <div className="p-10 text-center animate-scale-in">
-            <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-10 h-10 text-red-500" />
-            </div>
-            <h3 className="text-xl font-bold text-slate-800 mb-2">Hết thời gian giữ chỗ!</h3>
-            <p className="text-slate-500 text-sm mb-6">
-              Bạn đã quá 90 giây để hoàn thành Form. Vui lòng đóng cửa sổ và thử lại.
-            </p>
-            <button onClick={onClose} className="btn-primary w-full justify-center">Đóng</button>
-          </div>
         ) : (
           <>
             <div className="p-5 sm:p-6 border-b border-slate-100">
@@ -136,15 +109,9 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
                 </button>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Layers className="w-4 h-4 text-amber-600" />
-                  <span className="text-sm text-amber-800 font-medium">Còn {availableSlots} chỉ tiêu</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-red-600 bg-red-50 px-2 py-1 rounded border border-red-100">
-                  <Clock className="w-4 h-4 animate-pulse" />
-                  <span className="text-sm font-bold">{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</span>
-                </div>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 flex items-center gap-2">
+                <Layers className="w-4 h-4 text-amber-600" />
+                <span className="text-sm text-amber-800 font-medium">Còn {availableSlots} chỉ tiêu</span>
               </div>
             </div>
 
@@ -177,10 +144,26 @@ export function RegisterModal({ companyId: _companyId, companyName, availableSlo
                 {errors.exp && <p className="mt-1.5 text-xs text-red-500 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {errors.exp}</p>}
               </div>
 
-              <div className="pt-2 flex gap-3">
-                <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center">Hủy</button>
-                <button type="submit" className="btn-primary flex-1 justify-center">
-                  <UserCheck className="w-4 h-4" /> Xác nhận đăng ký
+              {errors.form && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+                  <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+                  <p className="text-sm text-red-700">{errors.form}</p>
+                </div>
+              )}
+
+              <div className="flex items-center gap-3 pt-2">
+                <button type="button" onClick={onClose} className="btn-secondary flex-1 justify-center" disabled={isLoading}>
+                  Hủy
+                </button>
+                <button type="submit" className="btn-primary flex-1 justify-center relative" disabled={isLoading}>
+                  {isLoading ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Đang xử lý...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4" /> Xác Nhận</span>
+                  )}
                 </button>
               </div>
             </form>

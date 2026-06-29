@@ -1,4 +1,4 @@
-﻿export type Role = 'student' | 'admin';
+export type Role = 'student' | 'admin';
 
 export interface Company {
   id: string;
@@ -83,6 +83,7 @@ export interface StudentViewConfig {
   showCompanyAddress: boolean;
   showContactPerson: boolean;
   allowExternalDeclaration: boolean;
+  appsScriptUrl: string;
   weeklyReport: WeeklyReportConfig;
 }
 
@@ -97,6 +98,7 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
   showCompanyAddress: true,
   showContactPerson: true,
   allowExternalDeclaration: false,
+  appsScriptUrl: '',
   weeklyReport: {
     enabled: false,
     googleFormUrl: '',
