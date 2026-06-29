@@ -87,7 +87,8 @@ export default function Home() {
     const autoSyncCSV = async () => {
       try {
         const sheetCsvUrl = "https://docs.google.com/spreadsheets/d/1KLgP6Ty01qP8hbPZfwQPKbpCiakbKzaHKPKpYBGdD2M/export?format=csv&gid=439149178";
-        const response = await fetch(sheetCsvUrl);
+        const urlWithCacheBuster = sheetCsvUrl + "&t=" + Date.now();
+        const response = await fetch(urlWithCacheBuster, { cache: 'no-store' });
         if (!response.ok) return; // Silent fail if private or error
         const csvText = await response.text();
         
@@ -125,7 +126,13 @@ export default function Home() {
         console.error("Auto sync CSV error:", err);
       }
     };
+    
+    // Chạy lần đầu tiên
     autoSyncCSV();
+    
+    // Cập nhật ngầm mỗi 15 giây
+    const intervalId = setInterval(autoSyncCSV, 15000);
+    return () => clearInterval(intervalId);
   }, [hydrated]);
 
   const handleLogin = useCallback((selectedRole: Role) => {

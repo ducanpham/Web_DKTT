@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, useCallback } from 'react';
 import Image from 'next/image';
-import { Search, LogOut, X, ExternalLink, Bell, BookOpen, Wrench, ChevronRight, ClipboardList } from 'lucide-react';
+import { Search, LogOut, X, ExternalLink, Bell, BookOpen, Wrench, ChevronRight, ClipboardList, Calendar } from 'lucide-react';
 import { Company, Registration, Role, InternshipGuide, StudentViewConfig } from '@/lib/data';
 import StatCards from './StatCards';
 import ChartCards from './ChartCards';
@@ -168,6 +168,17 @@ export default function StudentDashboard({
               >
                 <ClipboardList className="w-4 h-4" />
                 Nộp Báo Cáo Tuần
+              </a>
+            )}
+            {viewConfig?.careerEvent?.enabled && viewConfig.careerEvent.url && (
+              <a
+                href={viewConfig.careerEvent.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm"
+              >
+                <Calendar className="w-4 h-4" />
+                Sự Kiện Hướng Nghiệp
               </a>
             )}
             {viewConfig?.allowExternalDeclaration && (

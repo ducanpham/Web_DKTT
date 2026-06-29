@@ -85,6 +85,10 @@ export interface StudentViewConfig {
   allowExternalDeclaration: boolean;
   appsScriptUrl: string;
   weeklyReport: WeeklyReportConfig;
+  careerEvent?: {
+    enabled: boolean;
+    url: string;
+  };
 }
 
 export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
@@ -104,6 +108,10 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
     googleFormUrl: '',
     sheetsCsvUrl: '',
   },
+  careerEvent: {
+    enabled: false,
+    url: '',
+  }
 };
 
 export const INITIAL_COMPANIES: Company[] = [
@@ -829,7 +837,8 @@ export const INITIAL_REGISTRATIONS: Registration[] = [];
 export async function fetchConfigFromAPI(apiUrl: string): Promise<{ studentViewConfig?: StudentViewConfig, guide?: InternshipGuide } | null> {
   if (!apiUrl) return null;
   try {
-    const response = await fetch(apiUrl);
+    const urlWithCacheBuster = apiUrl + (apiUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
+    const response = await fetch(urlWithCacheBuster, { cache: 'no-store' });
     if (!response.ok) return null;
     const json = await response.json();
     if (json.status === 'success' && json.data) {

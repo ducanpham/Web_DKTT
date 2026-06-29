@@ -428,7 +428,30 @@ export default function AdminDashboard({
                         value={viewConfigDraft.weeklyReport?.sheetsCsvUrl ?? ''}
                         onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, googleFormUrl: '' }), sheetsCsvUrl: e.target.value } }))}
                         placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv"
-                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Sự kiện hướng nghiệp */}
+              <div className="border-t border-slate-200 pt-3 mt-1 space-y-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox"
+                    checked={viewConfigDraft.careerEvent?.enabled ?? false}
+                    onChange={(e) => setViewConfigDraft(p => ({ ...p, careerEvent: { ...(p.careerEvent ?? { url: '' }), enabled: e.target.checked } }))}
+                    className="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500" />
+                  <span className="text-sm font-semibold text-slate-800">Hiển thị nút Đăng ký Sự kiện Hướng nghiệp</span>
+                </label>
+                {viewConfigDraft.careerEvent?.enabled && (
+                  <div className="space-y-2 pl-6">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Đăng ký Sự kiện</label>
+                      <input type="url"
+                        value={viewConfigDraft.careerEvent?.url ?? ''}
+                        onChange={e => setViewConfigDraft(p => ({ ...p, careerEvent: { ...(p.careerEvent ?? { enabled: true }), url: e.target.value } }))}
+                        placeholder="https://forms.gle/..."
+                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all"
                       />
                     </div>
                   </div>
