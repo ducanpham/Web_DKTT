@@ -377,15 +377,13 @@ export default function AdminDashboard({
                     className="w-4 h-4 text-orange-600 rounded border-slate-300 focus:ring-orange-500" />
                   <span className="text-sm font-semibold text-slate-800">Bật Chế độ quá tải (Chuyển hướng Đăng ký sang Google Form)</span>
                 </label>
-                {viewConfigDraft.enableFallback && (
-                  <input
-                    type="url"
-                    value={viewConfigDraft.fallbackFormUrl}
-                    onChange={(e) => setViewConfigDraft(p => ({ ...p, fallbackFormUrl: e.target.value }))}
-                    placeholder="Nhập link Google Form..."
-                    className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all mb-3"
-                  />
-                )}
+                <input
+                  type="url"
+                  value={viewConfigDraft.fallbackFormUrl}
+                  onChange={(e) => setViewConfigDraft(p => ({ ...p, fallbackFormUrl: e.target.value }))}
+                  placeholder="Nhập link Google Form..."
+                  className={`w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all mb-3 ${!viewConfigDraft.enableFallback ? 'opacity-50' : ''}`}
+                />
                 
                 <label className="block text-sm font-semibold text-slate-800 mb-1">
                   API Google Apps Script (Đồng bộ Google Sheets)
@@ -411,27 +409,26 @@ export default function AdminDashboard({
                     className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" />
                   <span className="text-sm font-semibold text-slate-800">Bật Báo cáo tiến độ hàng tuần</span>
                 </label>
-                {viewConfigDraft.weeklyReport?.enabled && (
-                  <div className="space-y-2 pl-6">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Form (Sinh viên nộp báo cáo)</label>
-                      <input type="url"
-                        value={viewConfigDraft.weeklyReport?.googleFormUrl ?? ''}
-                        onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, sheetsCsvUrl: '' }), googleFormUrl: e.target.value } }))}
-                        placeholder="https://forms.gle/..."
-                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Sheets CSV (Admin theo dõi kết quả)</label>
-                      <input type="url"
-                        value={viewConfigDraft.weeklyReport?.sheetsCsvUrl ?? ''}
-                        onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, googleFormUrl: '' }), sheetsCsvUrl: e.target.value } }))}
-                        placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv"
-                      />
-                    </div>
+                <div className={`space-y-2 pl-6 ${!viewConfigDraft.weeklyReport?.enabled ? 'opacity-50' : ''}`}>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Form (Sinh viên nộp báo cáo)</label>
+                    <input type="url"
+                      value={viewConfigDraft.weeklyReport?.googleFormUrl ?? ''}
+                      onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, sheetsCsvUrl: '' }), googleFormUrl: e.target.value } }))}
+                      placeholder="https://forms.gle/..."
+                      className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
+                    />
                   </div>
-                )}
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Sheets CSV (Admin theo dõi kết quả)</label>
+                    <input type="url"
+                      value={viewConfigDraft.weeklyReport?.sheetsCsvUrl ?? ''}
+                      onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, googleFormUrl: '' }), sheetsCsvUrl: e.target.value } }))}
+                      placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv"
+                      className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
+                    />
+                  </div>
+                </div>
               </div>
 
               {/* Sự kiện hướng nghiệp */}
@@ -443,19 +440,17 @@ export default function AdminDashboard({
                     className="w-4 h-4 text-purple-600 rounded border-slate-300 focus:ring-purple-500" />
                   <span className="text-sm font-semibold text-slate-800">Hiển thị nút Đăng ký Sự kiện Hướng nghiệp</span>
                 </label>
-                {viewConfigDraft.careerEvent?.enabled && (
-                  <div className="space-y-2 pl-6">
-                    <div>
-                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Đăng ký Sự kiện</label>
-                      <input type="url"
-                        value={viewConfigDraft.careerEvent?.url ?? ''}
-                        onChange={e => setViewConfigDraft(p => ({ ...p, careerEvent: { ...(p.careerEvent ?? { enabled: true }), url: e.target.value } }))}
-                        placeholder="https://forms.gle/..."
-                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all"
-                      />
-                    </div>
+                <div className={`space-y-2 pl-6 ${!viewConfigDraft.careerEvent?.enabled ? 'opacity-50' : ''}`}>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-600 mb-1">Link Đăng ký Sự kiện</label>
+                    <input type="url"
+                      value={viewConfigDraft.careerEvent?.url ?? ''}
+                      onChange={e => setViewConfigDraft(p => ({ ...p, careerEvent: { ...(p.careerEvent ?? { enabled: true }), url: e.target.value } }))}
+                      placeholder="https://forms.gle/..."
+                      className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all"
+                    />
                   </div>
-                )}
+                </div>
               </div>
             </div>
             <div className="flex gap-3">
