@@ -26,8 +26,14 @@ export default function LoginScreen({ companies, onLogin }: LoginScreenProps) {
 
   const handleCompanyLogin = () => {
     setError('');
-    if (!selectedCompanyId) {
+    const company = companies.find(c => c.id === selectedCompanyId);
+    if (!company) {
       setError('Vui lòng chọn doanh nghiệp.');
+      return;
+    }
+    // Nếu công ty có đặt mật khẩu thì phải check
+    if (company.password && password !== company.password) {
+      setError('Mật khẩu không đúng.');
       return;
     }
     setIsLoading(true);
@@ -187,6 +193,33 @@ export default function LoginScreen({ companies, onLogin }: LoginScreenProps) {
                   </svg>
                 </div>
               </div>
+
+              {/* Ô nhập mật khẩu Doanh nghiệp */}
+              <label className="text-slate-300 text-sm font-medium block mt-4 mb-2">Mật khẩu Doanh nghiệp</label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => { setPassword(e.target.value); setError(''); }}
+                  onKeyDown={(e) => e.key === 'Enter' && handleCompanyLogin()}
+                  placeholder="Nhập mật khẩu (Nếu có)"
+                  className="w-full px-4 py-3.5 pr-12 rounded-xl bg-white/10 border border-white/20 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+
+              {error && (
+                <div className="mt-2.5 flex items-center gap-2 text-red-400 text-xs animate-fade-in">
+                  <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                  <span>{error}</span>
+                </div>
+              )}
             </div>
           )}
 

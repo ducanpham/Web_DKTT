@@ -6,6 +6,7 @@ export interface Company {
   logo: string; // emoji placeholder
   isGalaSponsor: boolean;
   isOnlineRecruitment: boolean;
+  password?: string; // Company specific password
   // Fields visible to both
   fields: string[];
   skills: string[];

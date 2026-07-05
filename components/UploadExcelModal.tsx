@@ -28,6 +28,7 @@ interface MappedCompany {
   isGalaSponsor: boolean;
   isOnlineRecruitment: boolean;
   address: string;
+  password?: string;
 }
 
 interface UploadExcelModalProps {
@@ -94,9 +95,12 @@ const COLUMN_MAP: Record<string, keyof MappedCompany> = {
   'tham gia ngay hoi sinh vien co dien tu': 'isGalaSponsor',
   'tham gia ngay hoi tn': 'isGalaSponsor',
   'online': 'isOnlineRecruitment',
-  'tuyển dụng online': 'isOnlineRecruitment',
   'online recruitment': 'isOnlineRecruitment',
   'tai tro': 'isOnlineRecruitment',
+  'mật khẩu': 'password',
+  'mat khau': 'password',
+  'password': 'password',
+  'pass': 'password',
 };
 
 const EMOJI_LIST = ['🔷','📡','🎮','💳','🛒','⚙️','🚗','📊','📦','🏥','🌐','💼','🏗️','🔬','✈️'];
@@ -177,6 +181,7 @@ export default function UploadExcelModal({ currentCompanies, onClose, onImport }
             isGalaSponsor: false,
             isOnlineRecruitment: false,
             address: '',
+            password: '',
           };
 
           rawHeaders.forEach((h) => {
@@ -245,6 +250,7 @@ export default function UploadExcelModal({ currentCompanies, onClose, onImport }
       },
       totalSlots: m.totalSlots || 0,
       availableSlots: m.totalSlots || 0,
+      password: m.password || undefined,
       contactName: m.contactName || 'Chưa cập nhật',
       contactPhone: m.contactPhone || 'Chưa cập nhật',
       contactEmail: m.contactEmail || 'Chưa cập nhật',
