@@ -13,6 +13,7 @@ import { Registration, WeeklyReport, WeeklyReportConfig } from '@/lib/data';
 interface WeeklyReportModalProps {
   config: WeeklyReportConfig;
   registrations: Registration[];
+  appsScriptUrl: string;
   onClose: () => void;
 }
 
@@ -20,7 +21,7 @@ function formatDate(iso: string) {
   try { return new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); } catch { return iso; }
 }
 
-export default function WeeklyReportModal({ config, registrations, onClose }: WeeklyReportModalProps) {
+export default function WeeklyReportModal({ config, registrations, appsScriptUrl, onClose }: WeeklyReportModalProps) {
   const [reports, setReports] = useState<WeeklyReport[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -31,8 +32,8 @@ export default function WeeklyReportModal({ config, registrations, onClose }: We
   const [showMissingOnly, setShowMissingOnly] = useState(false);
 
   const weeks = useMemo(() => {
-    const all = new Set(reports.map(r => r.weekLabel));
-    return Array.from(all).sort();
+    const all = new Set(reports.map(r => r.weekNumber));
+    return Array.from(all).sort((a, b) => a - b);
   }, [reports]);
 
   const companies = useMemo(() => {
@@ -47,7 +48,7 @@ export default function WeeklyReportModal({ config, registrations, onClose }: We
     return reports.filter(r => {
       const q = searchQuery.toLowerCase();
       if (q && !r.studentId.toLowerCase().includes(q) && !r.studentName.toLowerCase().includes(q)) return false;
-      if (weekFilter && r.weekLabel !== weekFilter) return false;
+      if (weekFilter && r.weekNumber.toString() !== weekFilter) return false;
       if (companyFilter && r.companyName !== companyFilter) return false;
       return true;
     });
@@ -56,83 +57,61 @@ export default function WeeklyReportModal({ config, registrations, onClose }: We
   // Tìm SV chưa nộp báo cáo trong tuần đang lọc
   const missingStudents = useMemo(() => {
     if (!weekFilter) return [];
-    const submitted = new Set(reports.filter(r => r.weekLabel === weekFilter).map(r => r.studentId.toUpperCase()));
+    const submitted = new Set(reports.filter(r => r.weekNumber.toString() === weekFilter).map(r => r.studentId.toUpperCase()));
     return registeredStudents.filter(r => !submitted.has(r.studentId.toUpperCase()));
   }, [weekFilter, reports, registeredStudents]);
 
   const displayList = showMissingOnly ? [] : filteredReports;
 
   const handleFetch = useCallback(async () => {
-    if (!config.sheetsCsvUrl.trim()) {
-      setError('Admin chưa cấu hình link Google Sheets CSV trong phần Giao diện Sinh viên.');
+    if (!appsScriptUrl) {
+      setError('Admin chưa cấu hình link Google Apps Script trong phần Cấu Hình Hệ Thống.');
       return;
     }
     setLoading(true);
     setError(null);
     try {
-      const resp = await fetch(config.sheetsCsvUrl);
-      if (!resp.ok) throw new Error('Không tải được CSV. Hãy kiểm tra quyền chia sẻ của Google Sheets (Anyone with link).');
-      const text = await resp.text();
-      Papa.parse(text, {
-        header: true,
-        skipEmptyLines: true,
-        complete: (result) => {
-          const rows = result.data as Record<string, string>[];
-          const parsed: WeeklyReport[] = rows.map((row, i) => {
-            const mssv = row['MSSV'] || row['Mã số sinh viên'] || row['Student ID'] || '';
-            const name = row['Họ và Tên'] || row['Họ tên'] || row['Name'] || '';
-            const cls = row['Lớp'] || row['Lớp thực tập'] || row['Class'] || '';
-            const company = row['Công ty'] || row['Tên công ty'] || row['Company'] || '';
-            const week = row['Tuần'] || row['Tuần báo cáo'] || row['Week'] || `Tuần ${i + 1}`;
-            const content = row['Công việc đã làm'] || row['Nội dung'] || row['Content'] || '';
-            const diff = row['Khó khăn'] || row['Đề xuất'] || row['Difficulties'] || '';
-            const time = row['Thời gian'] || row['Timestamp'] || new Date().toISOString();
-            return {
-              id: `${mssv}_${week}_${i}`,
-              studentId: mssv.trim(),
-              studentName: name.trim(),
-              internClass: cls.trim(),
-              companyName: company.trim(),
-              weekLabel: week.trim(),
-              content: content.trim(),
-              difficulties: diff.trim(),
-              submittedAt: time.trim(),
-            };
-          }).filter(r => r.studentId && r.studentName);
-          setReports(parsed);
-          setFetched(true);
-          setLoading(false);
-        },
-        error: () => {
-          setError('Lỗi phân tích CSV. Vui lòng kiểm tra định dạng file Google Sheets.');
-          setLoading(false);
-        }
+      const resp = await fetch(appsScriptUrl, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'getWeeklyReports' }),
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
       });
+      if (!resp.ok) throw new Error('Lỗi kết nối tới Google Apps Script.');
+      const result = await resp.json();
+      if (result.status === 'success') {
+        const sorted = (result.reports as WeeklyReport[]).sort((a, b) => {
+          if (a.weekNumber !== b.weekNumber) return b.weekNumber - a.weekNumber;
+          return a.studentName.localeCompare(b.studentName);
+        });
+        setReports(sorted);
+        setFetched(true);
+      } else {
+        throw new Error(result.message || 'Lỗi khi tải dữ liệu.');
+      }
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Lỗi không xác định';
       setError(msg);
+    } finally {
       setLoading(false);
     }
-  }, [config.sheetsCsvUrl]);
+  }, [appsScriptUrl]);
 
   const handleExport = useCallback(() => {
     const data = filteredReports.map(r => ({
       'MSSV': r.studentId,
       'Họ và Tên': r.studentName,
-      'Lớp': r.internClass,
       'Công ty': r.companyName,
-      'Tuần': r.weekLabel,
-      'Công việc đã làm': r.content,
-      'Khó khăn / Đề xuất': r.difficulties,
-      'Thời gian nộp': r.submittedAt,
+      'Tuần': r.weekNumber,
+      'Đánh giá Sinh viên': r.studentReport,
+      'Đánh giá Công ty': r.companyEval
     }));
     const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'BaoCaoTienDo');
-    XLSX.writeFile(wb, `BaoCaoTienDo_${weekFilter || 'TatCa'}.xlsx`);
+    XLSX.writeFile(wb, `BaoCaoTienDo_Tuan${weekFilter || 'TatCa'}.xlsx`);
   }, [filteredReports, weekFilter]);
 
-  const submittedCount = weekFilter ? reports.filter(r => r.weekLabel === weekFilter).length : reports.length;
+  const submittedCount = weekFilter ? reports.filter(r => r.weekNumber.toString() === weekFilter).length : reports.length;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -159,8 +138,8 @@ export default function WeeklyReportModal({ config, registrations, onClose }: We
             <div className="flex-1 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 flex items-center gap-3 min-w-0">
               <Calendar className="w-4 h-4 text-emerald-600 shrink-0" />
               <div className="min-w-0">
-                <p className="text-xs font-semibold text-emerald-700">Link Google Sheets (CSV)</p>
-                <p className="text-xs text-emerald-600 truncate">{config.sheetsCsvUrl || 'Chưa cấu hình'}</p>
+                <p className="text-xs font-semibold text-emerald-700">Link Google Apps Script</p>
+                <p className="text-xs text-emerald-600 truncate">{appsScriptUrl || 'Chưa cấu hình'}</p>
               </div>
             </div>
             <button
@@ -308,24 +287,23 @@ export default function WeeklyReportModal({ config, registrations, onClose }: We
                             <p className="text-xs text-slate-500">{rep.studentId} • <span className="font-medium text-emerald-600">{rep.companyName}</span></p>
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
-                            <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full">{rep.weekLabel}</span>
+                            <span className="text-xs font-semibold px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full">Tuần {rep.weekNumber}</span>
                             <ChevronDown className="w-4 h-4 text-slate-400 group-open:rotate-180 transition-transform" />
                           </div>
                         </summary>
                         <div className="px-4 pb-4 space-y-3 border-t border-slate-100 mt-0 pt-3">
-                          {rep.content && (
+                          {rep.studentReport && (
                             <div>
-                              <p className="text-xs font-bold text-slate-500 uppercase mb-1">Công việc đã làm</p>
-                              <p className="text-sm text-slate-700 whitespace-pre-line">{rep.content}</p>
+                              <p className="text-xs font-bold text-blue-600 uppercase mb-1">Đánh giá từ Sinh viên</p>
+                              <p className="text-sm text-slate-700 whitespace-pre-line p-3 bg-blue-50 rounded-xl">{rep.studentReport}</p>
                             </div>
                           )}
-                          {rep.difficulties && (
+                          {rep.companyEval && (
                             <div>
-                              <p className="text-xs font-bold text-slate-500 uppercase mb-1">Khó khăn / Đề xuất</p>
-                              <p className="text-sm text-slate-700 whitespace-pre-line">{rep.difficulties}</p>
+                              <p className="text-xs font-bold text-emerald-600 uppercase mb-1">Đánh giá từ Doanh nghiệp</p>
+                              <p className="text-sm text-slate-700 whitespace-pre-line p-3 bg-emerald-50 rounded-xl">{rep.companyEval}</p>
                             </div>
                           )}
-                          <p className="text-xs text-slate-400">Nộp lúc: {formatDate(rep.submittedAt)}</p>
                         </div>
                       </details>
                     ))

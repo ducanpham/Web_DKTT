@@ -8,6 +8,7 @@ import StatCards from './StatCards';
 import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
 import { ExternalCompanyModal } from './RegistrationModals';
+import StudentWeeklyReportModal from './StudentWeeklyReportModal';
 
 interface StudentDashboardProps {
   companies: Company[];
@@ -27,6 +28,7 @@ export default function StudentDashboard({
   const [fieldFilter, setFieldFilter] = useState<string | null>(null);
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
   const [showExternalModal, setShowExternalModal] = useState(false);
+  const [showWeeklyReportModal, setShowWeeklyReportModal] = useState(false);
 
   const activeFilterCount = [statFilter, fieldFilter, skillFilter].filter(Boolean).length;
 
@@ -159,16 +161,14 @@ export default function StudentDashboard({
             </p>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
-            {viewConfig?.weeklyReport?.enabled && viewConfig.weeklyReport.googleFormUrl && (
-              <a
-                href={viewConfig.weeklyReport.googleFormUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm"
+            {viewConfig?.weeklyReport?.enabled && (
+              <button
+                onClick={() => setShowWeeklyReportModal(true)}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm cursor-pointer"
               >
                 <ClipboardList className="w-4 h-4" />
                 Nộp Báo Cáo Tuần
-              </a>
+              </button>
             )}
             {viewConfig?.careerEvent?.enabled && viewConfig.careerEvent.url && (
               <a
@@ -239,8 +239,21 @@ export default function StudentDashboard({
         </div>
       </main>
 
+      {/* External Registration Modal */}
       {showExternalModal && (
-        <ExternalCompanyModal onClose={() => setShowExternalModal(false)} onSubmit={handleExternalSubmit} />
+        <ExternalCompanyModal
+          onClose={() => setShowExternalModal(false)}
+          onSubmit={handleExternalSubmit}
+        />
+      )}
+
+      {/* Student Weekly Report Modal */}
+      {showWeeklyReportModal && (
+        <StudentWeeklyReportModal
+          companies={companies}
+          appsScriptUrl={viewConfig.appsScriptUrl || ''}
+          onClose={() => setShowWeeklyReportModal(false)}
+        />
       )}
     </div>
   );

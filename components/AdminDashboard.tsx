@@ -573,6 +573,7 @@ export default function AdminDashboard({
         <WeeklyReportModal
           config={viewConfig.weeklyReport ?? { enabled: false, googleFormUrl: '', sheetsCsvUrl: '' }}
           registrations={registrations}
+          appsScriptUrl={viewConfig.appsScriptUrl || ''}
           onClose={() => setShowWeeklyModal(false)}
         />
       )}

@@ -1,4 +1,4 @@
-export type Role = 'student' | 'admin';
+export type Role = 'student' | 'company' | 'admin';
 
 export interface Company {
   id: string;
@@ -42,21 +42,19 @@ export interface Registration {
 }
 
 export interface WeeklyReport {
-  id: string;           // MSSV + tuần
+  id: string;
   studentId: string;
   studentName: string;
-  internClass: string;
   companyName: string;
-  weekLabel: string;    // VD: "Tuần 1", "Tuần 2"...
-  content: string;      // Công việc đã làm
-  difficulties: string; // Khó khăn / Đề xuất
-  submittedAt: string;
+  weekNumber: number;
+  studentReport: string;
+  companyEval: string;
 }
 
 export interface WeeklyReportConfig {
   enabled: boolean;            // Admin bật/tắt chức năng
-  googleFormUrl: string;       // Link Google Form cho sinh viên nộp
-  sheetsCsvUrl: string;        // Link CSV Google Sheets để admin fetch
+  googleFormUrl: string;       // Giữ lại cho compatibility (không dùng nữa)
+  sheetsCsvUrl: string;        // Giữ lại cho compatibility (không dùng nữa)
 }
 
 export interface InternshipGuide {

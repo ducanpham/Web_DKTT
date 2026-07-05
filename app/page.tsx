@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, StudentViewConfig, DEFAULT_STUDENT_VIEW_CONFIG, INITIAL_COMPANIES, INITIAL_REGISTRATIONS, fetchConfigFromAPI, saveConfigToAPI } from '@/lib/data';
 import LoginScreen from '@/components/LoginScreen';
 import StudentDashboard from '@/components/StudentDashboard';
+import CompanyDashboard from '@/components/CompanyDashboard';
 import AdminDashboard from '@/components/AdminDashboard';
 
 const STORAGE_KEY_ROLE = 'unintern_role';
@@ -30,6 +31,7 @@ function saveToStorage<T>(key: string, value: T) {
 
 export default function Home() {
   const [role, setRole] = useState<Role | null>(null);
+  const [activeCompanyId, setActiveCompanyId] = useState<string | null>(null);
   const [companies, setCompanies] = useState<Company[]>(INITIAL_COMPANIES);
   const [registrations, setRegistrations] = useState<Registration[]>(INITIAL_REGISTRATIONS);
   const [guide, setGuide] = useState<InternshipGuide>(DEFAULT_GUIDE);
@@ -39,11 +41,14 @@ export default function Home() {
   // Khôi phục từ localStorage khi tải trang
   useEffect(() => {
     const savedRole = loadFromStorage<Role | null>(STORAGE_KEY_ROLE, null);
+    const savedCompId = loadFromStorage<string | null>('web_dktt_company_id', null);
     const savedCompanies = loadFromStorage<Company[]>(STORAGE_KEY_COMPANIES, INITIAL_COMPANIES);
     const savedRegistrations = loadFromStorage<Registration[]>(STORAGE_KEY_REGISTRATIONS, INITIAL_REGISTRATIONS);
     const savedGuide = loadFromStorage<InternshipGuide>(STORAGE_KEY_GUIDE, DEFAULT_GUIDE);
     const savedStudentView = loadFromStorage<StudentViewConfig>(STORAGE_KEY_STUDENT_VIEW, DEFAULT_STUDENT_VIEW_CONFIG);
+    
     setRole(savedRole);
+    setActiveCompanyId(savedCompId);
     setCompanies(savedCompanies);
     setRegistrations(savedRegistrations);
     setGuide(savedGuide);
@@ -172,14 +177,22 @@ export default function Home() {
     autoFetchRegs();
   }, [hydrated, role, studentViewConfig.appsScriptUrl]); // Intentionally not depending on companies to avoid loop
 
-  const handleLogin = useCallback((selectedRole: Role) => {
+  const handleLogin = useCallback((selectedRole: Role, compId?: string) => {
     setRole(selectedRole);
     saveToStorage(STORAGE_KEY_ROLE, selectedRole);
+    if (compId) {
+      setActiveCompanyId(compId);
+      saveToStorage('web_dktt_company_id', compId);
+    }
   }, []);
 
   const handleLogout = useCallback(() => {
     setRole(null);
+    setActiveCompanyId(null);
     saveToStorage(STORAGE_KEY_ROLE, null);
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem('web_dktt_company_id');
+    }
   }, []);
 
   /* ──── Hành động của Sinh viên ──── */
@@ -396,7 +409,7 @@ export default function Home() {
     );
   }
 
-  if (!role) return <LoginScreen onLogin={handleLogin} />;
+  if (!role) return <LoginScreen companies={companies} onLogin={handleLogin} />;
 
   if (role === 'student') {
     return (
@@ -407,6 +420,21 @@ export default function Home() {
         viewConfig={studentViewConfig}
         onRegister={handleRegister}
         onDeclareExternal={handleDeclareExternal}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  if (role === 'company' && activeCompanyId) {
+    const myCompany = companies.find(c => c.id === activeCompanyId);
+    if (!myCompany) {
+       return <LoginScreen companies={companies} onLogin={handleLogin} />;
+    }
+    return (
+      <CompanyDashboard
+        company={myCompany}
+        registrations={registrations.filter(r => r.companyId === activeCompanyId)}
+        viewConfig={studentViewConfig}
         onLogout={handleLogout}
       />
     );

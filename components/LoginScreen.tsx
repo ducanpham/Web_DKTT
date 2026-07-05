@@ -4,12 +4,16 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { Shield, Eye, EyeOff, LogIn, AlertCircle } from 'lucide-react';
 
+import { Company, Role } from '@/lib/data';
+
 interface LoginScreenProps {
-  onLogin: (role: 'student' | 'admin') => void;
+  companies: Company[];
+  onLogin: (role: Role, companyId?: string) => void;
 }
 
-export default function LoginScreen({ onLogin }: LoginScreenProps) {
-  const [selectedRole, setSelectedRole] = useState<'student' | 'admin' | null>(null);
+export default function LoginScreen({ companies, onLogin }: LoginScreenProps) {
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string>('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
@@ -18,6 +22,16 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
   const handleStudentLogin = () => {
     setIsLoading(true);
     setTimeout(() => { onLogin('student'); setIsLoading(false); }, 600);
+  };
+
+  const handleCompanyLogin = () => {
+    setError('');
+    if (!selectedCompanyId) {
+      setError('Vui lòng chọn doanh nghiệp.');
+      return;
+    }
+    setIsLoading(true);
+    setTimeout(() => { onLogin('company', selectedCompanyId); setIsLoading(false); }, 600);
   };
 
   const handleAdminLogin = () => {
@@ -31,10 +45,11 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
     setTimeout(() => { onLogin('admin'); setIsLoading(false); }, 600);
   };
 
-  const handleRoleSelect = (role: 'student' | 'admin') => {
+  const handleRoleSelect = (role: Role) => {
     setSelectedRole(role);
     setError('');
     setPassword('');
+    setSelectedCompanyId('');
   };
 
   return (
@@ -103,6 +118,33 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
               )}
             </button>
 
+            {/* Doanh nghiệp */}
+            <button
+              onClick={() => handleRoleSelect('company')}
+              className={`relative group flex flex-col items-center gap-3 p-5 rounded-2xl border-2 transition-all duration-300 ${
+                selectedRole === 'company'
+                  ? 'border-emerald-400 bg-emerald-500/20 shadow-lg shadow-emerald-500/20'
+                  : 'border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10'
+              }`}
+            >
+              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                selectedRole === 'company' ? 'bg-emerald-500 shadow-lg shadow-emerald-500/40' : 'bg-white/10 group-hover:bg-white/15'
+              }`}>
+                <span className="text-2xl">🏢</span>
+              </div>
+              <div className="text-center">
+                <p className="text-white font-semibold text-sm">Doanh Nghiệp</p>
+                <p className="text-slate-400 text-xs mt-0.5">Đánh giá SV</p>
+              </div>
+              {selectedRole === 'company' && (
+                <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-emerald-400 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              )}
+            </button>
+
             {/* Quản trị viên */}
             <button
               onClick={() => handleRoleSelect('admin')}
@@ -121,15 +163,32 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
                 <p className="text-white font-semibold text-sm">Quản Trị Viên</p>
                 <p className="text-slate-400 text-xs mt-0.5">Toàn quyền quản lý</p>
               </div>
-              {selectedRole === 'admin' && (
-                <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-indigo-400 flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-              )}
             </button>
           </div>
+
+          {/* Form đăng nhập cho Doanh nghiệp */}
+          {selectedRole === 'company' && (
+            <div className="mb-5 animate-slide-up">
+              <label className="text-slate-300 text-sm font-medium block mb-2">Chọn Doanh Nghiệp</label>
+              <div className="relative">
+                <select
+                  value={selectedCompanyId}
+                  onChange={(e) => { setSelectedCompanyId(e.target.value); setError(''); }}
+                  className="w-full px-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-all text-sm appearance-none"
+                >
+                  <option value="" className="text-slate-800">-- Vui lòng chọn công ty của bạn --</option>
+                  {companies.map(c => (
+                    <option key={c.id} value={c.id} className="text-slate-800">{c.name}</option>
+                  ))}
+                </select>
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Ô nhập mật khẩu Admin */}
           {selectedRole === 'admin' && (
@@ -163,7 +222,24 @@ export default function LoginScreen({ onLogin }: LoginScreenProps) {
           )}
 
           {/* Nút đăng nhập */}
-          {selectedRole && (
+          {selectedRole === 'company' && (
+            <button
+              onClick={handleCompanyLogin}
+              disabled={isLoading}
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-medium py-3.5 rounded-xl transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-70 shadow-lg shadow-emerald-500/30 hover:-translate-y-0.5 animate-slide-up"
+            >
+              {isLoading ? (
+                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                </svg>
+              ) : (
+                <><LogIn className="w-4 h-4" /> Truy cập Cổng Doanh Nghiệp</>
+              )}
+            </button>
+          )}
+
+          {(selectedRole === 'student' || selectedRole === 'admin') && (
             <button
               onClick={selectedRole === 'student' ? handleStudentLogin : handleAdminLogin}
               disabled={isLoading}
