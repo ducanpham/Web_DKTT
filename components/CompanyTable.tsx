@@ -78,11 +78,6 @@ function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: 
                   <span className="line-clamp-1" title={company.address}>{company.address}</span>
                 </div>
               )}
-              {role === 'admin' && company.isHidden && (
-                <div className="flex items-center gap-1 text-xs text-red-500 font-semibold mt-1 bg-red-50 w-fit px-1.5 py-0.5 rounded">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Đã ẩn với sinh viên
-                </div>
-              )}
               <div className="flex items-center gap-1.5 mt-1">
                 {company.isGalaSponsor && (
                   <span className="badge bg-amber-100 text-amber-700 gap-1"><Star className="w-3 h-3" /> Gala</span>
@@ -91,6 +86,21 @@ function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: 
                   <span className="badge bg-emerald-100 text-emerald-700 gap-1"><Wifi className="w-3 h-3" /> Online</span>
                 )}
               </div>
+              {role === 'admin' && onUpdateCompany && (
+                <div className="mt-2.5">
+                  <button
+                    onClick={() => onUpdateCompany({ ...company, isHidden: !company.isHidden })}
+                    className={`flex items-center gap-1.5 px-2 py-1 rounded border text-[11px] font-semibold transition-all ${
+                      company.isHidden 
+                        ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' 
+                        : 'bg-indigo-50 border-indigo-200 text-indigo-600 hover:bg-indigo-100'
+                    }`}
+                  >
+                    <div className={`w-1.5 h-1.5 rounded-full ${company.isHidden ? 'bg-red-500 animate-pulse' : 'bg-indigo-500'}`} />
+                    {company.isHidden ? 'Đang ẩn với Sinh viên (Bấm để hiện)' : 'Đang hiện (Bấm để ẩn)'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </td>
@@ -135,18 +145,6 @@ function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: 
                 <Mail className="w-3 h-3 text-blue-400 flex-shrink-0" />
                 <a href={`mailto:${company.contactEmail}`} className="hover:underline truncate max-w-[160px]">{company.contactEmail}</a>
               </div>
-              {onUpdateCompany && (
-                <div className="pt-2 mt-2 border-t border-slate-100 flex items-center">
-                  <label className="flex items-center gap-1.5 cursor-pointer hover:bg-slate-50 p-1 rounded transition-colors group">
-                    <input type="checkbox" checked={!company.isHidden}
-                      onChange={(e) => onUpdateCompany({ ...company, isHidden: !e.target.checked })}
-                      className="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
-                    <span className={`text-[11px] font-medium transition-colors ${company.isHidden ? 'text-red-500' : 'text-slate-500 group-hover:text-slate-700'}`}>
-                      {company.isHidden ? 'Đang ẩn' : 'Hiển thị'}
-                    </span>
-                  </label>
-                </div>
-              )}
             </div>
           </td>
         )}
