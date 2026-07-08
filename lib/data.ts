@@ -7,6 +7,7 @@ export interface Company {
   isGalaSponsor: boolean;
   isOnlineRecruitment: boolean;
   password?: string; // Company specific password
+  isHidden?: boolean; // Flag to hide company from students
   // Fields visible to both
   fields: string[];
   skills: string[];

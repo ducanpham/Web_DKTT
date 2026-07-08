@@ -22,6 +22,7 @@ interface CompanyTableProps {
   role: Role;
   viewConfig?: StudentViewConfig;
   onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>;
+  onUpdateCompany?: (company: Company) => void;
 }
 
 
@@ -44,11 +45,12 @@ function SlotProgress({ available, total }: { available: number; total: number }
   );
 }
 
-function CompanyRow({ company, role, viewConfig, onRegister }: {
+function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: {
   company: Company;
   role: Role;
   viewConfig?: StudentViewConfig;
-  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>
+  onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>;
+  onUpdateCompany?: (company: Company) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
@@ -74,6 +76,11 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
                 <div className="flex items-start gap-1 text-xs text-slate-500 mt-1">
                   <Home className="w-3 h-3 mt-0.5 shrink-0" />
                   <span className="line-clamp-1" title={company.address}>{company.address}</span>
+                </div>
+              )}
+              {role === 'admin' && company.isHidden && (
+                <div className="flex items-center gap-1 text-xs text-red-500 font-semibold mt-1 bg-red-50 w-fit px-1.5 py-0.5 rounded">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> Đã ẩn với sinh viên
                 </div>
               )}
               <div className="flex items-center gap-1.5 mt-1">
@@ -112,7 +119,7 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
           </td>
         )}
 
-        {/* Admin: Liên hệ */}
+        {/* Admin: Liên hệ & Quản lý */}
         {role === 'admin' && (
           <td className="px-5 py-4 hidden xl:table-cell">
             <div className="space-y-1">
@@ -128,6 +135,18 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
                 <Mail className="w-3 h-3 text-blue-400 flex-shrink-0" />
                 <a href={`mailto:${company.contactEmail}`} className="hover:underline truncate max-w-[160px]">{company.contactEmail}</a>
               </div>
+              {onUpdateCompany && (
+                <div className="pt-2 mt-2 border-t border-slate-100 flex items-center">
+                  <label className="flex items-center gap-1.5 cursor-pointer hover:bg-slate-50 p-1 rounded transition-colors group">
+                    <input type="checkbox" checked={!company.isHidden}
+                      onChange={(e) => onUpdateCompany({ ...company, isHidden: !e.target.checked })}
+                      className="w-3.5 h-3.5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                    <span className={`text-[11px] font-medium transition-colors ${company.isHidden ? 'text-red-500' : 'text-slate-500 group-hover:text-slate-700'}`}>
+                      {company.isHidden ? 'Đang ẩn' : 'Hiển thị'}
+                    </span>
+                  </label>
+                </div>
+              )}
             </div>
           </td>
         )}
@@ -172,7 +191,33 @@ function CompanyRow({ company, role, viewConfig, onRegister }: {
             ) : (
               <div className="min-w-[130px]">
                 <SlotProgress available={company.availableSlots} total={company.totalSlots} />
-                <p className="text-xs text-slate-500 mt-1.5">Còn {company.availableSlots} chỉ tiêu</p>
+                <div className="flex items-center justify-between mt-1.5">
+                  <p className="text-xs text-slate-500">Còn {company.availableSlots} chỉ tiêu</p>
+                  {role === 'admin' && onUpdateCompany && (
+                    <div className="flex items-center gap-1">
+                      <button 
+                        onClick={() => {
+                          const newTotal = Math.max(0, company.totalSlots - 1);
+                          const newAvailable = Math.max(0, company.availableSlots - 1);
+                          onUpdateCompany({ ...company, totalSlots: newTotal, availableSlots: newAvailable });
+                        }}
+                        className="w-5 h-5 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                        title="Giảm 1 chỉ tiêu"
+                      >
+                        -
+                      </button>
+                      <button 
+                        onClick={() => {
+                          onUpdateCompany({ ...company, totalSlots: company.totalSlots + 1, availableSlots: company.availableSlots + 1 });
+                        }}
+                        className="w-5 h-5 flex items-center justify-center rounded bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                        title="Tăng 1 chỉ tiêu"
+                      >
+                        +
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </td>

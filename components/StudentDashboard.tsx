@@ -38,6 +38,7 @@ export default function StudentDashboard({
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((c) => {
+      if (c.isHidden) return false;
       if (search && !c.name.toLowerCase().includes(search.toLowerCase())) return false;
       if (statFilter === 'gala' && !c.isGalaSponsor) return false;
       if (statFilter === 'online' && !c.isOnlineRecruitment) return false;

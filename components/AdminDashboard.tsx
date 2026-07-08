@@ -83,13 +83,15 @@ export default function AdminDashboard({
     });
   }, [filteredCompanies]);
 
-  const handleImport = useCallback(
-    (newCompanies: Company[], replace: boolean) => {
-      onImportCompanies(newCompanies, replace);
-      setShowUploadModal(false);
-    },
-    [onImportCompanies]
-  );
+  const handleImport = (imported: Company[], replace: boolean) => {
+    onImportCompanies(imported, replace);
+    setShowUploadModal(false);
+  };
+
+  const handleUpdateCompany = (updated: Company) => {
+    const newCompanies = companies.map(c => c.id === updated.id ? updated : c);
+    onImportCompanies(newCompanies, true);
+  };
 
   const handleSaveGuide = useCallback(async () => {
     onUpdateGuide(guideDraft);
@@ -546,7 +548,7 @@ export default function AdminDashboard({
               </p>
             )}
           </div>
-          <CompanyTable companies={filteredCompanies} role={role} onRegister={noop} />
+          <CompanyTable companies={filteredCompanies} role={role} onRegister={noop} onUpdateCompany={handleUpdateCompany} />
         </div>
       </main>
 
