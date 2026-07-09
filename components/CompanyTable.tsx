@@ -382,7 +382,7 @@ function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: 
   );
 }
 
-export default function CompanyTable({ companies, role, viewConfig, onRegister }: CompanyTableProps) {
+export default function CompanyTable({ companies, role, viewConfig, onRegister, onUpdateCompany }: CompanyTableProps) {
   if (companies.length === 0) {
     return (
       <div className="card p-16 text-center">
@@ -424,7 +424,7 @@ export default function CompanyTable({ companies, role, viewConfig, onRegister }
           </thead>
           <tbody>
             {companies.map((company) => (
-              <CompanyRow key={company.id} company={company} role={role} viewConfig={viewConfig} onRegister={onRegister} />
+              <CompanyRow key={company.id} company={company} role={role} viewConfig={viewConfig} onRegister={onRegister} onUpdateCompany={onUpdateCompany} />
             ))}
           </tbody>
         </table>
