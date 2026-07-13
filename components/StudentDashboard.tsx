@@ -10,7 +10,7 @@ import CompanyTable from './CompanyTable';
 import { ExternalCompanyModal } from './RegistrationModals';
 import StudentWeeklyReportModal from './StudentWeeklyReportModal';
 import { StudentLookupModal } from './StudentLookupModal';
-import { ExternalCompanyInvitationModal } from './ExternalCompanyInvitationModal';
+import { ExternalCompanyRegistrationModal } from './ExternalCompanyRegistrationModal';
 
 interface StudentDashboardProps {
   companies: Company[];
@@ -18,7 +18,7 @@ interface StudentDashboardProps {
   guide: InternshipGuide;
   viewConfig: StudentViewConfig;
   onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>;
-  onDeclareExternal: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string) => void;
+  onDeclareExternal: (studentId: string, studentName: string, phone: string, email: string, internClass: string, companyName: string, companyEmail: string, companyAddress: string, companyPhone: string, expectedSkills: string) => Promise<string | null>;
   onLogout: () => void;
 }
 
@@ -29,7 +29,7 @@ export default function StudentDashboard({
   const [statFilter, setStatFilter] = useState<string | null>(null);
   const [fieldFilter, setFieldFilter] = useState<string | null>(null);
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
-  const [showExternalModal, setShowExternalModal] = useState(false);
+
   const [showExternalNoticeModal, setShowExternalNoticeModal] = useState(false);
   const [showWeeklyReportModal, setShowWeeklyReportModal] = useState(false);
   const [showLookupModal, setShowLookupModal] = useState(false);
@@ -54,10 +54,7 @@ export default function StudentDashboard({
     });
   }, [companies, search, statFilter, fieldFilter, skillFilter]);
 
-  const handleExternalSubmit = useCallback((sid: string, sn: string, phone: string, email: string, cls: string, cn: string) => {
-    onDeclareExternal(sid, sn, phone, email, cls, cn);
-    setShowExternalModal(false);
-  }, [onDeclareExternal]);
+
 
   const role: Role = 'student';
 
@@ -271,20 +268,13 @@ export default function StudentDashboard({
       )}
 
       {showExternalNoticeModal && (
-        <ExternalCompanyInvitationModal
-          appsScriptUrl={viewConfig?.appsScriptUrl || ''}
-          externalFormUrl={viewConfig?.externalDeclarationUrl || 'https://forms.office.com/r/jt56mpXZ4R'}
+        <ExternalCompanyRegistrationModal
+          onSubmit={onDeclareExternal}
           onClose={() => setShowExternalNoticeModal(false)}
         />
       )}
 
-      {/* External Registration Modal */}
-      {showExternalModal && (
-        <ExternalCompanyModal
-          onClose={() => setShowExternalModal(false)}
-          onSubmit={handleExternalSubmit}
-        />
-      )}
+
 
       {/* Student Weekly Report Modal */}
       {showWeeklyReportModal && (

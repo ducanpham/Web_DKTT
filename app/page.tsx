@@ -244,7 +244,30 @@ export default function Home() {
   );
 
   const handleDeclareExternal = useCallback(
-    (studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, companyName: string, expectedSkills?: string) => {
+    async (studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, companyName: string, companyEmail: string, companyAddress: string, companyPhone: string, expectedSkills: string) => {
+      
+      if (studentViewConfig.appsScriptUrl) {
+        try {
+          const res = await fetch(studentViewConfig.appsScriptUrl, {
+            method: 'POST',
+            body: JSON.stringify({
+              action: 'submitExternalRegistration',
+              studentId, studentName, phone: studentPhone, email: studentEmail, internClass,
+              companyName, companyEmail, companyAddress, companyPhone, expectedSkills
+            }),
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+          });
+          const result = await res.json();
+          if (result.status === 'error') return result.message || 'Lỗi đăng ký qua API.';
+        } catch (error) {
+          return 'Lỗi mạng khi kết nối đến hệ thống.';
+        }
+      } else {
+        if (registrations.some(r => r.studentId.trim().toUpperCase() === studentId.trim().toUpperCase())) {
+          return 'MSSV này đã đăng ký thực tập!';
+        }
+      }
+
       const newReg: Registration = {
         id: `r_ext_${Date.now()}`,
         studentId,
@@ -259,8 +282,9 @@ export default function Home() {
         expectedSkills,
       };
       setRegistrations((prev) => [...prev, newReg]);
+      return null;
     },
-    []
+    [registrations, studentViewConfig.appsScriptUrl]
   );
 
   /* ──── Hành động của Admin ──── */
