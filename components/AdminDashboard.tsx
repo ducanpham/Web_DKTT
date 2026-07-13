@@ -379,6 +379,17 @@ export default function AdminDashboard({
                   className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500" />
                 <span className="text-sm font-medium text-slate-700">Cho phép SV Đề xuất/Khai báo công ty ngoài</span>
               </label>
+              {viewConfigDraft.allowExternalDeclaration && (
+                <div className="pl-6 mt-2">
+                  <input
+                    type="url"
+                    value={viewConfigDraft.externalDeclarationUrl || ''}
+                    onChange={(e) => setViewConfigDraft(p => ({ ...p, externalDeclarationUrl: e.target.value }))}
+                    placeholder="Nhập link Microsoft Forms..."
+                    className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                  />
+                </div>
+              )}
               
               <div className="border-t border-slate-200 pt-3 mt-1">
                 <label className="flex items-center gap-2 cursor-pointer mb-3">

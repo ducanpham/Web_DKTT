@@ -10,6 +10,7 @@ import CompanyTable from './CompanyTable';
 import { ExternalCompanyModal } from './RegistrationModals';
 import StudentWeeklyReportModal from './StudentWeeklyReportModal';
 import { StudentLookupModal } from './StudentLookupModal';
+import { ExternalCompanyInvitationModal } from './ExternalCompanyInvitationModal';
 
 interface StudentDashboardProps {
   companies: Company[];
@@ -270,38 +271,11 @@ export default function StudentDashboard({
       )}
 
       {showExternalNoticeModal && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-scale-up">
-            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-violet-50">
-              <h2 className="text-lg font-bold text-violet-800">Lưu ý quan trọng</h2>
-              <button onClick={() => setShowExternalNoticeModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <div className="p-6">
-              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
-                <p className="text-sm text-amber-800 font-medium leading-relaxed">
-                  Đối với việc thu thập thông tin doanh nghiệp thực tập ngoài, <strong>yêu cầu người đại diện/hướng dẫn tại công ty gửi email xác nhận nhận thực tập</strong> đến địa chỉ email:
-                </p>
-                <div className="mt-3 bg-white px-3 py-2 border border-amber-100 rounded-lg inline-block">
-                  <a href="mailto:an.phamduc@hust.edu.vn" className="font-bold text-blue-600 hover:underline">an.phamduc@hust.edu.vn</a>
-                </div>
-                <p className="text-sm text-amber-800 font-medium leading-relaxed mt-3">
-                  <strong>Nội dung email cần ghi rõ:</strong> Xác nhận thời gian nhận thực tập, cam kết tạo điều kiện đầy đủ và hướng dẫn sinh viên thực tập tại công ty.
-                </p>
-              </div>
-              <div className="flex gap-3">
-                <button onClick={() => setShowExternalNoticeModal(false)} className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors text-sm">
-                  Đóng
-                </button>
-                <a href="https://forms.office.com/r/RqvQC2hkM2" target="_blank" rel="noopener noreferrer" onClick={() => setShowExternalNoticeModal(false)}
-                  className="flex-1 text-center px-4 py-2 bg-violet-600 text-white font-semibold rounded-xl hover:bg-violet-700 transition-colors text-sm shadow-sm">
-                  Đã hiểu, tới Form Khai báo
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ExternalCompanyInvitationModal
+          appsScriptUrl={viewConfig?.appsScriptUrl || ''}
+          externalFormUrl={viewConfig?.externalDeclarationUrl || 'https://forms.office.com/r/jt56mpXZ4R'}
+          onClose={() => setShowExternalNoticeModal(false)}
+        />
       )}
 
       {/* External Registration Modal */}
