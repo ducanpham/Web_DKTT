@@ -355,8 +355,8 @@ export default function Home() {
         headers: { 'Content-Type': 'text/plain;charset=utf-8' }
       });
       const result = await res.json();
-      if (result.status === 'success' && Array.isArray(result.data)) {
-        const fetchedRegs = result.data.map((row: any) => {
+      if (result.status === 'success' && Array.isArray(result.registrations)) {
+        const fetchedRegs = result.registrations.map((row: any) => {
           const matchedCompany = companies.find(c => c.name === row.companyName);
           return {
             id: row.id || `r_api_${Date.now()}`,
