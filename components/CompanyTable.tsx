@@ -23,6 +23,7 @@ interface CompanyTableProps {
   viewConfig?: StudentViewConfig;
   onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>;
   onUpdateCompany?: (company: Company) => void;
+  isClosed?: boolean;
 }
 
 
@@ -45,12 +46,13 @@ function SlotProgress({ available, total }: { available: number; total: number }
   );
 }
 
-function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: {
+function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany, isClosed }: {
   company: Company;
   role: Role;
   viewConfig?: StudentViewConfig;
   onRegister: (companyId: string, studentId: string, studentName: string, phone: string, email: string, internClass: string, expectedSkills?: string) => Promise<string | null>;
   onUpdateCompany?: (company: Company) => void;
+  isClosed?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
   const [registerModal, setRegisterModal] = useState(false);
@@ -169,6 +171,10 @@ function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: 
                   {hasSlots ? `${company.availableSlots} chỉ tiêu` : 'Hết chỗ'}
                 </span>
                 <button onClick={(e) => {
+                  if (isClosed) {
+                    e.preventDefault();
+                    return;
+                  }
                   if (!hasSlots) {
                     e.preventDefault();
                     alert("Công ty hiện tại đã hết vị trí, vui lòng chọn công ty khác.");
@@ -180,10 +186,12 @@ function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: 
                     setRegisterModal(true);
                   }
                 }}
+                  disabled={isClosed}
                   className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+                    isClosed ? 'bg-slate-200 text-slate-500 cursor-not-allowed' :
                     hasSlots ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 cursor-pointer'
                   }`}>
-                  {hasSlots ? 'Đăng ký' : 'Hết chỗ (Bấm xem)'}
+                  {isClosed ? 'Đã đóng' : hasSlots ? 'Đăng ký' : 'Hết chỗ (Bấm xem)'}
                 </button>
               </div>
             ) : (
@@ -223,16 +231,18 @@ function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: 
         {role === 'student' && !viewConfig?.showSlots && (
           <td className="px-5 py-4">
             <button onClick={() => {
+              if (isClosed) return;
               if (viewConfig?.enableFallback && viewConfig?.fallbackFormUrl) {
                 window.open(viewConfig.fallbackFormUrl, '_blank');
               } else {
                 setRegisterModal(true);
               }
-            }} disabled={!hasSlots}
+            }} disabled={!hasSlots || isClosed}
               className={`text-xs font-semibold px-3 py-1.5 rounded-lg transition-all ${
+                isClosed ? 'bg-slate-200 text-slate-500 cursor-not-allowed' :
                 hasSlots ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md' : 'bg-slate-100 text-slate-400 cursor-not-allowed'
               }`}>
-              {hasSlots ? 'Đăng ký' : 'Hết chỗ'}
+              {isClosed ? 'Đã đóng' : hasSlots ? 'Đăng ký' : 'Hết chỗ'}
             </button>
           </td>
         )}
@@ -382,7 +392,7 @@ function CompanyRow({ company, role, viewConfig, onRegister, onUpdateCompany }: 
   );
 }
 
-export default function CompanyTable({ companies, role, viewConfig, onRegister, onUpdateCompany }: CompanyTableProps) {
+export default function CompanyTable({ companies, role, viewConfig, onRegister, onUpdateCompany, isClosed }: CompanyTableProps) {
   if (companies.length === 0) {
     return (
       <div className="card p-16 text-center">
@@ -424,7 +434,7 @@ export default function CompanyTable({ companies, role, viewConfig, onRegister, 
           </thead>
           <tbody>
             {companies.map((company) => (
-              <CompanyRow key={company.id} company={company} role={role} viewConfig={viewConfig} onRegister={onRegister} onUpdateCompany={onUpdateCompany} />
+              <CompanyRow key={company.id} company={company} role={role} viewConfig={viewConfig} onRegister={onRegister} onUpdateCompany={onUpdateCompany} isClosed={isClosed} />
             ))}
           </tbody>
         </table>

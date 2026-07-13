@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { LogOut, User, ClipboardEdit } from 'lucide-react';
 import { Company, Registration, StudentViewConfig } from '@/lib/data';
 import CompanyWeeklyEvalModal from './CompanyWeeklyEvalModal';
+import CompanyGeneralReportModal from './CompanyGeneralReportModal';
 
 interface CompanyDashboardProps {
   company: Company;
@@ -15,6 +16,7 @@ interface CompanyDashboardProps {
 
 export default function CompanyDashboard({ company, registrations, viewConfig, onLogout }: CompanyDashboardProps) {
   const [evalStudent, setEvalStudent] = useState<Registration | null>(null);
+  const [showGeneralReport, setShowGeneralReport] = useState(false);
 
   const appsScriptUrl = viewConfig.appsScriptUrl || '';
 
@@ -49,10 +51,23 @@ export default function CompanyDashboard({ company, registrations, viewConfig, o
 
       <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-7 space-y-6">
         <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-          <h2 className="text-lg font-bold text-slate-800 mb-4">Danh sách Sinh viên Thực tập</h2>
-          <p className="text-sm text-slate-500 mb-6">
-            Dưới đây là danh sách các sinh viên đã trúng tuyển thực tập tại doanh nghiệp của bạn. Vui lòng đánh giá tiến độ làm việc của các bạn hàng tuần.
-          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h2 className="text-lg font-bold text-slate-800 mb-1">Danh sách Sinh viên Thực tập</h2>
+              <p className="text-sm text-slate-500">
+                Dưới đây là danh sách các sinh viên đã trúng tuyển thực tập tại doanh nghiệp của bạn.
+              </p>
+            </div>
+            {registrations.length > 0 && (
+              <button 
+                onClick={() => setShowGeneralReport(true)}
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 rounded-xl transition-all shadow-sm"
+              >
+                <ClipboardEdit className="w-4 h-4" />
+                Đánh giá chung tất cả
+              </button>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {registrations.length === 0 ? (
@@ -96,6 +111,14 @@ export default function CompanyDashboard({ company, registrations, viewConfig, o
           registration={evalStudent}
           appsScriptUrl={appsScriptUrl}
           onClose={() => setEvalStudent(null)}
+        />
+      )}
+
+      {showGeneralReport && (
+        <CompanyGeneralReportModal
+          registrations={registrations}
+          appsScriptUrl={appsScriptUrl}
+          onClose={() => setShowGeneralReport(false)}
         />
       )}
     </div>

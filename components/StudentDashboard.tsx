@@ -9,6 +9,7 @@ import ChartCards from './ChartCards';
 import CompanyTable from './CompanyTable';
 import { ExternalCompanyModal } from './RegistrationModals';
 import StudentWeeklyReportModal from './StudentWeeklyReportModal';
+import { StudentLookupModal } from './StudentLookupModal';
 
 interface StudentDashboardProps {
   companies: Company[];
@@ -28,7 +29,11 @@ export default function StudentDashboard({
   const [fieldFilter, setFieldFilter] = useState<string | null>(null);
   const [skillFilter, setSkillFilter] = useState<string | null>(null);
   const [showExternalModal, setShowExternalModal] = useState(false);
+  const [showExternalNoticeModal, setShowExternalNoticeModal] = useState(false);
   const [showWeeklyReportModal, setShowWeeklyReportModal] = useState(false);
+  const [showLookupModal, setShowLookupModal] = useState(false);
+
+  const isClosed = new Date() > new Date('2026-07-15T23:59:59+07:00');
 
   const activeFilterCount = [statFilter, fieldFilter, skillFilter].filter(Boolean).length;
 
@@ -84,14 +89,20 @@ export default function StudentDashboard({
             )}
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full">
+          <div className="flex items-center gap-2">
+            <button onClick={() => setShowLookupModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors text-sm font-semibold">
+              <Search className="w-4 h-4" />
+              <span className="hidden md:inline">Tra cứu đăng ký</span>
+            </button>
+            
+            <div className="hidden sm:flex items-center gap-2 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full ml-1">
               <span className="text-sm">🤖</span>
               <span className="text-xs font-semibold text-blue-600">Sinh Viên</span>
             </div>
 
             {registrations.length > 0 && (
-              <div className="relative">
+              <div className="relative ml-1">
                 <div className="p-2 rounded-lg bg-slate-100 text-slate-500">
                   <Bell className="w-4 h-4" />
                 </div>
@@ -102,13 +113,22 @@ export default function StudentDashboard({
             )}
 
             <button onClick={onLogout}
-              className="flex items-center gap-1.5 text-slate-500 hover:text-red-600 text-sm font-medium transition-colors p-2 rounded-lg hover:bg-red-50">
+              className="flex items-center gap-1.5 text-slate-500 hover:text-red-600 text-sm font-medium transition-colors p-2 rounded-lg hover:bg-red-50 ml-1">
               <LogOut className="w-4 h-4" />
               <span className="hidden sm:inline">Đăng xuất</span>
             </button>
           </div>
         </div>
       </header>
+
+      {isClosed && (
+        <div className="bg-red-500 text-white px-4 py-3 shadow-md border-b border-red-600">
+          <div className="max-w-screen-2xl mx-auto flex items-center justify-center gap-2 text-sm sm:text-base font-semibold">
+            <Bell className="w-5 h-5" />
+            <span>Đã hết hạn đăng ký tự nguyện (15/07/2026). Sinh viên chưa đăng ký sẽ đi thực tập theo phân công của Khoa.</span>
+          </div>
+        </div>
+      )}
 
       <main className="max-w-screen-2xl mx-auto px-4 sm:px-6 py-7 space-y-6">
         {/* Banner Hướng dẫn Thực tập — chỉ hiện khi admin đã cung cấp link */}
@@ -183,11 +203,18 @@ export default function StudentDashboard({
               </a>
             )}
             {viewConfig?.allowExternalDeclaration && (
-              <a href="https://forms.office.com/r/RqvQC2hkM2" target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
-                <ExternalLink className="w-4 h-4" />
-                Đề xuất/Khai Báo Công Ty Ngoài
-              </a>
+              isClosed ? (
+                <button disabled className="inline-flex items-center gap-2 bg-slate-100 text-slate-400 font-semibold px-5 py-3 rounded-xl border border-slate-200 cursor-not-allowed text-sm">
+                  <ExternalLink className="w-4 h-4" />
+                  Đề xuất/Khai Báo Công Ty Ngoài (Đã đóng)
+                </button>
+              ) : (
+                <button onClick={() => setShowExternalNoticeModal(true)}
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
+                  <ExternalLink className="w-4 h-4" />
+                  Đề xuất/Khai Báo Công Ty Ngoài
+                </button>
+              )
             )}
           </div>
         </div>
@@ -231,14 +258,51 @@ export default function StudentDashboard({
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-bold text-slate-800">
               Danh Sách Doanh Nghiệp{' '}
-              {filteredCompanies.length < companies.length && (
-                <span className="text-base font-normal text-slate-400">({filteredCompanies.length} / {companies.length})</span>
-              )}
+              {filteredCompanies.length < companies.length && <span className="text-base font-normal text-slate-400">({filteredCompanies.length} / {companies.length})</span>}
             </h2>
           </div>
-          <CompanyTable companies={filteredCompanies} role={role} viewConfig={viewConfig} onRegister={onRegister} />
+          <CompanyTable companies={filteredCompanies} role={role} viewConfig={viewConfig} onRegister={onRegister} isClosed={isClosed} />
         </div>
       </main>
+
+      {showLookupModal && (
+        <StudentLookupModal companies={companies} registrations={registrations} onClose={() => setShowLookupModal(false)} />
+      )}
+
+      {showExternalNoticeModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-scale-up">
+            <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-violet-50">
+              <h2 className="text-lg font-bold text-violet-800">Lưu ý quan trọng</h2>
+              <button onClick={() => setShowExternalNoticeModal(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                <p className="text-sm text-amber-800 font-medium leading-relaxed">
+                  Đối với việc thu thập thông tin doanh nghiệp thực tập ngoài, <strong>yêu cầu người đại diện/hướng dẫn tại công ty gửi email xác nhận nhận thực tập</strong> đến địa chỉ email:
+                </p>
+                <div className="mt-3 bg-white px-3 py-2 border border-amber-100 rounded-lg inline-block">
+                  <a href="mailto:an.phamduc@hust.edu.vn" className="font-bold text-blue-600 hover:underline">an.phamduc@hust.edu.vn</a>
+                </div>
+                <p className="text-sm text-amber-800 font-medium leading-relaxed mt-3">
+                  <strong>Nội dung email cần ghi rõ:</strong> Xác nhận thời gian nhận thực tập, cam kết tạo điều kiện đầy đủ và hướng dẫn sinh viên thực tập tại công ty.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => setShowExternalNoticeModal(false)} className="flex-1 px-4 py-2 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors text-sm">
+                  Đóng
+                </button>
+                <a href="https://forms.office.com/r/RqvQC2hkM2" target="_blank" rel="noopener noreferrer" onClick={() => setShowExternalNoticeModal(false)}
+                  className="flex-1 text-center px-4 py-2 bg-violet-600 text-white font-semibold rounded-xl hover:bg-violet-700 transition-colors text-sm shadow-sm">
+                  Đã hiểu, tới Form Khai báo
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* External Registration Modal */}
       {showExternalModal && (
