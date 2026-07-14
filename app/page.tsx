@@ -376,6 +376,23 @@ export default function Home() {
 
         // Thay thế toàn bộ registrations bằng dữ liệu từ sheet
         setRegistrations(fetchedRegs);
+        
+        // Cập nhật slot còn lại
+        setCompanies(prev => {
+          const counts: Record<string, number> = {};
+          fetchedRegs.forEach((r: any) => {
+            counts[r.companyName] = (counts[r.companyName] || 0) + 1;
+          });
+          return prev.map(c => {
+            const used = counts[c.name] || 0;
+            const newAvailable = Math.max(0, c.totalSlots - used);
+            if (c.availableSlots !== newAvailable) {
+              return { ...c, availableSlots: newAvailable };
+            }
+            return c;
+          });
+        });
+
         alert('Đã đồng bộ danh sách đăng ký từ Google Sheets!');
       } else {
         alert('Có lỗi khi đồng bộ hoặc dữ liệu trống.');
