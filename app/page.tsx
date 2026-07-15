@@ -427,10 +427,10 @@ export default function Home() {
         setCompanies(prev => {
           const counts: Record<string, number> = {};
           fetchedRegs.forEach((r: any) => {
-            counts[r.companyName] = (counts[r.companyName] || 0) + 1;
+            counts[r.companyId] = (counts[r.companyId] || 0) + 1;
           });
           return prev.map(c => {
-            const used = counts[c.name] || 0;
+            const used = counts[c.id] || 0;
             const newAvailable = Math.max(0, c.totalSlots - used);
             if (c.availableSlots !== newAvailable) {
               return { ...c, availableSlots: newAvailable };
