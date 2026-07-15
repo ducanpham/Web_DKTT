@@ -98,13 +98,16 @@ export default function Home() {
       if (!apiUrl) return;
 
       try {
-        const response = await fetch(apiUrl, {
+        const response = await fetch('/api/proxy', {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            action: 'getSlotCounts',
-            companyNames: companies.map(c => c.name)
-          }),
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            url: apiUrl,
+            payload: {
+              action: 'getSlotCounts',
+              companyNames: companies.map(c => c.name)
+            }
+          })
         });
         
         if (!response.ok) return;
@@ -144,10 +147,13 @@ export default function Home() {
       const apiUrl = studentViewConfig.appsScriptUrl || DEFAULT_STUDENT_VIEW_CONFIG.appsScriptUrl;
       if (!apiUrl) return;
       try {
-        const res = await fetch(apiUrl, {
+        const res = await fetch('/api/proxy', {
           method: 'POST',
-          body: JSON.stringify({ action: 'getRegistrations' }),
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            url: apiUrl,
+            payload: { action: 'getRegistrations' } 
+          })
         });
         const result = await res.json();
         if (result.status === 'success' && Array.isArray(result.data)) {
@@ -204,13 +210,23 @@ export default function Home() {
 
       if (studentViewConfig.appsScriptUrl) {
         try {
-          const res = await fetch(studentViewConfig.appsScriptUrl, {
+          const res = await fetch('/api/proxy', {
             method: 'POST',
-            body: JSON.stringify({
-              action: 'register',
-              studentId, studentName, phone: studentPhone, email: studentEmail, internClass, expectedSkills: expectedSkills || '', companyName
-            }),
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+              url: studentViewConfig.appsScriptUrl,
+              payload: {
+                action: 'register',
+                studentId,
+                studentName,
+                studentPhone,
+                studentEmail,
+                internClass,
+                expectedSkills,
+                companyId: companyId,
+                companyName: companyName
+              }
+            })
           });
           const result = await res.json();
           if (result.status === 'error') return result.message || 'Lỗi đăng ký qua API.';
@@ -248,14 +264,25 @@ export default function Home() {
       
       if (studentViewConfig.appsScriptUrl) {
         try {
-          const res = await fetch(studentViewConfig.appsScriptUrl, {
+          const res = await fetch('/api/proxy', {
             method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              action: 'submitExternalRegistration',
-              studentId, studentName, phone: studentPhone, email: studentEmail, internClass,
-              companyName, companyEmail, companyAddress, companyPhone, expectedSkills
-            }),
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+              url: studentViewConfig.appsScriptUrl,
+              payload: {
+                action: 'submitExternalRegistration',
+                studentId: studentId,
+                studentName: studentName,
+                studentPhone: studentPhone,
+                studentEmail: studentEmail,
+                internClass: internClass,
+                companyName: companyName,
+                companyEmail: companyEmail,
+                companyAddress: companyAddress,
+                companyPhone: companyPhone,
+                expectedSkills: expectedSkills
+              }
+            })
           });
           const result = await res.json();
           if (result.status === 'error') return result.message || 'Lỗi đăng ký qua API.';
@@ -296,10 +323,16 @@ export default function Home() {
 
       if (studentViewConfig.appsScriptUrl && reg.rowIndex) {
         try {
-          const res = await fetch(studentViewConfig.appsScriptUrl, {
+          const res = await fetch('/api/proxy', {
             method: 'POST',
-            body: JSON.stringify({ action: 'deleteRegistration', rowIndex: reg.rowIndex }),
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              url: studentViewConfig.appsScriptUrl,
+              payload: {
+                action: 'deleteRegistration',
+                rowIndex: Number(reg.rowIndex)
+              }
+            })
           });
           const result = await res.json();
           if (result.status === 'success') {
@@ -349,10 +382,13 @@ export default function Home() {
   const handleSyncGoogleSheets = useCallback(async () => {
     if (!studentViewConfig.appsScriptUrl) return;
     try {
-      const res = await fetch(studentViewConfig.appsScriptUrl, {
+      const res = await fetch('/api/proxy', {
         method: 'POST',
-        body: JSON.stringify({ action: 'getRegistrations' }),
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          url: studentViewConfig.appsScriptUrl,
+          payload: { action: 'getRegistrations' } 
+        })
       });
       const result = await res.json();
       if (result.status === 'success' && Array.isArray(result.registrations)) {
