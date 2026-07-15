@@ -397,9 +397,9 @@ export default function Home() {
       } else {
         alert('Có lỗi khi đồng bộ hoặc dữ liệu trống.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Sync API error:", err);
-      alert('Lỗi mạng khi kết nối tới Google Sheets.');
+      alert('Lỗi mạng khi kết nối tới Google Sheets. Chi tiết lỗi: ' + (err.message || String(err)));
     }
   }, [studentViewConfig.appsScriptUrl, companies]);
 
