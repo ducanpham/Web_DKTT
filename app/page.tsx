@@ -92,33 +92,63 @@ export default function Home() {
   // Auto-sync Google Form CSV to reduce slots on load
   useEffect(() => {
     if (!hydrated) return;
-    const autoSyncCSV = async () => {
-      // Use the Apps Script URL from the config
+    const syncDataFromAPI = async () => {
+      // Use the Apps Script URL from the config or fallback to default
       const apiUrl = studentViewConfig.appsScriptUrl || DEFAULT_STUDENT_VIEW_CONFIG.appsScriptUrl;
       if (!apiUrl) return;
 
       try {
-        const response = await fetch('/api/proxy', {
+        const res = await fetch('/api/proxy', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+          body: JSON.stringify({ 
             url: apiUrl,
-            payload: {
-              action: 'getSlotCounts',
-              companyNames: companies.map(c => c.name)
-            }
+            payload: { action: 'getRegistrations' } 
           })
         });
         
-        if (!response.ok) return;
-        const result = await response.json();
+        if (!res.ok) return;
+        const result = await res.json();
         
-        if (result.status === 'success' && result.data && typeof result.data === 'object' && !result.data.error) {
-          const counts = result.data as Record<string, number>;
+        if (result.status === 'success' && Array.isArray(result.registrations)) {
+          const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : '';
           
+          const fetchedRegs = result.registrations.map((row: any) => {
+            const rawCompName = normalize(String(row.companyName || ''));
+            const matchedCompany = rawCompName ? companies.find(c => {
+              const nc = normalize(c.name);
+              return nc === rawCompName || rawCompName.includes(nc) || nc.includes(rawCompName);
+            }) : undefined;
+            return {
+              id: row.id || `r_api_${Date.now()}_${Math.random()}`,
+              rowIndex: row.rowIndex,
+              studentId: String(row.studentId || ''),
+              studentName: row.studentName,
+              studentPhone: String(row.studentPhone || ''),
+              studentEmail: row.studentEmail,
+              internClass: row.internClass,
+              expectedSkills: row.expectedSkills || '',
+              companyName: row.companyName,
+              companyId: matchedCompany ? matchedCompany.id : 'UNKNOWN',
+              registeredAt: row.registeredAt || new Date().toISOString(),
+              isExternal: false
+            };
+          }).filter((r: any) => r.studentId); // Remove empty rows
+
+          // Update registrations for all users so search works
+          setRegistrations(fetchedRegs);
+
+          // Calculate slots locally based on fetched registrations
+          const counts: Record<string, number> = {};
+          fetchedRegs.forEach((r: any) => {
+            if (r.companyId && r.companyId !== 'UNKNOWN') {
+              counts[r.companyId] = (counts[r.companyId] || 0) + 1;
+            }
+          });
+
           setCompanies(prev => {
             return prev.map(c => {
-              const used = counts[c.name] || 0;
+              const used = counts[c.id] || 0;
               const newAvailable = Math.max(0, c.totalSlots - used);
               if (c.availableSlots !== newAvailable) {
                 return { ...c, availableSlots: newAvailable };
@@ -133,60 +163,12 @@ export default function Home() {
     };
     
     // Chạy lần đầu tiên
-    autoSyncCSV();
+    syncDataFromAPI();
     
     // Cập nhật ngầm mỗi 15 giây
-    const intervalId = setInterval(autoSyncCSV, 15000);
+    const intervalId = setInterval(syncDataFromAPI, 15000);
     return () => clearInterval(intervalId);
-  }, [hydrated]);
-
-  // Tự động lấy danh sách đăng ký nếu là Admin
-  useEffect(() => {
-    if (!hydrated || role !== 'admin') return;
-    const autoFetchRegs = async () => {
-      const apiUrl = studentViewConfig.appsScriptUrl || DEFAULT_STUDENT_VIEW_CONFIG.appsScriptUrl;
-      if (!apiUrl) return;
-      try {
-        const res = await fetch('/api/proxy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            url: apiUrl,
-            payload: { action: 'getRegistrations' } 
-          })
-        });
-        const result = await res.json();
-        if (result.status === 'success' && Array.isArray(result.data)) {
-          const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : '';
-          const fetchedRegs = result.data.map((row: any) => {
-            const rawCompName = normalize(String(row.companyName || ''));
-            const matchedCompany = rawCompName ? companies.find(c => {
-              const nc = normalize(c.name);
-              return nc === rawCompName || rawCompName.includes(nc) || nc.includes(rawCompName);
-            }) : undefined;
-            return {
-              id: row.id || `r_api_${Date.now()}`,
-              rowIndex: row.rowIndex,
-              studentId: row.studentId,
-              studentName: row.studentName,
-              studentPhone: String(row.studentPhone || ''),
-              studentEmail: row.studentEmail,
-              internClass: row.internClass,
-              expectedSkills: row.expectedSkills || '',
-              companyName: row.companyName,
-              companyId: matchedCompany ? matchedCompany.id : 'UNKNOWN',
-              registeredAt: row.registeredAt || new Date().toISOString(),
-              isExternal: false
-            };
-          });
-          setRegistrations(fetchedRegs);
-        }
-      } catch (err) {
-        console.error("Auto fetch registrations error:", err);
-      }
-    };
-    autoFetchRegs();
-  }, [hydrated, role, studentViewConfig.appsScriptUrl]); // Intentionally not depending on companies to avoid loop
+  }, [hydrated, studentViewConfig.appsScriptUrl]); // Removed role and companies from deps
 
   const handleLogin = useCallback((selectedRole: Role, compId?: string) => {
     setRole(selectedRole);
@@ -213,13 +195,15 @@ export default function Home() {
       const company = companies.find((c) => c.id === companyId);
       const companyName = company?.name ?? 'Không xác định';
 
-      if (studentViewConfig.appsScriptUrl) {
+      const apiUrl = studentViewConfig.appsScriptUrl || DEFAULT_STUDENT_VIEW_CONFIG.appsScriptUrl;
+      if (apiUrl) {
         try {
+          const cleanUrl = apiUrl.replace(/\/+$/, '');
           const res = await fetch('/api/proxy', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
-              url: studentViewConfig.appsScriptUrl,
+              url: cleanUrl,
               payload: {
                 action: 'register',
                 studentId,
@@ -267,13 +251,15 @@ export default function Home() {
   const handleDeclareExternal = useCallback(
     async (studentId: string, studentName: string, studentPhone: string, studentEmail: string, internClass: string, companyName: string, companyEmail: string, companyAddress: string, companyPhone: string, expectedSkills: string) => {
       
-      if (studentViewConfig.appsScriptUrl) {
+      const apiUrl = studentViewConfig.appsScriptUrl || DEFAULT_STUDENT_VIEW_CONFIG.appsScriptUrl;
+      if (apiUrl) {
         try {
+          const cleanUrl = apiUrl.replace(/\/+$/, ''); // Remove trailing slashes
           const res = await fetch('/api/proxy', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              url: studentViewConfig.appsScriptUrl,
+              url: cleanUrl,
               payload: {
                 action: 'submitExternalRegistration',
                 studentId: studentId,
@@ -289,6 +275,12 @@ export default function Home() {
               }
             })
           });
+          
+          if (!res.ok) {
+            const text = await res.text();
+            return `Lỗi hệ thống (${res.status}). Vui lòng kiểm tra lại URL Apps Script.`;
+          }
+          
           const result = await res.json();
           if (result.status === 'error') return result.message || 'Lỗi đăng ký qua API.';
         } catch (error) {
