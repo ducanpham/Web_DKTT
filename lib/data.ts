@@ -105,7 +105,7 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
   showContactPerson: true,
   allowExternalDeclaration: true,
   externalDeclarationUrl: 'https://forms.office.com/r/jt56mpXZ4R',
-  appsScriptUrl: 'https://script.google.com/macros/s/AKfycbw6H0eCgG21S98oK9zT8eE1c5l7d2I3a4E1g_o0uA_G9eN1M4XQ9lQ8tP6mQY5JvB7K/exec',
+  appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwtmAJcBdPENz0sZpHS2w5skziD-jt7UALY72iXRkohp6FzEE67BR3XIQY2H1O_LFaw/exec',
   weeklyReport: {
     enabled: false,
     googleFormUrl: '',
