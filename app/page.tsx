@@ -157,13 +157,13 @@ export default function Home() {
         });
         const result = await res.json();
         if (result.status === 'success' && Array.isArray(result.data)) {
+          const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : '';
           const fetchedRegs = result.data.map((row: any) => {
-            const rawCompName = String(row.companyName || '').trim().toUpperCase();
-            const matchedCompany = rawCompName ? companies.find(c => 
-              c.name.trim().toUpperCase() === rawCompName || 
-              rawCompName.includes(c.name.trim().toUpperCase()) ||
-              c.name.trim().toUpperCase().includes(rawCompName)
-            ) : undefined;
+            const rawCompName = normalize(String(row.companyName || ''));
+            const matchedCompany = rawCompName ? companies.find(c => {
+              const nc = normalize(c.name);
+              return nc === rawCompName || rawCompName.includes(nc) || nc.includes(rawCompName);
+            }) : undefined;
             return {
               id: row.id || `r_api_${Date.now()}`,
               rowIndex: row.rowIndex,
@@ -397,13 +397,13 @@ export default function Home() {
       });
       const result = await res.json();
       if (result.status === 'success' && Array.isArray(result.registrations)) {
+        const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : '';
         const fetchedRegs = result.registrations.map((row: any) => {
-          const rawCompName = String(row.companyName || '').trim().toUpperCase();
-          const matchedCompany = rawCompName ? companies.find(c => 
-            c.name.trim().toUpperCase() === rawCompName || 
-            rawCompName.includes(c.name.trim().toUpperCase()) ||
-            c.name.trim().toUpperCase().includes(rawCompName)
-          ) : undefined;
+          const rawCompName = normalize(String(row.companyName || ''));
+          const matchedCompany = rawCompName ? companies.find(c => {
+            const nc = normalize(c.name);
+            return nc === rawCompName || rawCompName.includes(nc) || nc.includes(rawCompName);
+          }) : undefined;
           return {
             id: row.id || `r_api_${Date.now()}`,
             rowIndex: row.rowIndex,
