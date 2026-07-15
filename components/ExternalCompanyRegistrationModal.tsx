@@ -19,6 +19,22 @@ interface ExternalCompanyRegistrationModalProps {
   ) => Promise<string | null>;
 }
 
+const Field = ({ label, icon: Icon, value, onChange, placeholder, type = "text", errorKey, errors, setErrors }: any) => (
+  <div>
+    <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+      {label} {errorKey !== 'companyAddress' && errorKey !== 'companyPhone' && <span className="text-red-500">*</span>}
+    </label>
+    <div className="relative">
+      <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      <input type={type} value={value}
+        onChange={(e) => { onChange(e.target.value); setErrors((p: any) => { const newP = { ...p }; delete newP[errorKey]; return newP; }); }}
+        placeholder={placeholder}
+        className={`w-full px-3 py-2 pl-10 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors[errorKey] ? 'border-red-400 focus:ring-red-400' : 'border-slate-200'}`} />
+    </div>
+    {errors[errorKey] && <p className="mt-1.5 text-xs text-red-500">{errors[errorKey]}</p>}
+  </div>
+);
+
 export function ExternalCompanyRegistrationModal({ onClose, onSubmit }: ExternalCompanyRegistrationModalProps) {
   const [studentId, setStudentId] = useState('');
   const [studentName, setStudentName] = useState('');
@@ -83,21 +99,6 @@ export function ExternalCompanyRegistrationModal({ onClose, onSubmit }: External
     }
   };
 
-  const Field = ({ label, icon: Icon, value, onChange, placeholder, type = "text", errorKey }: any) => (
-    <div>
-      <label className="block text-sm font-semibold text-slate-700 mb-1.5">
-        {label} {errorKey !== 'companyAddress' && errorKey !== 'companyPhone' && <span className="text-red-500">*</span>}
-      </label>
-      <div className="relative">
-        <Icon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-        <input type={type} value={value}
-          onChange={(e) => { onChange(e.target.value); setErrors((p) => { const newP = { ...p }; delete newP[errorKey]; return newP; }); }}
-          placeholder={placeholder}
-          className={`w-full px-3 py-2 pl-10 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 ${errors[errorKey] ? 'border-red-400 focus:ring-red-400' : 'border-slate-200'}`} />
-      </div>
-      {errors[errorKey] && <p className="mt-1.5 text-xs text-red-500">{errors[errorKey]}</p>}
-    </div>
-  );
 
   return (
     <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in overflow-y-auto">
@@ -148,11 +149,11 @@ export function ExternalCompanyRegistrationModal({ onClose, onSubmit }: External
                 <div>
                   <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 border-b pb-2">1. Thông tin sinh viên</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Field label="MSSV" icon={Hash} value={studentId} onChange={setStudentId} placeholder="VD: 20225678" errorKey="id" />
-                    <Field label="Họ và Tên" icon={User} value={studentName} onChange={setStudentName} placeholder="Nhập họ và tên đầy đủ" errorKey="name" />
-                    <Field label="Số Điện Thoại" icon={Phone} value={phone} onChange={setPhone} placeholder="VD: 0912345678" type="tel" errorKey="phone" />
-                    <Field label="Email" icon={Mail} value={email} onChange={setEmail} placeholder="VD: sv@hust.edu.vn" type="email" errorKey="email" />
-                    <Field label="Lớp Thực Tập" icon={BookOpen} value={internClass} onChange={setInternClass} placeholder="VD: KSCD-01" errorKey="cls" />
+                    <Field label="MSSV" icon={Hash} value={studentId} onChange={setStudentId} placeholder="VD: 20225678" errorKey="id" errors={errors} setErrors={setErrors} />
+                    <Field label="Họ và Tên" icon={User} value={studentName} onChange={setStudentName} placeholder="Nhập họ và tên đầy đủ" errorKey="name" errors={errors} setErrors={setErrors} />
+                    <Field label="Số Điện Thoại" icon={Phone} value={phone} onChange={setPhone} placeholder="VD: 0912345678" type="tel" errorKey="phone" errors={errors} setErrors={setErrors} />
+                    <Field label="Email" icon={Mail} value={email} onChange={setEmail} placeholder="VD: sv@hust.edu.vn" type="email" errorKey="email" errors={errors} setErrors={setErrors} />
+                    <Field label="Lớp Thực Tập" icon={BookOpen} value={internClass} onChange={setInternClass} placeholder="VD: KSCD-01" errorKey="cls" errors={errors} setErrors={setErrors} />
                   </div>
                   <div className="mt-4">
                     <label className="block text-sm font-semibold text-slate-700 mb-1.5">
@@ -173,12 +174,12 @@ export function ExternalCompanyRegistrationModal({ onClose, onSubmit }: External
                   <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 border-b pb-2">2. Thông tin công ty ngoài</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
-                      <Field label="Tên Doanh Nghiệp" icon={Building} value={companyName} onChange={setCompanyName} placeholder="VD: Công ty TNHH VNG" errorKey="companyName" />
+                      <Field label="Tên Doanh Nghiệp" icon={Building} value={companyName} onChange={setCompanyName} placeholder="VD: Công ty TNHH VNG" errorKey="companyName" errors={errors} setErrors={setErrors} />
                     </div>
-                    <Field label="Email Người Đại Diện / Nhân Sự" icon={Mail} value={companyEmail} onChange={setCompanyEmail} placeholder="Dùng để gửi thư mời" type="email" errorKey="companyEmail" />
-                    <Field label="Số điện thoại người liên hệ / hướng dẫn" icon={Phone} value={companyPhone} onChange={setCompanyPhone} placeholder="VD: 0912345678" type="tel" errorKey="companyPhone" />
+                    <Field label="Email Người Đại Diện / Nhân Sự" icon={Mail} value={companyEmail} onChange={setCompanyEmail} placeholder="Dùng để gửi thư mời" type="email" errorKey="companyEmail" errors={errors} setErrors={setErrors} />
+                    <Field label="Số điện thoại người liên hệ / hướng dẫn" icon={Phone} value={companyPhone} onChange={setCompanyPhone} placeholder="VD: 0912345678" type="tel" errorKey="companyPhone" errors={errors} setErrors={setErrors} />
                     <div className="sm:col-span-2">
-                      <Field label="Địa chỉ công ty (Không bắt buộc)" icon={MapPin} value={companyAddress} onChange={setCompanyAddress} placeholder="Địa chỉ nơi bạn sẽ thực tập" errorKey="companyAddress" />
+                      <Field label="Địa chỉ công ty (Không bắt buộc)" icon={MapPin} value={companyAddress} onChange={setCompanyAddress} placeholder="Địa chỉ nơi bạn sẽ thực tập" errorKey="companyAddress" errors={errors} setErrors={setErrors} />
                     </div>
                   </div>
                 </div>
