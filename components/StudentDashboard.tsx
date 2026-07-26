@@ -34,7 +34,8 @@ export default function StudentDashboard({
   const [showWeeklyReportModal, setShowWeeklyReportModal] = useState(false);
   const [showLookupModal, setShowLookupModal] = useState(false);
 
-  const isClosed = new Date() > new Date('2026-07-15T23:59:59+07:00');
+  const deadlineStr = viewConfig?.registrationDeadline || '2026-08-31T23:59:59+07:00';
+  const isClosed = new Date() > new Date(deadlineStr);
 
   const activeFilterCount = [statFilter, fieldFilter, skillFilter].filter(Boolean).length;
 

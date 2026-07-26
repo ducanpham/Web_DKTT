@@ -390,8 +390,23 @@ export default function AdminDashboard({
                   />
                 </div>
               )}
-              
-              <div className="border-t border-slate-200 pt-3 mt-1">
+
+              <div className="border-t border-slate-200 pt-3 mt-3">
+                <label className="block text-sm font-semibold text-slate-800 mb-1">
+                  ⏰ Hạn chót đăng ký thực tập
+                </label>
+                <p className="text-xs text-slate-500 mb-2">
+                  Sau thời điểm này, nút Đăng ký ở tất cả công ty sẽ tự động chuyển sang trạng thái &quot;Đã đóng&quot;.
+                </p>
+                <input
+                  type="datetime-local"
+                  value={viewConfigDraft.registrationDeadline ? viewConfigDraft.registrationDeadline.slice(0, 16) : '2026-08-31T23:59'}
+                  onChange={(e) => setViewConfigDraft(p => ({ ...p, registrationDeadline: e.target.value ? `${e.target.value}:59+07:00` : '2026-08-31T23:59:59+07:00' }))}
+                  className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                />
+              </div>
+
+              <div className="border-t border-slate-200 pt-3 mt-3">
                 <label className="flex items-center gap-2 cursor-pointer mb-3">
                   <input type="checkbox" checked={viewConfigDraft.enableFallback}
                     onChange={(e) => setViewConfigDraft((p) => ({ ...p, enableFallback: e.target.checked }))}

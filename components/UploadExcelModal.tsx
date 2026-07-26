@@ -58,8 +58,18 @@ const COLUMN_MAP: Record<string, keyof MappedCompany> = {
   'contact': 'contactName',
   'số điện thoại': 'contactPhone',
   'so dien thoai': 'contactPhone',
+  'dien thoai': 'contactPhone',
   'phone': 'contactPhone',
   'sdt': 'contactPhone',
+  'so dt': 'contactPhone',
+  'dt': 'contactPhone',
+  'di dong': 'contactPhone',
+  'so di dong': 'contactPhone',
+  'so dien thoai lien he': 'contactPhone',
+  'sdt lien he': 'contactPhone',
+  'contact phone': 'contactPhone',
+  'tel': 'contactPhone',
+  'mobile': 'contactPhone',
   'email': 'contactEmail',
   'website': 'website',
   'địa chỉ': 'address',
@@ -108,6 +118,7 @@ const EMOJI_LIST = ['🔷','📡','🎮','💳','🛒','⚙️','🚗','📊','�
 function normalizeHeader(h: string): string {
   return h.toLowerCase().trim()
     .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
     .replace(/\s+/g, ' ');
 }
 
@@ -115,7 +126,7 @@ function parseBool(val: string | number | boolean | null | undefined): boolean {
   if (typeof val === 'boolean') return val;
   if (typeof val === 'number') return val !== 0;
   const s = String(val ?? '').toLowerCase().trim();
-  const normalized = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const normalized = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd');
   
   if (normalized.includes('khong') || normalized.includes('no') || normalized.includes('false')) return false;
   if (normalized.includes('co') || normalized.includes('tham gia') || normalized.includes('yes') || normalized === '1' || normalized === 'x' || normalized === '✓') {

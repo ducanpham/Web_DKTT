@@ -111,7 +111,7 @@ export default function Home() {
         const result = await res.json();
         
         if (result.status === 'success' && Array.isArray(result.registrations)) {
-          const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : '';
+          const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toUpperCase().trim() : '';
           
           const fetchedRegs = result.registrations.map((row: any) => {
             const rawCompName = normalize(String(row.companyName || ''));
@@ -389,7 +389,7 @@ export default function Home() {
       });
       const result = await res.json();
       if (result.status === 'success' && Array.isArray(result.registrations)) {
-        const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim() : '';
+        const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toUpperCase().trim() : '';
         const fetchedRegs = result.registrations.map((row: any) => {
           const rawCompName = normalize(String(row.companyName || ''));
           const matchedCompany = rawCompName ? companies.find(c => {

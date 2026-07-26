@@ -86,6 +86,7 @@ export interface StudentViewConfig {
   allowExternalDeclaration: boolean;
   externalDeclarationUrl: string;
   appsScriptUrl: string;
+  registrationDeadline?: string;
   weeklyReport: WeeklyReportConfig;
   careerEvent?: {
     enabled: boolean;
@@ -106,6 +107,7 @@ export const DEFAULT_STUDENT_VIEW_CONFIG: StudentViewConfig = {
   allowExternalDeclaration: true,
   externalDeclarationUrl: 'https://forms.office.com/r/jt56mpXZ4R',
   appsScriptUrl: 'https://script.google.com/macros/s/AKfycbwtmAJcBdPENz0sZpHS2w5skziD-jt7UALY72iXRkohp6FzEE67BR3XIQY2H1O_LFaw/exec',
+  registrationDeadline: '2026-08-31T23:59:59+07:00',
   weeklyReport: {
     enabled: false,
     googleFormUrl: '',
