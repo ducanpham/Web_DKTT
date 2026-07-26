@@ -873,16 +873,60 @@ export const INITIAL_REGISTRATIONS: Registration[] = [];
 export async function fetchConfigFromAPI(apiUrl: string): Promise<{ studentViewConfig?: StudentViewConfig, guide?: InternshipGuide, customCompanies?: Company[] } | null> {
   if (!apiUrl) return null;
   try {
-    const urlWithCacheBuster = apiUrl + (apiUrl.includes('?') ? '&' : '?') + 't=' + Date.now();
-    const response = await fetch(urlWithCacheBuster, { cache: 'no-store' });
-    if (!response.ok) return null;
-    const json = await response.json();
-    if (json.status === 'success' && json.data) {
-      return json.data;
+    const cleanUrl = apiUrl.replace(/\/+$/, '');
+    const res = await fetch('/api/proxy', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: cleanUrl,
+        payload: { action: 'getGlobalConfig' }
+      })
+    });
+    if (!res.ok) {
+      const resFallback = await fetch('/api/proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: cleanUrl,
+          payload: { action: 'getCompanies' }
+        })
+      });
+      if (resFallback.ok) {
+        const jsonFallback = await resFallback.json();
+        if (jsonFallback && (jsonFallback.status === 'success' || Array.isArray(jsonFallback.companies))) {
+          return { customCompanies: jsonFallback.companies || jsonFallback.data || [] };
+        }
+      }
+      return null;
+    }
+    const json = await res.json();
+    if (json && (json.status === 'success' || json.data)) {
+      const data = json.data || json;
+      return {
+        studentViewConfig: data.studentViewConfig || data.webConfig,
+        guide: data.guide || data.internshipGuide,
+        customCompanies: data.customCompanies || data.companies || (Array.isArray(json.companies) ? json.companies : undefined)
+      };
+    }
+    if (json && json.message && json.message.includes('not found')) {
+      const resFallback = await fetch('/api/proxy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: cleanUrl,
+          payload: { action: 'getCompanies' }
+        })
+      });
+      if (resFallback.ok) {
+        const jsonFallback = await resFallback.json();
+        if (jsonFallback && (jsonFallback.status === 'success' || Array.isArray(jsonFallback.companies))) {
+          return { customCompanies: jsonFallback.companies || jsonFallback.data || [] };
+        }
+      }
     }
     return null;
   } catch (error) {
-    console.error("Error fetching config from API:", error);
+    console.error("Error fetching config from API via proxy:", error);
     return null;
   }
 }
@@ -890,18 +934,33 @@ export async function fetchConfigFromAPI(apiUrl: string): Promise<{ studentViewC
 export async function saveConfigToAPI(apiUrl: string, action: 'saveViewConfig' | 'saveGuide' | 'saveCompanies', data: any): Promise<boolean> {
   if (!apiUrl) return false;
   try {
-    const response = await fetch(apiUrl, {
+    const cleanUrl = apiUrl.replace(/\/+$/, '');
+    let mappedAction = action as string;
+    let payloadObj: any = { action: mappedAction, data };
+    if (action === 'saveCompanies') {
+      mappedAction = 'updateCompanies';
+      payloadObj = { action: 'updateCompanies', companies: data, data };
+    } else if (action === 'saveViewConfig') {
+      mappedAction = 'updateWebConfig';
+      payloadObj = { action: 'updateWebConfig', config: data, data };
+    } else if (action === 'saveGuide') {
+      mappedAction = 'updateGuide';
+      payloadObj = { action: 'updateGuide', guide: data, data };
+    }
+
+    const response = await fetch('/api/proxy', {
       method: 'POST',
-      body: JSON.stringify({ action, data }),
-      headers: {
-        'Content-Type': 'text/plain;charset=utf-8',
-      }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: cleanUrl,
+        payload: payloadObj
+      })
     });
     if (!response.ok) return false;
     const json = await response.json();
-    return json.status === 'success';
+    return json.status === 'success' || json.status === 'ok';
   } catch (error) {
-    console.error("Error saving config to API:", error);
+    console.error("Error saving config to API via proxy:", error);
     return false;
   }
 }
