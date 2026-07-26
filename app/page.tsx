@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Company, Registration, Role, InternshipGuide, DEFAULT_GUIDE, StudentViewConfig, DEFAULT_STUDENT_VIEW_CONFIG, INITIAL_COMPANIES, INITIAL_REGISTRATIONS, fetchConfigFromAPI, saveConfigToAPI } from '@/lib/data';
 import LoginScreen from '@/components/LoginScreen';
 import StudentDashboard from '@/components/StudentDashboard';
@@ -37,6 +37,11 @@ export default function Home() {
   const [guide, setGuide] = useState<InternshipGuide>(DEFAULT_GUIDE);
   const [studentViewConfig, setStudentViewConfig] = useState<StudentViewConfig>(DEFAULT_STUDENT_VIEW_CONFIG);
   const [hydrated, setHydrated] = useState(false);
+
+  const companiesRef = useRef<Company[]>(companies);
+  const registrationsRef = useRef<Registration[]>(registrations);
+  useEffect(() => { companiesRef.current = companies; }, [companies]);
+  useEffect(() => { registrationsRef.current = registrations; }, [registrations]);
 
   // Khôi phục từ localStorage khi tải trang
   useEffect(() => {
@@ -82,7 +87,19 @@ export default function Home() {
           setGuide(configData.guide);
         }
         if (configData.customCompanies && Array.isArray(configData.customCompanies)) {
-          setCompanies(configData.customCompanies);
+          setCompanies(prev => {
+            const counts: Record<string, number> = {};
+            registrationsRef.current.forEach(r => {
+              if (!r.isExternal && r.companyId && r.companyId !== 'UNKNOWN' && r.companyId !== 'EXT') {
+                counts[r.companyId] = (counts[r.companyId] || 0) + 1;
+              }
+            });
+            return configData.customCompanies!.map((c: Company) => {
+              const used = counts[c.id] || 0;
+              const newAvailable = Math.max(0, c.totalSlots - used);
+              return { ...c, availableSlots: newAvailable };
+            });
+          });
         }
       }
     };
@@ -115,7 +132,7 @@ export default function Home() {
           
           const fetchedRegs = result.registrations.map((row: any) => {
             const rawCompName = normalize(String(row.companyName || ''));
-            const matchedCompany = rawCompName ? companies.find(c => {
+            const matchedCompany = rawCompName ? companiesRef.current.find(c => {
               const nc = normalize(c.name);
               return nc === rawCompName || rawCompName.includes(nc) || nc.includes(rawCompName);
             }) : undefined;
@@ -392,7 +409,7 @@ export default function Home() {
         const normalize = (s: string) => s ? s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/đ/gi, "d").toUpperCase().trim() : '';
         const fetchedRegs = result.registrations.map((row: any) => {
           const rawCompName = normalize(String(row.companyName || ''));
-          const matchedCompany = rawCompName ? companies.find(c => {
+          const matchedCompany = rawCompName ? companiesRef.current.find(c => {
             const nc = normalize(c.name);
             return nc === rawCompName || rawCompName.includes(nc) || nc.includes(rawCompName);
           }) : undefined;
