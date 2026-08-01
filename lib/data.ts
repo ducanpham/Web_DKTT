@@ -54,9 +54,14 @@ export interface WeeklyReport {
 }
 
 export interface WeeklyReportConfig {
-  enabled: boolean;            // Admin bật/tắt chức năng
-  googleFormUrl: string;       // Giữ lại cho compatibility (không dùng nữa)
-  sheetsCsvUrl: string;        // Giữ lại cho compatibility (không dùng nữa)
+  enabled: boolean;
+  studentFormUrl?: string;
+  companyFormUrl?: string;
+  studentSheetsUrl?: string;
+  companySheetsUrl?: string;
+  // deprecated fields
+  googleFormUrl?: string;
+  sheetsCsvUrl?: string;
 }
 
 export interface InternshipGuide {

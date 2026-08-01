@@ -182,13 +182,25 @@ export default function StudentDashboard({
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             {viewConfig?.weeklyReport?.enabled && (
-              <button
-                onClick={() => setShowWeeklyReportModal(true)}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm cursor-pointer"
-              >
-                <ClipboardList className="w-4 h-4" />
-                Nộp Báo Cáo Tuần
-              </button>
+              viewConfig.weeklyReport.studentFormUrl ? (
+                <a
+                  href={viewConfig.weeklyReport.studentFormUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm cursor-pointer"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  Nộp Báo Cáo Tuần
+                </a>
+              ) : (
+                <button
+                  onClick={() => setShowWeeklyReportModal(true)}
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold px-5 py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm cursor-pointer"
+                >
+                  <ClipboardList className="w-4 h-4" />
+                  Nộp Báo Cáo Tuần
+                </button>
+              )
             )}
             {viewConfig?.careerEvent?.enabled && viewConfig.careerEvent.url && (
               <a

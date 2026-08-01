@@ -93,12 +93,23 @@ export default function CompanyDashboard({ company, registrations, viewConfig, o
                     <p className="truncate"><span className="font-medium">Email:</span> {reg.studentEmail || 'Không có'}</p>
                   </div>
 
-                  <button
-                    onClick={() => setEvalStudent(reg)}
-                    className="w-full py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-semibold text-sm transition-colors flex items-center justify-center gap-2"
-                  >
-                    <ClipboardEdit className="w-4 h-4" /> Đánh giá tiến độ tuần
-                  </button>
+                  {viewConfig.weeklyReport?.companyFormUrl ? (
+                    <a
+                      href={viewConfig.weeklyReport.companyFormUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                    >
+                      <ClipboardEdit className="w-4 h-4" /> Đánh giá tiến độ tuần
+                    </a>
+                  ) : (
+                    <button
+                      onClick={() => setEvalStudent(reg)}
+                      className="w-full py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 font-semibold text-sm transition-colors flex items-center justify-center gap-2"
+                    >
+                      <ClipboardEdit className="w-4 h-4" /> Đánh giá tiến độ tuần
+                    </button>
+                  )}
                 </div>
               ))
             )}

@@ -254,11 +254,23 @@ export default function AdminDashboard({
             </button>
 
             {/* Báo cáo tiến độ */}
+            <div className="flex gap-2">
+            {viewConfig.weeklyReport?.studentSheetsUrl && (
+              <a href={viewConfig.weeklyReport.studentSheetsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-100 font-semibold text-sm transition-all border border-blue-100">
+                Báo cáo Sinh viên
+              </a>
+            )}
+            {viewConfig.weeklyReport?.companySheetsUrl && (
+              <a href={viewConfig.weeklyReport.companySheetsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-purple-50 text-purple-600 rounded-xl hover:bg-purple-100 font-semibold text-sm transition-all border border-purple-100">
+                Đánh giá Doanh nghiệp
+              </a>
+            )}
             <button onClick={() => setShowWeeklyModal(true)}
-              className="btn-secondary text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200">
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 font-semibold text-sm transition-all border border-emerald-100">
               <ClipboardList className="w-4 h-4" />
-              Báo Cáo Tuần
+              Theo dõi báo cáo (Nội bộ)
             </button>
+          </div>
           </div>
         </div>
 
@@ -441,28 +453,53 @@ export default function AdminDashboard({
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox"
                     checked={viewConfigDraft.weeklyReport?.enabled ?? false}
-                    onChange={(e) => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { googleFormUrl: '', sheetsCsvUrl: '' }), enabled: e.target.checked } }))}
+                    onChange={(e) => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? {}), enabled: e.target.checked } }))}
                     className="w-4 h-4 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500" />
                   <span className="text-sm font-semibold text-slate-800">Bật Báo cáo tiến độ hàng tuần</span>
                 </label>
-                <div className={`space-y-2 pl-6 ${!viewConfigDraft.weeklyReport?.enabled ? 'opacity-50' : ''}`}>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Form (Sinh viên nộp báo cáo)</label>
-                    <input type="url"
-                      value={viewConfigDraft.weeklyReport?.googleFormUrl ?? ''}
-                      onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, sheetsCsvUrl: '' }), googleFormUrl: e.target.value } }))}
-                      placeholder="https://forms.gle/..."
-                      className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
-                    />
+                <div className={`space-y-4 pl-6 ${!viewConfigDraft.weeklyReport?.enabled ? 'opacity-50' : ''}`}>
+                  <div className="space-y-2 p-3 bg-blue-50/50 rounded-xl border border-blue-100">
+                    <p className="text-xs font-bold text-blue-700 uppercase">Dành cho Sinh Viên</p>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Form (Nộp báo cáo)</label>
+                      <input type="url"
+                        value={viewConfigDraft.weeklyReport?.studentFormUrl ?? ''}
+                        onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true }), studentFormUrl: e.target.value } }))}
+                        placeholder="https://forms.gle/..."
+                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Sheets (Admin theo dõi)</label>
+                      <input type="url"
+                        value={viewConfigDraft.weeklyReport?.studentSheetsUrl ?? ''}
+                        onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true }), studentSheetsUrl: e.target.value } }))}
+                        placeholder="https://docs.google.com/spreadsheets/..."
+                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                      />
+                    </div>
                   </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Sheets CSV (Admin theo dõi kết quả)</label>
-                    <input type="url"
-                      value={viewConfigDraft.weeklyReport?.sheetsCsvUrl ?? ''}
-                      onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true, googleFormUrl: '' }), sheetsCsvUrl: e.target.value } }))}
-                      placeholder="https://docs.google.com/spreadsheets/d/.../export?format=csv"
-                      className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
-                    />
+
+                  <div className="space-y-2 p-3 bg-purple-50/50 rounded-xl border border-purple-100">
+                    <p className="text-xs font-bold text-purple-700 uppercase">Dành cho Doanh Nghiệp</p>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Form (Đánh giá sinh viên)</label>
+                      <input type="url"
+                        value={viewConfigDraft.weeklyReport?.companyFormUrl ?? ''}
+                        onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true }), companyFormUrl: e.target.value } }))}
+                        placeholder="https://forms.gle/..."
+                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-600 mb-1">Link Google Sheets (Admin theo dõi)</label>
+                      <input type="url"
+                        value={viewConfigDraft.weeklyReport?.companySheetsUrl ?? ''}
+                        onChange={e => setViewConfigDraft(p => ({ ...p, weeklyReport: { ...(p.weeklyReport ?? { enabled: true }), companySheetsUrl: e.target.value } }))}
+                        placeholder="https://docs.google.com/spreadsheets/..."
+                        className="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 outline-none transition-all"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
