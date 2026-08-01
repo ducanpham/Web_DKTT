@@ -24,6 +24,8 @@ export default function StudentWeeklyReportModal({ companies, appsScriptUrl, onC
   const [skillOther, setSkillOther] = useState('');
   const [difficulties, setDifficulties] = useState<string[]>([]);
   const [difficultyOther, setDifficultyOther] = useState('');
+  const [suitability, setSuitability] = useState('');
+  const [suitabilityReason, setSuitabilityReason] = useState('');
   const [supportNeeded, setSupportNeeded] = useState('');
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -62,6 +64,13 @@ export default function StudentWeeklyReportModal({ companies, appsScriptUrl, onC
     'Môi trường làm việc chưa thích nghi kịp'
   ];
 
+  const SUITABILITY_OPTIONS = [
+    'Rất phù hợp (Đúng chuyên ngành, học hỏi nhiều kiến thức CĐT)',
+    'Phù hợp (Có liên quan đến chuyên ngành, môi trường tốt)',
+    'Bình thường (Ít liên quan nhưng rèn luyện được kỹ năng)',
+    'Không phù hợp (Hoàn toàn trái ngành, không có cơ hội phát triển)'
+  ];
+
   const toggleArray = (arr: string[], setArr: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
     setArr(arr.includes(item) ? arr.filter(x => x !== item) : [...arr, item]);
   };
@@ -73,6 +82,10 @@ export default function StudentWeeklyReportModal({ companies, appsScriptUrl, onC
     }
     if (!status) {
       setError('Vui lòng chọn trạng thái tiến độ chung.');
+      return;
+    }
+    if (!suitability) {
+      setError('Vui lòng đánh giá mức độ phù hợp của doanh nghiệp với sinh viên Cơ điện tử.');
       return;
     }
 
@@ -90,6 +103,8 @@ export default function StudentWeeklyReportModal({ companies, appsScriptUrl, onC
       `Công việc: ${taskList.length > 0 ? taskList.join('; ') : 'Không có'}`,
       `Kỹ năng: ${skillList.length > 0 ? skillList.join('; ') : 'Không có'}`,
       `Khó khăn: ${difficultyList.length > 0 ? difficultyList.join('; ') : 'Không có'}`,
+      `Mức độ phù hợp CĐT: ${suitability}`,
+      `Lý do / Góp ý về môi trường: ${suitabilityReason.trim() || 'Không có'}`,
       `Đề xuất hỗ trợ: ${supportNeeded.trim() || 'Không có'}`
     ];
 
@@ -269,7 +284,26 @@ export default function StudentWeeklyReportModal({ companies, appsScriptUrl, onC
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-slate-800 mb-2">5. Đề xuất / Yêu cầu hỗ trợ (Nhà trường, Công ty)</label>
+            <label className="block text-sm font-semibold text-slate-800 mb-2">5. Đánh giá mức độ phù hợp của doanh nghiệp với SV Cơ điện tử <span className="text-red-500">*</span></label>
+            <div className="grid grid-cols-1 gap-2 mb-2">
+              {SUITABILITY_OPTIONS.map(opt => (
+                <label key={opt} className="flex items-start gap-3 p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-300 cursor-pointer transition-colors">
+                  <input type="radio" name="suitability" value={opt} checked={suitability === opt} onChange={e => setSuitability(e.target.value)} className="mt-1" />
+                  <span className="text-sm text-slate-700">{opt}</span>
+                </label>
+              ))}
+            </div>
+            <input
+              type="text"
+              placeholder="Lý do / Góp ý thêm về môi trường làm việc..."
+              value={suitabilityReason}
+              onChange={e => setSuitabilityReason(e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-sm"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-slate-800 mb-2">6. Đề xuất / Yêu cầu hỗ trợ (Nhà trường, Công ty)</label>
             <textarea
               value={supportNeeded}
               onChange={e => setSupportNeeded(e.target.value)}
